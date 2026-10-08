@@ -29,3 +29,14 @@ game28.dta
 
 # Log files
 warnings.log
+
+# Project skeleton
+.env
+.env.*
+!.env.example
+node_modules/
+dist/
+coverage/
+*.log
+__pycache__/
+.DS_Store
