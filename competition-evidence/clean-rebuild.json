@@ -1,0 +1,8 @@
+{
+  "verifiedAt": "2026-10-03T15:06:16.508229+00:00",
+  "method": "Extract source ZIP into clean directory; npm run build; node scripts/test-edge-cases.mjs",
+  "workerMatchesManifest": true,
+  "edgeCasesPassed": 12,
+  "edgeCasesFailed": 0,
+  "npmDependencyInstallationVerified": false
+}

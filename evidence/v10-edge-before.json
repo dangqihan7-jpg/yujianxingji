@@ -1,0 +1,81 @@
+{
+  "target": "/workspace/scratch/ec382ee31a8a/henan-site",
+  "noRealExternalRequests": true,
+  "total": 12,
+  "passed": 0,
+  "failed": 12,
+  "results": [
+    {
+      "id": "decimal-days-not-truncated",
+      "expected": "1.5天 must remain unresolved rather than become 5天",
+      "status": "failed",
+      "error": "{\"fields\":{\"city\":\"洛阳\",\"days\":5,\"mode\":null,\"maxHours\":null,\"restMinutes\":null,\"budget\":1200,\"avoidCrossCity\":null,\"interests\":[],\"requiredIds\":[],\"excludedIds\":[],\"excludedModes\":[]},\"unresolved\":[]}\n\n5 !== null\n"
+    },
+    {
+      "id": "budget-1,200",
+      "expected": "Read complete budget as 1200 or explicitly leave unresolved",
+      "status": "failed",
+      "error": "{\"fields\":{\"city\":\"洛阳\",\"days\":2,\"mode\":null,\"maxHours\":null,\"restMinutes\":null,\"budget\":1,\"avoidCrossCity\":null,\"interests\":[],\"requiredIds\":[],\"excludedIds\":[],\"excludedModes\":[]},\"unresolved\":[]}"
+    },
+    {
+      "id": "budget-1万",
+      "expected": "Read complete budget as 10000 or explicitly leave unresolved",
+      "status": "failed",
+      "error": "{\"fields\":{\"city\":\"洛阳\",\"days\":2,\"mode\":null,\"maxHours\":null,\"restMinutes\":null,\"budget\":1,\"avoidCrossCity\":null,\"interests\":[],\"requiredIds\":[],\"excludedIds\":[],\"excludedModes\":[]},\"unresolved\":[]}"
+    },
+    {
+      "id": "budget-2千",
+      "expected": "Read complete budget as 2000 or explicitly leave unresolved",
+      "status": "failed",
+      "error": "{\"fields\":{\"city\":\"洛阳\",\"days\":2,\"mode\":null,\"maxHours\":null,\"restMinutes\":null,\"budget\":2,\"avoidCrossCity\":null,\"interests\":[],\"requiredIds\":[],\"excludedIds\":[],\"excludedModes\":[]},\"unresolved\":[]}"
+    },
+    {
+      "id": "budget-extra-precision",
+      "expected": "100.999 may be rejected explicitly but cannot be truncated silently",
+      "status": "failed",
+      "error": "{\"fields\":{\"city\":\"洛阳\",\"days\":2,\"mode\":null,\"maxHours\":null,\"restMinutes\":null,\"budget\":100.99,\"avoidCrossCity\":null,\"interests\":[],\"requiredIds\":[],\"excludedIds\":[],\"excludedModes\":[]},\"unresolved\":[]}"
+    },
+    {
+      "id": "negative-compound-transport-verb",
+      "expected": "不乘坐公交 excludes transit",
+      "status": "failed",
+      "error": "{\"fields\":{\"city\":\"洛阳\",\"days\":2,\"mode\":\"transit\",\"maxHours\":null,\"restMinutes\":null,\"budget\":null,\"avoidCrossCity\":null,\"interests\":[],\"requiredIds\":[],\"excludedIds\":[],\"excludedModes\":[]},\"unresolved\":[]}\n\n'transit' !== null\n"
+    },
+    {
+      "id": "negative-transport-coordination",
+      "expected": "不要步行和自驾 excludes both, selecting neither",
+      "status": "failed",
+      "error": "{\"fields\":{\"city\":\"洛阳\",\"days\":2,\"mode\":\"driving\",\"maxHours\":null,\"restMinutes\":null,\"budget\":null,\"avoidCrossCity\":null,\"interests\":[],\"requiredIds\":[],\"excludedIds\":[],\"excludedModes\":[\"walking\"]},\"unresolved\":[]}\n\n'driving' !== null\n"
+    },
+    {
+      "id": "negative-place-coordination",
+      "expected": "All three listed places must be excluded",
+      "status": "failed",
+      "error": "{\"fields\":{\"city\":\"洛阳\",\"days\":2,\"mode\":null,\"maxHours\":null,\"restMinutes\":null,\"budget\":null,\"avoidCrossCity\":null,\"interests\":[\"culture\"],\"requiredIds\":[\"hn-whitehorse\"],\"excludedIds\":[\"hn-longmen\",\"hn-luoyang-museum\"],\"excludedModes\":[]},\"unresolved\":[]}\n\n1 !== 0\n"
+    },
+    {
+      "id": "positive-after-negative-list",
+      "expected": "Positive clause after exclusions must remain positive",
+      "status": "failed",
+      "error": "{\"fields\":{\"city\":\"洛阳\",\"days\":2,\"mode\":\"driving\",\"maxHours\":null,\"restMinutes\":null,\"budget\":null,\"avoidCrossCity\":null,\"interests\":[\"culture\"],\"requiredIds\":[\"hn-whitehorse\"],\"excludedIds\":[\"hn-longmen\",\"hn-luoyang-museum\"],\"excludedModes\":[]},\"unresolved\":[]}"
+    },
+    {
+      "id": "interday-transfer-remains-unknown",
+      "expected": "Two cities on separate days must have pending interday transfer",
+      "status": "failed",
+      "error": "{\"daily\":[{\"day\":1,\"stops\":1,\"cities\":[\"洛阳\"],\"visit\":60,\"travel\":null,\"knownMinutes\":90,\"hasTraffic\":true,\"conflicts\":[],\"pending\":[],\"status\":\"checked\"},{\"day\":2,\"stops\":1,\"cities\":[\"开封\"],\"visit\":60,\"travel\":null,\"knownMinutes\":90,\"hasTraffic\":true,\"conflicts\":[],\"pending\":[],\"status\":\"checked\"}],\"budget\":{\"target\":500,\"subtotal\":0,\"missing\":[],\"status\":\"checked\"},\"conflicts\":0,\"pending\":0,\"missingRequired\":[],\"excludedPresent\":[],\"modeConflict\":false,\"locked\":0,\"status\":\"checked\"}"
+    },
+    {
+      "id": "money-cent-precision",
+      "expected": "0.10+0.20 must not exceed a 0.30 budget",
+      "status": "failed",
+      "error": "{\"daily\":[{\"day\":1,\"stops\":1,\"cities\":[\"洛阳\"],\"visit\":60,\"travel\":null,\"knownMinutes\":90,\"hasTraffic\":true,\"conflicts\":[],\"pending\":[],\"status\":\"checked\"}],\"budget\":{\"target\":0.3,\"subtotal\":0.30000000000000004,\"missing\":[],\"status\":\"conflict\"},\"conflicts\":1,\"pending\":0,\"missingRequired\":[],\"excludedPresent\":[],\"modeConflict\":false,\"locked\":0,\"status\":\"conflict\"}\n+ actual - expected\n\n+ 'conflict'\n- 'checked'\n"
+    },
+    {
+      "id": "model-correct-values-survive-guard",
+      "expected": "Correct mocked model cannot be overwritten by truncated deterministic numbers",
+      "status": "failed",
+      "error": "{\"source\":\"ai\",\"provider\":\"讯飞星火 X2.5\",\"fields\":{\"city\":\"洛阳\",\"days\":5,\"mode\":null,\"maxHours\":null,\"restMinutes\":null,\"budget\":1,\"avoidCrossCity\":null,\"interests\":[],\"requiredIds\":[],\"excludedIds\":[],\"excludedModes\":[]},\"unresolved\":[\"1.5天不支持\"],\"note\":\"模型提取的条件需由你确认；明确的数字和排除要求由程序保护，实际行程另行核算。\"}\n\n5 !== null\n"
+    }
+  ]
+}

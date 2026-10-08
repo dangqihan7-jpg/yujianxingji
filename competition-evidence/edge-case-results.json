@@ -1,0 +1,341 @@
+{
+  "target": "/workspace/scratch/9b34f79abb53/github-handoff",
+  "noRealExternalRequests": true,
+  "total": 12,
+  "passed": 12,
+  "failed": 0,
+  "results": [
+    {
+      "id": "decimal-days-not-truncated",
+      "expected": "1.5天 must remain unresolved rather than become 5天",
+      "status": "passed",
+      "observation": {
+        "fields": {
+          "city": "洛阳",
+          "days": null,
+          "mode": null,
+          "maxHours": null,
+          "restMinutes": null,
+          "budget": 1200,
+          "avoidCrossCity": null,
+          "interests": [],
+          "requiredIds": [],
+          "excludedIds": [],
+          "excludedModes": []
+        },
+        "unresolved": [
+          "识别到 1.5 天；当前可选 1–5 天或 7 天，请手动确认天数。"
+        ]
+      }
+    },
+    {
+      "id": "budget-1,200",
+      "expected": "Read complete budget as 1200 or explicitly leave unresolved",
+      "status": "passed",
+      "observation": {
+        "fields": {
+          "city": "洛阳",
+          "days": 2,
+          "mode": null,
+          "maxHours": null,
+          "restMinutes": null,
+          "budget": 1200,
+          "avoidCrossCity": null,
+          "interests": [],
+          "requiredIds": [],
+          "excludedIds": [],
+          "excludedModes": []
+        },
+        "unresolved": []
+      }
+    },
+    {
+      "id": "budget-1万",
+      "expected": "Read complete budget as 10000 or explicitly leave unresolved",
+      "status": "passed",
+      "observation": {
+        "fields": {
+          "city": "洛阳",
+          "days": 2,
+          "mode": null,
+          "maxHours": null,
+          "restMinutes": null,
+          "budget": 10000,
+          "avoidCrossCity": null,
+          "interests": [],
+          "requiredIds": [],
+          "excludedIds": [],
+          "excludedModes": []
+        },
+        "unresolved": []
+      }
+    },
+    {
+      "id": "budget-2千",
+      "expected": "Read complete budget as 2000 or explicitly leave unresolved",
+      "status": "passed",
+      "observation": {
+        "fields": {
+          "city": "洛阳",
+          "days": 2,
+          "mode": null,
+          "maxHours": null,
+          "restMinutes": null,
+          "budget": 2000,
+          "avoidCrossCity": null,
+          "interests": [],
+          "requiredIds": [],
+          "excludedIds": [],
+          "excludedModes": []
+        },
+        "unresolved": []
+      }
+    },
+    {
+      "id": "budget-extra-precision",
+      "expected": "100.999 may be rejected explicitly but cannot be truncated silently",
+      "status": "passed",
+      "observation": {
+        "fields": {
+          "city": "洛阳",
+          "days": 2,
+          "mode": null,
+          "maxHours": null,
+          "restMinutes": null,
+          "budget": null,
+          "avoidCrossCity": null,
+          "interests": [],
+          "requiredIds": [],
+          "excludedIds": [],
+          "excludedModes": []
+        },
+        "unresolved": [
+          "识别到预算 100.999 元，超过当前支持范围或格式无法确认，请手动确认。"
+        ]
+      }
+    },
+    {
+      "id": "negative-compound-transport-verb",
+      "expected": "不乘坐公交 excludes transit",
+      "status": "passed",
+      "observation": {
+        "fields": {
+          "city": "洛阳",
+          "days": 2,
+          "mode": null,
+          "maxHours": null,
+          "restMinutes": null,
+          "budget": null,
+          "avoidCrossCity": null,
+          "interests": [],
+          "requiredIds": [],
+          "excludedIds": [],
+          "excludedModes": [
+            "transit"
+          ]
+        },
+        "unresolved": [
+          "已排除部分交通方式，请选择允许的出行方式。"
+        ]
+      }
+    },
+    {
+      "id": "negative-transport-coordination",
+      "expected": "不要步行和自驾 excludes both, selecting neither",
+      "status": "passed",
+      "observation": {
+        "fields": {
+          "city": "洛阳",
+          "days": 2,
+          "mode": null,
+          "maxHours": null,
+          "restMinutes": null,
+          "budget": null,
+          "avoidCrossCity": null,
+          "interests": [],
+          "requiredIds": [],
+          "excludedIds": [],
+          "excludedModes": [
+            "walking",
+            "driving"
+          ]
+        },
+        "unresolved": [
+          "已排除部分交通方式，请选择允许的出行方式。"
+        ]
+      }
+    },
+    {
+      "id": "negative-place-coordination",
+      "expected": "All three listed places must be excluded",
+      "status": "passed",
+      "observation": {
+        "fields": {
+          "city": "洛阳",
+          "days": 2,
+          "mode": null,
+          "maxHours": null,
+          "restMinutes": null,
+          "budget": null,
+          "avoidCrossCity": null,
+          "interests": [
+            "culture"
+          ],
+          "requiredIds": [],
+          "excludedIds": [
+            "hn-longmen",
+            "hn-luoyang-museum",
+            "hn-whitehorse"
+          ],
+          "excludedModes": []
+        },
+        "unresolved": []
+      }
+    },
+    {
+      "id": "positive-after-negative-list",
+      "expected": "Positive clause after exclusions must remain positive",
+      "status": "passed",
+      "observation": {
+        "fields": {
+          "city": "洛阳",
+          "days": 2,
+          "mode": "driving",
+          "maxHours": null,
+          "restMinutes": null,
+          "budget": null,
+          "avoidCrossCity": null,
+          "interests": [
+            "culture"
+          ],
+          "requiredIds": [
+            "hn-whitehorse"
+          ],
+          "excludedIds": [
+            "hn-longmen",
+            "hn-luoyang-museum"
+          ],
+          "excludedModes": [
+            "transit"
+          ]
+        },
+        "unresolved": []
+      }
+    },
+    {
+      "id": "interday-transfer-remains-unknown",
+      "expected": "Two cities on separate days must have pending interday transfer",
+      "status": "passed",
+      "observation": {
+        "daily": [
+          {
+            "day": 1,
+            "stops": 1,
+            "cities": [
+              "洛阳"
+            ],
+            "visit": 60,
+            "travel": null,
+            "knownMinutes": 90,
+            "hasTraffic": true,
+            "conflicts": [],
+            "pending": [],
+            "status": "checked"
+          },
+          {
+            "day": 2,
+            "stops": 1,
+            "cities": [
+              "开封"
+            ],
+            "visit": 60,
+            "travel": null,
+            "knownMinutes": 90,
+            "hasTraffic": true,
+            "conflicts": [],
+            "pending": [
+              "第 1 天至第 2 天的 洛阳 → 开封 城际交通尚未核算"
+            ],
+            "status": "pending"
+          }
+        ],
+        "budget": {
+          "target": 500,
+          "subtotal": 0,
+          "missing": [],
+          "status": "checked"
+        },
+        "conflicts": 0,
+        "pending": 1,
+        "missingRequired": [],
+        "excludedPresent": [],
+        "modeConflict": false,
+        "locked": 0,
+        "status": "pending"
+      }
+    },
+    {
+      "id": "money-cent-precision",
+      "expected": "0.10+0.20 must not exceed a 0.30 budget",
+      "status": "passed",
+      "observation": {
+        "daily": [
+          {
+            "day": 1,
+            "stops": 1,
+            "cities": [
+              "洛阳"
+            ],
+            "visit": 60,
+            "travel": null,
+            "knownMinutes": 90,
+            "hasTraffic": true,
+            "conflicts": [],
+            "pending": [],
+            "status": "checked"
+          }
+        ],
+        "budget": {
+          "target": 0.3,
+          "subtotal": 0.3,
+          "missing": [],
+          "status": "checked"
+        },
+        "conflicts": 0,
+        "pending": 0,
+        "missingRequired": [],
+        "excludedPresent": [],
+        "modeConflict": false,
+        "locked": 0,
+        "status": "checked"
+      }
+    },
+    {
+      "id": "model-correct-values-survive-guard",
+      "expected": "Correct mocked model cannot be overwritten by truncated deterministic numbers",
+      "status": "passed",
+      "observation": {
+        "source": "ai",
+        "provider": "讯飞星火 X2.5",
+        "fields": {
+          "city": "洛阳",
+          "days": null,
+          "mode": null,
+          "maxHours": null,
+          "restMinutes": null,
+          "budget": 1200,
+          "avoidCrossCity": null,
+          "interests": [],
+          "requiredIds": [],
+          "excludedIds": [],
+          "excludedModes": []
+        },
+        "unresolved": [
+          "识别到 1.5 天；当前可选 1–5 天或 7 天，请手动确认天数。",
+          "1.5天不支持"
+        ],
+        "note": "模型提取的条件需由你确认；明确的数字和排除要求由程序保护，实际行程另行核算。"
+      }
+    }
+  ]
+}

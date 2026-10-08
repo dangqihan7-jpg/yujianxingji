@@ -1,0 +1,155 @@
+{
+  "generatedAt": "2026-10-08T09:33:08.537Z",
+  "target": "/workspace/scratch/9b34f79abb53/github-handoff",
+  "scope": "SQLite executes all project migrations in memory. Model calls are mocked; no real provider or real secret was used. Concurrency verifies SQL guard behavior under overlapping async local requests, not a production distributed load test.",
+  "workerSha256": "b21b937637cacbfc4a0dfa5a3a0e0a8324508a3a2ec9accf8410d8c6cbc89240",
+  "migrations": [
+    "0000_smiling_sphinx.sql",
+    "0001_brainy_ben_urich.sql"
+  ],
+  "total": 14,
+  "passed": 14,
+  "failed": 0,
+  "results": [
+    {
+      "id": "default-anonymous-no-spend",
+      "description": "未开启公开演示时访客不能消耗模型额度",
+      "status": "passed",
+      "observation": {
+        "outbound": 0,
+        "source": "rules"
+      }
+    },
+    {
+      "id": "public-first-call-and-hashed-identity",
+      "description": "开启演示并完成迁移后可调用，身份与密钥不明文入库",
+      "status": "passed",
+      "observation": {
+        "outbound": 1,
+        "rows": 2,
+        "identitiesHashed": true
+      }
+    },
+    {
+      "id": "client-daily-cap",
+      "description": "同一访问者第三次调用回退，不越过每日2次限制",
+      "status": "passed",
+      "observation": {
+        "outbound": 2,
+        "sources": [
+          "ai",
+          "ai",
+          "rules"
+        ]
+      }
+    },
+    {
+      "id": "global-daily-cap",
+      "description": "不同访问者合计不能越过每日3次全站限制",
+      "status": "passed",
+      "observation": {
+        "outbound": 3,
+        "sources": [
+          "ai",
+          "ai",
+          "ai",
+          "rules"
+        ]
+      }
+    },
+    {
+      "id": "concurrent-client-cap",
+      "description": "20个并发请求同一访问者，仅3次可发往模型",
+      "status": "passed",
+      "observation": {
+        "requests": 20,
+        "outbound": 3,
+        "rules": 17
+      }
+    },
+    {
+      "id": "concurrent-global-cap",
+      "description": "20个不同访问者并发，仅5次可发往模型",
+      "status": "passed",
+      "observation": {
+        "requests": 20,
+        "outbound": 5,
+        "rules": 15
+      }
+    },
+    {
+      "id": "missing-db-fail-closed",
+      "description": "公开演示缺DB时规则回退，禁止模型调用",
+      "status": "passed",
+      "observation": {
+        "outbound": 0,
+        "reason": "模型演示的额度控制暂不可用"
+      }
+    },
+    {
+      "id": "broken-db-fail-closed",
+      "description": "DB失效时规则回退，不发模型请求",
+      "status": "passed",
+      "observation": {
+        "outbound": 0,
+        "reason": "模型额度控制暂不可用"
+      }
+    },
+    {
+      "id": "missing-second-migration-fail-closed",
+      "description": "仅首迁移缺model_usage表时规则回退，不发模型请求",
+      "status": "passed",
+      "observation": {
+        "outbound": 0,
+        "reason": "模型额度控制暂不可用"
+      }
+    },
+    {
+      "id": "foreign-origin-no-spend",
+      "description": "外站Origin不能消耗演示额度",
+      "status": "passed",
+      "observation": {
+        "outbound": 0,
+        "reason": "模型请求来源不正确"
+      }
+    },
+    {
+      "id": "rules-no-quota-charge",
+      "description": "显式规则模式不占DB额度，不发模型请求",
+      "status": "passed",
+      "observation": {
+        "outbound": 0,
+        "globalCalls": 0
+      }
+    },
+    {
+      "id": "failed-model-reservation-counts-once",
+      "description": "模型失败仍计一次尝试，后续不会绕过访问者限制",
+      "status": "passed",
+      "observation": {
+        "outbound": 1,
+        "reservedCalls": 1,
+        "failuresCountAsAttempts": true
+      }
+    },
+    {
+      "id": "old-usage-cleanup",
+      "description": "成功预约额度时清理超过7天的旧额度记录",
+      "status": "passed",
+      "observation": {
+        "oldUsageRemoved": true,
+        "outbound": 1
+      }
+    },
+    {
+      "id": "date-key-isolation",
+      "description": "昨日额度记录不阻塞今日请求，配额日期采用UTC",
+      "status": "passed",
+      "observation": {
+        "outbound": 2,
+        "dateZone": "UTC",
+        "previousDateIgnored": true
+      }
+    }
+  ]
+}

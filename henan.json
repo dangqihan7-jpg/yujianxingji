@@ -1,0 +1,506 @@
+{
+  "cities": [
+    "郑州",
+    "洛阳",
+    "开封",
+    "焦作",
+    "安阳",
+    "三门峡"
+  ],
+  "places": [
+    {
+      "id": "hn-ruyi",
+      "name": "如意湖",
+      "city": "郑州",
+      "category": "scenic",
+      "location": [
+        113.729,
+        34.769
+      ],
+      "address": "郑州市郑东新区",
+      "description": "沿湖散步，看郑东新区的城市天际线。可以把这里放在一天的最后，留一点时间给湖边的晚风。",
+      "theme": "城市漫步",
+      "duration": 90,
+      "image": "/assets/ruyi.jpg",
+      "reference": "https://commons.wikimedia.org/wiki/File:Ruyi_Lake_25514-Zhengzhou_(49067715743).jpg",
+      "credit": "xiquinhosilva / Wikimedia Commons · CC BY 2.0 · 已缩放",
+      "visitTip": "适合安排在城市游览结束后，放慢节奏沿湖散步。"
+    },
+    {
+      "id": "hn-henan-museum",
+      "name": "河南博物院",
+      "city": "郑州",
+      "category": "scenic",
+      "location": [
+        113.678,
+        34.791
+      ],
+      "address": "郑州市金水区农业路",
+      "description": "从文物认识中原历史。建议留出完整的参观时间，参观日期、预约规则和临时展览以博物院公告为准。",
+      "theme": "文博寻踪",
+      "duration": 150,
+      "reference": "https://www.henan.gov.cn/2020/07-24/1745005.html",
+      "image": "/assets/henan-museum.jpg",
+      "photoReference": "https://commons.wikimedia.org/wiki/File:Henan_Museum_pic_1.jpg",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0/",
+      "credit": "drnan tu (Drnantu) / Wikimedia Commons · CC BY-SA 2.0 · 拍摄于 2008-07-02 · 已缩放与压缩",
+      "visitTip": "先看自己感兴趣的展厅，再留时间细看文物；预约成功后再确定当天顺序。"
+    },
+    {
+      "id": "hn-erqi",
+      "name": "二七纪念塔",
+      "city": "郑州",
+      "category": "scenic",
+      "location": [
+        113.665,
+        34.748
+      ],
+      "address": "郑州市二七广场",
+      "description": "郑州老城的代表性地标。适合与周边街区步行体验组合，登塔和展陈开放安排请另行确认。",
+      "theme": "城市地标",
+      "duration": 60,
+      "reference": "https://hct.henan.gov.cn/2021/12-01/2357795.html"
+    },
+    {
+      "id": "hn-shaolin",
+      "name": "嵩山少林寺",
+      "city": "郑州",
+      "category": "scenic",
+      "location": [
+        112.942,
+        34.507
+      ],
+      "address": "郑州市登封市嵩山",
+      "description": "了解少林文化与嵩山历史建筑。登封距离郑州市区较远，建议单独安排一天，不与市区景点紧凑拼接。",
+      "theme": "山川古寺",
+      "duration": 300,
+      "reference": "https://www.henan.gov.cn/2020/07-24/1745005.html",
+      "image": "/assets/shaolin-temple.jpg",
+      "photoReference": "https://commons.wikimedia.org/wiki/File:20241103_Gate_of_Shaolin_Temple.jpg",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+      "credit": "Windmemories / Wikimedia Commons · CC BY-SA 4.0 · 拍摄于 2024-11-03 · 已缩放与压缩"
+    },
+    {
+      "id": "hn-only-henan",
+      "name": "只有河南·戏剧幻城",
+      "city": "郑州",
+      "category": "scenic",
+      "location": [
+        113.994,
+        34.784
+      ],
+      "address": "郑州市中牟县",
+      "description": "以戏剧呈现河南的土地与故事。适合预留半天以上，具体剧目、场次和票务请查看当日官方安排。",
+      "theme": "戏剧体验",
+      "duration": 300,
+      "reference": "https://hct.henan.gov.cn/2024/12-19/3101345.html"
+    },
+    {
+      "id": "hn-longmen",
+      "name": "龙门石窟",
+      "city": "洛阳",
+      "category": "scenic",
+      "location": [
+        112.477,
+        34.558
+      ],
+      "address": "洛阳市龙门山口",
+      "description": "沿伊河观看石窟造像与石刻艺术，感受世界文化遗产的历史厚度。建议穿舒适的鞋，并预留步行和讲解时间。",
+      "theme": "世界遗产",
+      "duration": 180,
+      "image": "/assets/longmen.jpg",
+      "credit": "Gary Todd / Wikimedia Commons · CC0 1.0 · 已缩放",
+      "photoReference": "https://commons.wikimedia.org/wiki/File:Vairocana,_Fengxian_Temple,_Longmen_Grottoes_(10240207654).jpg",
+      "reference": "https://hct.henan.gov.cn/2025/06-17/3170379.html",
+      "visitTip": "建议以石窟造像和河岸步行为主，额外留出景区内部步行时间。"
+    },
+    {
+      "id": "hn-whitehorse",
+      "name": "白马寺",
+      "city": "洛阳",
+      "category": "scenic",
+      "location": [
+        112.604,
+        34.721
+      ],
+      "address": "洛阳市洛龙区白马寺镇",
+      "description": "在古寺建筑中了解佛教传入中国的历史。这里位于洛阳东部，与龙门石窟之间需要安排交通时间。",
+      "theme": "古寺文化",
+      "duration": 120,
+      "reference": "https://hct.henan.gov.cn/2025/05-21/3160322.html",
+      "image": "/assets/white-horse-temple.jpg",
+      "photoReference": "https://commons.wikimedia.org/wiki/File:%E7%99%BD%E9%A9%AC%E5%AF%BA-White_Horse_Temple.jpg",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "credit": "A1AA1A / Wikimedia Commons · CC0 1.0 · 拍摄于 2014-06-08 · 已缩放与压缩",
+      "visitTip": "确认前往的寺院入口，把往返市区的交通单独核算。"
+    },
+    {
+      "id": "hn-luoyi",
+      "name": "洛邑古城",
+      "city": "洛阳",
+      "category": "scenic",
+      "location": [
+        112.478,
+        34.684
+      ],
+      "address": "洛阳市老城区",
+      "description": "漫步古城街巷，体验洛阳的夜间文化与汉服氛围。可以与老城美食安排在同一天，活动内容以现场为准。",
+      "theme": "古城夜游",
+      "duration": 90,
+      "reference": "https://hct.henan.gov.cn/2025/09-24/3229991.html",
+      "image": "/assets/hn-luoyi.jpg",
+      "photoReference": "https://commons.wikimedia.org/wiki/File:20241215_Luoyi_Ancient_City.jpg",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+      "photoCaption": "洛邑古城航拍视角，文峰塔、新潭与传统建筑群同框。",
+      "credit": "Windmemories / Wikimedia Commons · CC BY-SA 4.0 · 拍摄于 2024-12-15 · 已缩放、压缩；缩略图裁切显示",
+      "visitTip": "可以留作老城散步的一站，夜游时需把返程时间算进行程。"
+    },
+    {
+      "id": "hn-luoyang-museum",
+      "name": "洛阳博物馆",
+      "city": "洛阳",
+      "category": "scenic",
+      "location": [
+        112.454,
+        34.641
+      ],
+      "address": "洛阳市洛龙区",
+      "description": "通过馆藏文物梳理河洛历史，适合作为古都旅行的文化一站。预约、开放日和临时展览请提前核实。",
+      "theme": "文博寻踪",
+      "duration": 120,
+      "reference": "https://www.henan.gov.cn/2020/07-24/1745005.html",
+      "image": "/assets/hn-luoyang-museum.jpg",
+      "photoReference": "https://commons.wikimedia.org/wiki/File:Exterior,_Luoyang_Museum_20240929.jpg",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+      "photoCaption": "洛阳博物馆正立面与广场实景。",
+      "credit": "Tim Wu / Wikimedia Commons · CC BY-SA 4.0 · 拍摄于 2024-09-29 · 已缩放、压缩；缩略图裁切显示",
+      "visitTip": "适合先了解城市历史，再带着线索去看古迹。"
+    },
+    {
+      "id": "hn-xigong",
+      "name": "西工小街",
+      "city": "洛阳",
+      "category": "food",
+      "location": [
+        112.448,
+        34.674
+      ],
+      "address": "洛阳市西工区",
+      "description": "在街区寻找洛阳小吃与地方风味。水席、牛肉汤等是城市美食线索，具体店铺、价格和营业时间需现场选择。",
+      "theme": "街巷烟火",
+      "duration": 60,
+      "reference": "https://hct.henan.gov.cn/2025/06-04/3165501.html",
+      "visitTip": "这是一处美食街区，先选择具体餐馆，再确认营业时间与餐饮预算。"
+    },
+    {
+      "id": "hn-longting",
+      "name": "龙亭公园",
+      "city": "开封",
+      "category": "scenic",
+      "location": [
+        114.355,
+        34.811
+      ],
+      "address": "开封市龙亭区",
+      "description": "从龙亭建筑与园林认识开封的古都气质。与清明上河园组合时，建议为园区之间的交通留出余量。",
+      "theme": "宋都风华",
+      "duration": 90,
+      "image": "/assets/kaifeng.jpg",
+      "credit": "Gary Todd / Wikimedia Commons · CC0 1.0 · 已缩放",
+      "photoReference": "https://commons.wikimedia.org/wiki/File:Dragon_Pavilion_01.jpg",
+      "reference": "https://www.henan.gov.cn/2020/07-24/1745005.html",
+      "visitTip": "适合以古建筑与园林细节为主，和同区域景点组合。"
+    },
+    {
+      "id": "hn-qingming",
+      "name": "清明上河园",
+      "city": "开封",
+      "category": "scenic",
+      "location": [
+        114.345,
+        34.813
+      ],
+      "address": "开封市龙亭区",
+      "description": "以宋代城市生活为主题的文化园区。园内演艺较多，适合预留半天；演出时刻和夜场票务以官方公告为准。",
+      "theme": "宋韵体验",
+      "duration": 240,
+      "reference": "https://hct.henan.gov.cn/2024/12-19/3101345.html",
+      "image": "/assets/hn-qingming.jpg",
+      "photoReference": "https://commons.wikimedia.org/wiki/File:2014_Millennium_City_Park_Towers_and_Lake.jpg",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "photoCaption": "清明上河园湖畔楼阁实景，前景为黄色荷花造型装置。",
+      "credit": "Gary Todd / Wikimedia Commons · CC0 1.0 · 拍摄于 2014-04-26 · 已缩放、压缩；缩略图裁切显示",
+      "visitTip": "先查看当日演出安排，再围绕想看的场次选择园内游览顺序。"
+    },
+    {
+      "id": "hn-kaifeng-fu",
+      "name": "开封府",
+      "city": "开封",
+      "category": "scenic",
+      "location": [
+        114.349,
+        34.787
+      ],
+      "address": "开封市包公湖周边",
+      "description": "从府衙文化与主题展陈了解开封历史。适合与市区其他文化景点组合，演艺与开放安排请另行核实。",
+      "theme": "府衙文化",
+      "duration": 120,
+      "reference": "https://www.henan.gov.cn/2020/07-24/1745005.html"
+    },
+    {
+      "id": "hn-ironpagoda",
+      "name": "铁塔公园",
+      "city": "开封",
+      "category": "scenic",
+      "location": [
+        114.372,
+        34.816
+      ],
+      "address": "开封市顺河回族区",
+      "description": "观看开封铁塔与园林空间，感受古建筑的细节。建议安排轻松步行，登塔与园区开放政策以现场为准。",
+      "theme": "古建寻踪",
+      "duration": 90,
+      "reference": "https://www.henan.gov.cn/2020/07-24/1745005.html"
+    },
+    {
+      "id": "hn-yuntai",
+      "name": "云台山",
+      "city": "焦作",
+      "category": "scenic",
+      "location": [
+        113.373,
+        35.437
+      ],
+      "address": "焦作市修武县",
+      "description": "把旅行节奏交给太行山水与峡谷步道。建议单独安排一天；景区交通、天气与步道开放情况需出发前确认。",
+      "theme": "太行山水",
+      "duration": 360,
+      "reference": "https://hct.henan.gov.cn/2023/01-20/2677769.html",
+      "image": "/assets/yuntai-mountain.jpg",
+      "photoReference": "https://commons.wikimedia.org/wiki/File:2018_Yuntai_Mountain_Red-stone_Gorge_02.jpg",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "credit": "Gary Todd / Wikimedia Commons · CC0 1.0 · 拍摄于 2018-05-20 · 已缩放与压缩",
+      "visitTip": "当天以山水游览为主，景区内部车程和步道时间另外预留。"
+    },
+    {
+      "id": "hn-chenjiagou",
+      "name": "陈家沟",
+      "city": "焦作",
+      "category": "scenic",
+      "location": [
+        113.176,
+        34.982
+      ],
+      "address": "焦作市温县",
+      "description": "体验太极拳文化与村落空间。文化体验项目需要另行咨询，不把演示行程中的停留时间视为预约。",
+      "theme": "太极文化",
+      "duration": 120,
+      "reference": "https://hct.henan.gov.cn/2022/08-19/2564130.html"
+    },
+    {
+      "id": "hn-yinxu",
+      "name": "殷墟博物馆",
+      "city": "安阳",
+      "category": "scenic",
+      "location": [
+        114.329,
+        36.126
+      ],
+      "address": "安阳市殷墟片区",
+      "description": "从甲骨文与考古发现认识商代文明。博物馆与遗址参观需要分别确认入场安排，建议预留充分的讲解时间。",
+      "theme": "文明溯源",
+      "duration": 180,
+      "reference": "https://hct.henan.gov.cn/2025/06-17/3170379.html"
+    },
+    {
+      "id": "hn-writing",
+      "name": "中国文字博物馆",
+      "city": "安阳",
+      "category": "scenic",
+      "location": [
+        114.391,
+        36.114
+      ],
+      "address": "安阳市北关区",
+      "description": "沿着文字演变的线索认识中华文化。适合与殷墟博物馆组合，参观预约与开放日期请以官方信息为准。",
+      "theme": "文字之旅",
+      "duration": 120,
+      "reference": "https://www.henan.gov.cn/2020/07-24/1745005.html"
+    },
+    {
+      "id": "hn-redflag",
+      "name": "红旗渠",
+      "city": "安阳",
+      "category": "scenic",
+      "location": [
+        113.862,
+        36.299
+      ],
+      "address": "安阳市林州市",
+      "description": "了解太行山间的水利工程与红旗渠精神。展示定位为片区位置，分水苑、青年洞等具体游览区域请另行确认。",
+      "theme": "红色研学",
+      "duration": 180,
+      "reference": "https://hct.henan.gov.cn/2022/11-15/2639835.html",
+      "image": "/assets/hn-redflag.jpg",
+      "photoReference": "https://commons.wikimedia.org/wiki/File:20260815_Red_Flag_Canal_05.jpg",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+      "photoCaption": "红旗渠青年洞洞口与渠水实景，崖壁可见“青年洞”题字。",
+      "credit": "Windmemories / Wikimedia Commons · CC BY-SA 4.0 · 拍摄于 2026-08-15 · 已缩放、压缩；缩略图裁切显示",
+      "visitTip": "先决定参观分水苑还是青年洞；照片展示青年洞，交通定位须选择实际前往的区域。"
+    },
+    {
+      "id": "hn-dikeng",
+      "name": "陕州地坑院",
+      "city": "三门峡",
+      "category": "scenic",
+      "location": [
+        111.208,
+        34.728
+      ],
+      "address": "三门峡市陕州区",
+      "description": "走进地平线下的村落，了解独特的民居空间与民俗文化。非遗展演和节庆活动以当日安排为准。",
+      "theme": "民居非遗",
+      "duration": 150,
+      "reference": "https://hct.henan.gov.cn/2024/12-19/3101345.html"
+    },
+    {
+      "id": "hn-guoguo",
+      "name": "虢国博物馆",
+      "city": "三门峡",
+      "category": "scenic",
+      "location": [
+        111.207,
+        34.8
+      ],
+      "address": "三门峡市湖滨区",
+      "description": "以考古遗存和文物展陈了解虢国文化。适合与黄河文化主题行程组合，开放与预约信息请提前确认。",
+      "theme": "文博寻踪",
+      "duration": 120,
+      "reference": "https://hct.henan.gov.cn/2023/07-01/2771007.html"
+    },
+    {
+      "id": "hn-swanlake",
+      "name": "天鹅湖国家城市湿地公园",
+      "city": "三门峡",
+      "category": "scenic",
+      "location": [
+        111.175,
+        34.785
+      ],
+      "address": "三门峡市黄河湿地区域",
+      "description": "沿湿地步行，感受黄河岸边的生态景观。观鸟受季节与天气影响，不保证到访时能看到天鹅。",
+      "theme": "黄河湿地",
+      "duration": 90,
+      "reference": "https://hct.henan.gov.cn/2023/05-20/2746303.html"
+    }
+  ],
+  "routes": [
+    {
+      "id": "classic",
+      "title": "郑汴洛 · 古都三日",
+      "subtitle": "城市湖畔、宋都园林、龙门石刻",
+      "days": 3,
+      "city": "河南",
+      "note": "跨城请单独安排高铁或公路交通。以下为游览组合，时刻仅累计停留时间。",
+      "stops": [
+        [
+          "hn-henan-museum",
+          1,
+          150
+        ],
+        [
+          "hn-ruyi",
+          1,
+          90
+        ],
+        [
+          "hn-qingming",
+          2,
+          240
+        ],
+        [
+          "hn-longting",
+          2,
+          90
+        ],
+        [
+          "hn-longmen",
+          3,
+          180
+        ],
+        [
+          "hn-luoyi",
+          3,
+          90
+        ]
+      ],
+      "image": "/assets/longmen.jpg",
+      "photoLabel": "龙门石窟奉先寺实景",
+      "kicker": "文化寻踪 / ZHENG · BIAN · LUO",
+      "story": "从郑州的文博与湖畔，到开封的宋都园林，再到洛阳的石窟与老城，按城市分日体验中原文化。"
+    },
+    {
+      "id": "luoyang",
+      "title": "洛阳 · 两日慢游",
+      "subtitle": "石窟、文博与老城烟火",
+      "days": 2,
+      "city": "洛阳",
+      "note": "白马寺与市区相距较远，需要预留交通。可根据预约与抵达时间调整先后。",
+      "stops": [
+        [
+          "hn-longmen",
+          1,
+          180
+        ],
+        [
+          "hn-luoyang-museum",
+          1,
+          120
+        ],
+        [
+          "hn-whitehorse",
+          2,
+          120
+        ],
+        [
+          "hn-xigong",
+          2,
+          60
+        ],
+        [
+          "hn-luoyi",
+          2,
+          90
+        ]
+      ],
+      "image": "/assets/white-horse-temple.jpg",
+      "photoLabel": "洛阳白马寺实景",
+      "kicker": "古都慢游 / LUOYANG",
+      "story": "第一天串联石窟与文博，第二天安排古寺、街巷风味和老城散步，留出城市两端之间的交通时间。"
+    },
+    {
+      "id": "taihang",
+      "title": "太行 · 山水两日",
+      "subtitle": "云台山与红旗渠文化体验",
+      "days": 2,
+      "city": "河南",
+      "note": "焦作与林州之间需要公路交通。山区出行前请确认天气、步道与景区交通。",
+      "stops": [
+        [
+          "hn-yuntai",
+          1,
+          360
+        ],
+        [
+          "hn-redflag",
+          2,
+          180
+        ]
+      ],
+      "image": "/assets/yuntai-mountain.jpg",
+      "photoLabel": "云台山红石峡实景",
+      "kicker": "山水之间 / TAIHANG",
+      "story": "一天集中体验云台山山水，另一天了解红旗渠。两地之间单独安排交通，不把山区行程排成城市步行游。"
+    }
+  ]
+}

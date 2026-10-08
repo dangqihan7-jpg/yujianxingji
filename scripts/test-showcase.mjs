@@ -1,0 +1,32 @@
+import assert from 'node:assert/strict';
+import vm from 'node:vm';
+import worker,{HTML,CATALOG,PRESETS,rulePlan,validatePlan} from '../worker/index.js';
+
+const preset=PRESETS.find(r=>r.id==='luoyang');
+const crowded={days:2,start:'09:00',maxHours:6,restMinutes:30,stops:preset.stops.map(([id,,duration])=>({place:CATALOG.find(p=>p.id===id),day:1,duration}))};
+const response=await worker.fetch(new Request('https://fixture.test/api/plan',{method:'POST',body:JSON.stringify(crowded)}),{});
+const planned=await response.json();assert.equal(response.status,200);assert.equal(planned.source,'rules');validatePlan(planned.stops,crowded);
+const forced=await worker.fetch(new Request('https://fixture.test/api/plan',{method:'POST',body:JSON.stringify({...crowded,engine:'rules'})}),{LLM_API_KEY:'fixture',LLM_BASE_URL:'https://model.invalid',LLM_MODEL:'fixture'});
+assert.equal(forced.status,200);assert.equal((await forced.json()).source,'rules','Showcase sample must stay deterministic when a model is configured');
+const durations=[1,2].map(day=>planned.stops.filter(s=>s.day===day).reduce((sum,s)=>sum+crowded.stops.find(x=>x.place.id===s.id).duration,30));
+assert(Math.max(...durations)<=330,'Five Luoyang places should be split by load rather than packed in one day');
+const classic=PRESETS.find(p=>p.id==='classic'),draft={days:3,maxHours:8,restMinutes:30,stops:classic.stops.map(([id,,duration])=>({place:CATALOG.find(p=>p.id===id),day:1,duration}))};
+const split=rulePlan(draft);validatePlan(split,draft);for(const day of [1,2,3])assert.equal(new Set(split.filter(s=>s.day===day).map(s=>draft.stops.find(t=>t.place.id===s.id).place.city)).size,1);
+for(let n=1;n<=15;n++)for(const days of [1,2,3,5,7]){const sample={days,maxHours:6,restMinutes:30,stops:CATALOG.slice(0,n).map((place,i)=>({place,day:1,duration:30+i*15}))};validatePlan(rulePlan(sample),sample)}
+
+const nodes=new Map(),body={dataset:{view:'gallery'}},get=s=>{if(!nodes.has(s))nodes.set(s,{value:s==='#days'?'3':s==='#start'?'09:00':s==='#city'?'河南':s==='#maxhours'?'6':s==='#restmins'?'30':s==='#travelmode'?'driving':'',style:{},dataset:{},classList:{add(){},toggle(){}},querySelectorAll:()=>[],addEventListener(){},showModal(){this.open=true},close(){this.open=false}});return nodes.get(s)};
+const context={document:{body,querySelector:get,querySelectorAll:()=>[],createElement:()=>({click(){}}),head:{append(){}}},navigator:{},URL,Blob,Map,Set,console,setTimeout:()=>0,clearTimeout(){},fetch:(path,options)=>worker.fetch(new Request('https://fixture.test'+path,options),{})};context.window=context;vm.createContext(context);
+vm.runInContext(HTML.split('<script>')[1].split('</script>')[0].replace(/\ninit\(\);\s*$/,''),context);const run=s=>vm.runInContext(s,context);
+assert(get('#gallery').innerHTML.includes('data-start-route="luoyang"'));assert(get('#gallery').innerHTML.includes('data-feature-route="classic"'));
+assert(get('#gallery').innerHTML.includes('data-open-sources'),'Mobile gallery must retain sources access');
+const hydrating=run('JSON.stringify(compactDraft())');get('#gallery').onclick({target:{closest:s=>s==='[data-atlas-city]'?{dataset:{atlasCity:'洛阳'}}:null}});
+get('#overview').onclick({target:{closest:s=>s==='[data-folio-place]'?{dataset:{folioPlace:CATALOG[0].id}}:null}});
+assert.equal(run('JSON.stringify(compactDraft())'),hydrating,'Gallery and overview must not edit the draft while saved state is loading');
+run('saveBooting=false');get('#gallery').onclick({target:{closest:s=>s==='[data-start-route]'?{dataset:{startRoute:'luoyang'}}:null}});
+assert.equal(body.dataset.view,'planner');assert.equal(run('trip.length'),5);
+run("setView('overview')");assert.equal(body.dataset.view,'overview');assert(get('#overview').innerHTML.includes('DAY 02'));assert(get('#overview').innerHTML.includes('站间交通待核算'));
+run('trip.forEach(s=>s.day=1);renderTrip()');await run('generate()');assert(get('#advicebody').innerHTML.includes('调整前 / 调整后'));assert(get('#advicebody').innerHTML.includes('交通尚需按新顺序核算'));
+get('#apply').onclick();assert.equal(body.dataset.view,'overview');assert(get('#overview').innerHTML.includes('单日最长已知安排'));assert.equal(run('trip.length'),5);
+run('trip[0].duration+=15;renderTrip()');assert(!get('#overview').innerHTML.includes('单日最长已知安排'),'Changed draft must clear obsolete comparison');
+const untouched=run('JSON.stringify(compactDraft())');await run('showPlanningExample()');assert.equal(run('JSON.stringify(compactDraft())'),untouched,'Trying an example must not mutate or save the current itinerary');assert(get('#advicebody').innerHTML.includes('互动示例'));get('#applyexample').onclick();assert.equal(run('currentPresetId'),'luoyang');assert.equal(get('#maxhours').value,'6');assert(get('#overview').innerHTML.includes('单日最长已知安排'));
+console.log('Passed: load-aware/city-aware planning, valid assignment across 75 cases, gallery route selection, overview, truthful before/after metrics and stale comparison removal.');

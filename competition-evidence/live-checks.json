@@ -1,0 +1,84 @@
+{
+  "verifiedAt": "2026-10-03T15:00:33Z",
+  "site": "https://roam-map-planner.dangqihan7.chatgpt.site",
+  "publishedVersion": 11,
+  "publishedCommit": "a4a3bb19d1506114d7b5672586c9300ae8b6d8ab",
+  "deploymentSucceededAt": "2026-10-03T14:54:03.113310+00:00",
+  "method": "Actual cloud-browser UI operations, not simulated service responses",
+  "cases": [
+    {
+      "id": "A",
+      "time": "2026-10-03T14:41Z",
+      "frontendVersionAtStart": 10,
+      "intentSource": "讯飞星火 X2.5",
+      "candidateSource": "讯飞星火 X2.5",
+      "day1": [
+        "洛阳博物馆",
+        "龙门石窟"
+      ],
+      "day2": [
+        "白马寺",
+        "洛邑古城"
+      ],
+      "beforeLoadStopCount": 5,
+      "afterExplicitLoadStopCount": 4,
+      "initialAudit": {
+        "conflicts": 0,
+        "pending": 3
+      },
+      "actualTransit": {
+        "from": "洛阳博物馆 聂泰路6号",
+        "to": "龙门石窟大石门检票口 龙门中街13号北侧",
+        "mode": "transit",
+        "minutes": 76,
+        "km": 14.9,
+        "visitsMinutes": 300,
+        "restMinutes": 30,
+        "totalMinutes": 406,
+        "limitMinutes": 360,
+        "overMinutes": 46
+      },
+      "edit": {
+        "from": 120,
+        "to": 90,
+        "visibleHoursAfter": 1.5,
+        "undoMinutes": 120
+      },
+      "lockedDay": {
+        "place": "白马寺",
+        "day": 2,
+        "attemptedDays": 1,
+        "actualDays": 2,
+        "rejected": true
+      }
+    },
+    {
+      "id": "B",
+      "time": "2026-10-03T14:56Z",
+      "frontendVersionAtStart": 11,
+      "intentSource": "讯飞星火 X2.5",
+      "candidateSource": "rules",
+      "fallbackReason": "模型连接失败或超过25秒等待时间",
+      "day1": [
+        "龙门石窟",
+        "洛阳博物馆"
+      ],
+      "day2": [
+        "洛邑古城",
+        "白马寺"
+      ],
+      "afterExplicitLoadStopCount": 4,
+      "audit": {
+        "conflicts": 0,
+        "pending": 3
+      }
+    }
+  ],
+  "limitations": [
+    "Snapshots depend on chosen POIs, query time and service availability; not travel safety or route optimality evidence",
+    "No formal human participant study performed",
+    "Live successful and fallback runs are separate cases; no reliability percentage inferred",
+    "Some map tiles were incomplete during capture; not retouched",
+    "Local HTTP build was verified separately; local cloud-browser URL access was blocked"
+  ]
+}

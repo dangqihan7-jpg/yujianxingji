@@ -1,0 +1,17 @@
+{
+  "name": "sites-worker-esm-starter",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "node scripts/dev.mjs",
+    "build": "bash scripts/build.sh",
+    "validate": "node scripts/validate-artifact.mjs",
+    "db:generate": "drizzle-kit generate",
+    "test": "node scripts/test.mjs && node scripts/test-decision.mjs && node scripts/test-journey.mjs && node scripts/test-js-api.mjs && node scripts/test-map-loader.mjs && node scripts/test-offline.mjs && node scripts/test-showcase.mjs && node scripts/test-regressions.mjs && node scripts/test-model-limits.mjs && node scripts/test-edge-cases.mjs",
+    "pretest": "node scripts/offline.mjs"
+  },
+  "devDependencies": {
+    "drizzle-kit": "0.31.10",
+    "drizzle-orm": "0.45.2"
+  }
+}

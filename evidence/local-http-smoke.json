@@ -1,0 +1,38 @@
+{
+  "verifiedAt": "2026-10-03T15:03:18.041060+00:00",
+  "method": "Node24 local HTTP server, SQLite migrations; no external services configured",
+  "input": {
+    "text": "洛阳1.5天，预算1,200元，不要步行和自驾，不去龙门石窟、洛阳博物馆和白马寺"
+  },
+  "response": {
+    "source": "rules",
+    "fields": {
+      "city": "洛阳",
+      "days": null,
+      "mode": null,
+      "maxHours": null,
+      "restMinutes": null,
+      "budget": 1200,
+      "avoidCrossCity": null,
+      "interests": [
+        "culture"
+      ],
+      "requiredIds": [],
+      "excludedIds": [
+        "hn-longmen",
+        "hn-luoyang-museum",
+        "hn-whitehorse"
+      ],
+      "excludedModes": [
+        "walking",
+        "driving"
+      ]
+    },
+    "unresolved": [
+      "识别到 1.5 天；当前可选 1–5 天或 7 天，请手动确认天数。",
+      "已排除部分交通方式，请选择允许的出行方式。"
+    ],
+    "note": "文字规则识别；请确认条件后再生成行程。未识别的需求不会被当作已满足。"
+  },
+  "passed": true
+}
