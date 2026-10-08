@@ -17,6 +17,11 @@ const env={DB,...Object.fromEntries(keys.filter(k=>process.env[k]).map(k=>[k,pro
 const port=Number(process.env.TRAVEL_DEV_PORT)||8787;
 http.createServer(async(req,res)=>{try{
  const chunks=[];let size=0;for await(const chunk of req){size+=chunk.length;if(size>100000){res.writeHead(413);res.end('Request too large');return}chunks.push(chunk)}
- const method=req.method,request=new Request('http://127.0.0.1:'+port+req.url,{method,headers:req.headers,...(!['GET','HEAD'].includes(method)?{body:Buffer.concat(chunks)}:{})});
+ const method=req.method;
+ // 反向代理（nginx）透传公网 Host/协议，使服务端 Origin 校验与 Secure cookie 生效；仅监听回环地址时信任该头。
+ const fwdHost=req.headers['x-forwarded-host'],fwdProto=req.headers['x-forwarded-proto'];
+ const host=typeof fwdHost==='string'&&fwdHost?fwdHost.split(',')[0].trim():(req.headers.host||('127.0.0.1:'+port));
+ const proto=typeof fwdProto==='string'&&fwdProto?fwdProto.split(',')[0].trim():'http';
+ const request=new Request(proto+'://'+host+req.url,{method,headers:req.headers,...(!['GET','HEAD'].includes(method)?{body:Buffer.concat(chunks)}:{})});
  const response=await worker.fetch(request,env);res.writeHead(response.status,Object.fromEntries(response.headers));res.end(Buffer.from(await response.arrayBuffer()));
 }catch{res.writeHead(500);res.end('Local server error')}}).listen(port,'127.0.0.1',()=>console.log('Local demo: http://127.0.0.1:'+port+' (loopback only)'));
