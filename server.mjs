@@ -151,7 +151,9 @@ async function modelJSON(env,messages){
  let base;try{base=new URL(env.LLM_BASE_URL);if(base.protocol!=='https:'||base.username||base.password)throw Error()}catch{fail('模型服务地址配置不正确',503)}
  base.pathname=base.pathname.replace(/\/$/,'')+'/chat/completions';const spark=base.hostname==='spark-api-open.xf-yun.com',maas=base.hostname==='maas-api.cn-huabei-1.xf-yun.com';
  const maxTokens=Math.min(8192,Math.max(1024,Number(env.LLM_MAX_TOKENS)||4096));
- let response;try{response=await fetch(base,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+env.LLM_API_KEY},signal:AbortSignal.timeout(25000),body:JSON.stringify({model:env.LLM_MODEL,temperature:0.2,stream:false,max_tokens:maxTokens,...(!maas?{response_format:{type:'json_object'}}:{}),...(spark?{tools:[{type:'web_search',web_search:{enable:false}}]}:{}),messages})})}catch{fail('模型连接失败或超过25秒等待时间',502)}
+ // This lightweight model can exhaust the response window on reasoning before returning JSON.
+ const fastMaaS=maas&&env.LLM_MODEL==='spark-x2.5-1.7b';
+ let response;try{response=await fetch(base,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+env.LLM_API_KEY},signal:AbortSignal.timeout(25000),body:JSON.stringify({model:env.LLM_MODEL,temperature:0.2,stream:false,max_tokens:maxTokens,...(fastMaaS?{thinking:{type:'disabled'}}:{}),...(!maas?{response_format:{type:'json_object'}}:{}),...(spark?{tools:[{type:'web_search',web_search:{enable:false}}]}:{}),messages})})}catch{fail('模型连接失败或超过25秒等待时间',502)}
  if(!response.ok)fail('模型服务返回 HTTP '+response.status+'，请检查授权、额度或服务状态',502);
  let result,parsed;try{result=await response.json();if(!result||result.error||(result.code!=null&&result.code!==0))throw Error();const content=result.choices?.[0]?.message?.content;if(typeof content!=='string')throw Error();parsed=JSON.parse(content.replace(/^\s*```(?:json)?\s*/,'').replace(/\s*```\s*$/,''));if(!parsed||typeof parsed!=='object'||Array.isArray(parsed))throw Error()}catch{fail('模型返回格式无效',502)}return {parsed,provider:maas?'讯飞星火 X2.5':spark?'讯飞星火':String(env.LLM_MODEL).slice(0,80)};
 }

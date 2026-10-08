@@ -24,6 +24,15 @@ const live=await data(await call('/api/places?city=郑州&category=food',null,en
 await call('/_AMapService/v3/place/text?key=public-key',null,env);assert.equal(new URL(calls.at(-1).url).searchParams.get('jscode'),'secret-code');
 globalThis.fetch=async()=>new Response(JSON.stringify({choices:[{message:{content:JSON.stringify({stops:[{id:'unknown',day:1}]})}}]}));const rejected=await data(await call('/api/plan',draft,env));assert.equal(rejected.status,200);assert.equal(rejected.body.source,'rules');assert(rejected.body.fallback.reason);validatePlan(rejected.body.stops,draft);
 globalThis.fetch=async()=>new Response(JSON.stringify({choices:[{message:{content:JSON.stringify({stops:draft.stops.map(s=>({id:s.place.id,day:1}))})}}]}));const ai=await data(await call('/api/plan',draft,env));assert.equal(ai.body.source,'ai');assert.equal(ai.body.stops.length,4);
+const modelBodies=[];
+globalThis.fetch=async(url,options)=>{modelBodies.push(JSON.parse(options.body));return new Response(JSON.stringify({choices:[{message:{content:JSON.stringify({stops:draft.stops.map(s=>({id:s.place.id,day:1}))})}}]}))};
+for(const modelEnv of [
+ {...env,LLM_BASE_URL:'https://maas-api.cn-huabei-1.xf-yun.com/v2',LLM_MODEL:'spark-x2.5-1.7b'},
+ {...env,LLM_BASE_URL:'https://maas-api.cn-huabei-1.xf-yun.com/v2',LLM_MODEL:'spark-x2.5'},
+ {...env,LLM_MODEL:'spark-x2.5-1.7b'}
+])assert.equal((await data(await call('/api/plan',draft,modelEnv))).body.source,'ai');
+assert.deepEqual(modelBodies[0].thinking,{type:'disabled'});
+assert.equal(modelBodies[1].thinking,undefined);assert.equal(modelBodies[2].thinking,undefined);
 globalThis.fetch=async()=>new Response(JSON.stringify({status:'1',route:{paths:[{distance:'400',duration:'300',steps:[{polyline:'113.5,34.6;113.6,34.7'}]}]}}));const route=await data(await call('/api/route',{locations:[[113.5,34.6],[113.6,34.7]]},env));assert.equal(route.body.legs[0].duration,300);assert.equal(route.body.legs[0].path.length,2);
 }finally{globalThis.fetch=originalFetch}
 // Test the browser's shared state/actions without claiming visual browser QA.
