@@ -1,0 +1,9 @@
+[Unit]
+Description=Renew the Yujianxingji IP certificate
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+UMask=0077
+ExecStart=/opt/certbot/bin/certbot renew --quiet --cert-name yujianxingji-ip
