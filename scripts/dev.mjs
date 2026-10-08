@@ -12,7 +12,7 @@ for(const name of (await readdir(new URL('../drizzle/',import.meta.url))).filter
  db.exec('BEGIN');try{db.exec(await readFile(new URL('../drizzle/'+name,import.meta.url),'utf8'));db.prepare('INSERT INTO local_migrations (name) VALUES (?)').run(name);db.exec('COMMIT')}catch(e){db.exec('ROLLBACK');throw e}
 }
 const DB={prepare(query){const statement=db.prepare(query);let args=[];const prepared={bind(...values){args=values;return prepared},async first(){return statement.get(...args)||null},async run(){return {meta:{changes:Number(statement.run(...args).changes)}}}};return prepared}};
-const keys=['AMAP_JS_KEY','AMAP_SECURITY_JS_CODE','AMAP_WEB_SERVICE_KEY','LLM_API_KEY','LLM_BASE_URL','LLM_MODEL','LLM_MAX_TOKENS','LLM_PUBLIC_DEMO','LLM_DAILY_LIMIT','LLM_CLIENT_DAILY_LIMIT'];
+const keys=['AMAP_JS_KEY','AMAP_SECURITY_JS_CODE','AMAP_WEB_SERVICE_KEY','LLM_API_KEY','LLM_BASE_URL','LLM_MODEL','LLM_MAX_TOKENS','LLM_PUBLIC_DEMO','LLM_DAILY_LIMIT','LLM_CLIENT_DAILY_LIMIT','STANDALONE_AUTH'];
 const env={DB,...Object.fromEntries(keys.filter(k=>process.env[k]).map(k=>[k,process.env[k]]))};
 const port=Number(process.env.TRAVEL_DEV_PORT)||8787;
 http.createServer(async(req,res)=>{try{

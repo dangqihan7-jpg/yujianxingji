@@ -60,6 +60,7 @@ npm run dev
 - `LLM_BASE_URL=https://maas-api.cn-huabei-1.xf-yun.com/v2`、`LLM_MODEL=spark-x2.5`。
 - `LLM_MAX_TOKENS=4096`：回复长度请求参数；不代表含思考Token的账单硬上限。
 - `LLM_PUBLIC_DEMO=true`：开启有额度限制的公共演示。需要 D1 的 model_usage 表，否则回退规则。
+- `STANDALONE_AUTH=true`：独立服务器部署时启用自建账号登录（注册/登录/会话 cookie），替代平台注入的 `oai-authenticated-user-id` 身份；独立模式下客户端提交的该头一律忽略。默认不启用。
 - `LLM_DAILY_LIMIT=120`、`LLM_CLIENT_DAILY_LIMIT=10`：按 UTC 日限制调用尝试次数；失败也计数，不重试模型。匿名访问使用服务端IP的加盐哈希，数据库不保留原IP，7天清理。IP缺失时共享额度；不是强账户配额或精确金额上限。
 
 X2.5 请求只使用官方已明确的 chat/completions 参数，不发送未明确支持的 response_format、tools 或 thinking_budget。只读取最终 content，进行JSON与业务约束校验。未配置、模型异常、25秒超时、非法结果或额度不足时，HTTP200返回 source=rules 与 fallback.reason（明确请求规则/未配置除外），显示原因。生成候选不会自动修改草稿；用户确认后才应用。固定日期、地点完整性、明确排除和完整数字由程序保护。小数天数会转为待确认；分组金额与千/万单位完整解析；并列否定条件逐项保留。跨游览日城市发生变化时，城际转场仍标记待核算，不把每日内部交通可用误当成全程可行。预算采用整数分求和，避免浮点误差。官方协议：https://www.xfyun.cn/doc/spark/推理服务-http.html

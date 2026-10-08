@@ -20,3 +20,10 @@ dialog{border:1px solid #e5ebee;border-radius:22px;padding:0;width:min(600px,92v
 
 /* The whole itinerary panel scrolls; siblings never shrink over stop cards. */
 .trip>*{flex-shrink:0}.trip-body{flex:1 0 auto;min-height:80px}.trip-footer{position:relative;background:#fff;flex:0 0 auto}.brief-place-conditions{border:1px solid #dce8ea;border-radius:10px;padding:14px;margin:16px 0}.brief-place-conditions input{width:auto;margin-right:8px}.brief-place-conditions label{line-height:1.8}.brief-place-conditions p{font-size:14px;color:#607e87}
+.auth-tabs{display:flex;gap:8px;margin-bottom:16px}
+.auth-tabs button{flex:1;padding:10px;border:1px solid var(--line,#dce8ea);background:#f6fafb;border-radius:10px;cursor:pointer;font-size:14px;color:#4d737f}
+.auth-tabs button.active{background:#103947;color:#fff;border-color:#103947}
+#authform>div{margin-bottom:14px}
+#authform label{display:block;margin-bottom:6px;font-size:14px;font-weight:600;color:#315c6d}
+#authform input{width:100%;padding:11px 12px;border:1px solid #d3e3e9;border-radius:10px;font-size:15px;box-sizing:border-box}
+#autherror{color:#b3261e}

@@ -1,75 +1,82 @@
 {
-  "timestamp": "2026-10-03T14:50:05.796475+00:00",
+  "timestamp": "2026-10-08T10:02:58.316595+00:00",
   "kind": "local deterministic tests; model and map API fixtures mocked",
   "suites": [
     {
       "suite": "test.mjs",
       "status": "passed",
       "exit_code": 0,
-      "stdout": "Passed: demo/live API handling, itinerary validation, secret isolation, proxy allowlist, AI result validation, route parsing, shared UI actions and WebMCP.\n",
-      "stderr": ""
-    },
-    {
-      "suite": "test-js-api.mjs",
-      "status": "passed",
-      "exit_code": 0,
-      "stdout": "Passed: JS API search, details, photos, routes, no-data/error handling and configuration with only two credentials; no Web-service endpoint used.\n",
-      "stderr": ""
-    },
-    {
-      "suite": "test-map-loader.mjs",
-      "status": "passed",
-      "exit_code": 0,
-      "stdout": "Passed: late SDK recovery, truthful connection status, retry, stale-attempt isolation and fallback after initialization failure.\n",
-      "stderr": ""
-    },
-    {
-      "suite": "test-offline.mjs",
-      "status": "passed",
-      "exit_code": 0,
-      "stdout": "Passed: offline presets and photos, compact export/import round trip, restored details, rule advice and eleven image routes.\n",
-      "stderr": ""
-    },
-    {
-      "suite": "test-journey.mjs",
-      "status": "passed",
-      "exit_code": 0,
-      "stdout": "Passed: D1 save/restore and user isolation, conflict protection, routing persistence, undo, multimodal timing, missing/stale route guards, candidate confirmation and failed restore protection.\n",
-      "stderr": ""
-    },
-    {
-      "suite": "test-showcase.mjs",
-      "status": "passed",
-      "exit_code": 0,
-      "stdout": "Passed: load-aware/city-aware planning, valid assignment across 75 cases, gallery route selection, overview, truthful before/after metrics and stale comparison removal.\n",
+      "stdout": "Passed: demo/live API handling, itinerary validation, secret isolation, proxy allowlist, AI result validation, route parsing, shared UI actions and WebMCP.",
       "stderr": ""
     },
     {
       "suite": "test-decision.mjs",
       "status": "passed",
       "exit_code": 0,
-      "stdout": "Passed: intent extraction and validation, honest unknown budget/traffic, locked-date planning, authenticated model contract, partial reordering, real experience recording and atomic imports. Model responses in this test are mocked.\n",
+      "stdout": "Passed: intent extraction and validation, honest unknown budget/traffic, locked-date planning, authenticated model contract, partial reordering, real experience recording and atomic imports. Model responses in this test are mocked.",
+      "stderr": ""
+    },
+    {
+      "suite": "test-journey.mjs",
+      "status": "passed",
+      "exit_code": 0,
+      "stdout": "Passed: D1 save/restore and user isolation, conflict protection, routing persistence, undo, multimodal timing, missing/stale route guards, candidate confirmation and failed restore protection.",
+      "stderr": ""
+    },
+    {
+      "suite": "test-js-api.mjs",
+      "status": "passed",
+      "exit_code": 0,
+      "stdout": "Passed: JS API search, details, photos, routes, no-data/error handling and configuration with only two credentials; no Web-service endpoint used.",
+      "stderr": ""
+    },
+    {
+      "suite": "test-map-loader.mjs",
+      "status": "passed",
+      "exit_code": 0,
+      "stdout": "Passed: late SDK recovery, truthful connection status, retry, stale-attempt isolation and fallback after initialization failure.",
+      "stderr": ""
+    },
+    {
+      "suite": "test-offline.mjs",
+      "status": "passed",
+      "exit_code": 0,
+      "stdout": "Passed: offline presets and photos, compact export/import round trip, restored details, rule advice and eleven image routes.",
+      "stderr": ""
+    },
+    {
+      "suite": "test-showcase.mjs",
+      "status": "passed",
+      "exit_code": 0,
+      "stdout": "Passed: load-aware/city-aware planning, valid assignment across 75 cases, gallery route selection, overview, truthful before/after metrics and stale comparison removal.",
       "stderr": ""
     },
     {
       "suite": "test-regressions.mjs",
       "status": "passed",
       "exit_code": 0,
-      "stdout": "{\"total\":66,\"passed\":66,\"failed\":0,\"results\":\"/workspace/scratch/ec382ee31a8a/henan-site/competition-evidence/regression-results.json\"}\n",
+      "stdout": "{\"total\":66,\"passed\":66,\"failed\":0,\"results\":\"/home/hatch/workspace/yujianxingji/competition-evidence/regression-results.json\"}",
       "stderr": ""
     },
     {
       "suite": "test-model-limits.mjs",
       "status": "passed",
       "exit_code": 0,
-      "stdout": "{\"total\":14,\"passed\":14,\"failed\":0,\"results\":\"/workspace/scratch/ec382ee31a8a/henan-site/competition-evidence/public-quota-results.json\"}\n",
+      "stdout": "{\"total\":14,\"passed\":14,\"failed\":0,\"results\":\"/home/hatch/workspace/yujianxingji/competition-evidence/public-quota-results.json\"}",
       "stderr": ""
     },
     {
       "suite": "test-edge-cases.mjs",
       "status": "passed",
       "exit_code": 0,
-      "stdout": "{\"total\":12,\"passed\":12,\"failed\":0,\"output\":\"/workspace/scratch/ec382ee31a8a/henan-site/competition-evidence/edge-case-results.json\"}\n",
+      "stdout": "{\"total\":12,\"passed\":12,\"failed\":0,\"output\":\"/home/hatch/workspace/yujianxingji/competition-evidence/edge-case-results.json\"}",
+      "stderr": ""
+    },
+    {
+      "suite": "test-auth.mjs",
+      "status": "passed",
+      "exit_code": 0,
+      "stdout": "Passed: standalone auth register/login/logout/session, password hashing, platform-header isolation, draft persistence per account.",
       "stderr": ""
     }
   ]

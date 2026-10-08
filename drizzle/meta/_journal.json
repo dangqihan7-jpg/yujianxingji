@@ -15,6 +15,13 @@
       "when": 1791034042097,
       "tag": "0001_brainy_ben_urich",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1791453645927,
+      "tag": "0002_charming_hydra",
+      "breakpoints": true
     }
   ]
 }

@@ -1,11 +1,12 @@
 {
-  "generatedAt": "2026-10-08T09:33:08.537Z",
-  "target": "/workspace/scratch/9b34f79abb53/github-handoff",
+  "generatedAt": "2026-10-08T10:02:57.959Z",
+  "target": "/home/hatch/workspace/yujianxingji",
   "scope": "SQLite executes all project migrations in memory. Model calls are mocked; no real provider or real secret was used. Concurrency verifies SQL guard behavior under overlapping async local requests, not a production distributed load test.",
-  "workerSha256": "b21b937637cacbfc4a0dfa5a3a0e0a8324508a3a2ec9accf8410d8c6cbc89240",
+  "workerSha256": "7e2497a11faea73a72f87f0068625c185e108f44be0bc0df3755611744d010eb",
   "migrations": [
     "0000_smiling_sphinx.sql",
-    "0001_brainy_ben_urich.sql"
+    "0001_brainy_ben_urich.sql",
+    "0002_charming_hydra.sql"
   ],
   "total": 14,
   "passed": 14,
