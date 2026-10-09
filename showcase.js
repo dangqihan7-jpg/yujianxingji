@@ -26,18 +26,23 @@ function renderGallery(){
       <div class="hero-bottom"><span>慢一点，遇见多一点。</span><button data-open-sources>${esc(hero?.name||'河南实景')} · 实景照片与来源 ↗</button></div>
     </section>
     <div class="gallery-inner">
+      <section class="planning-guide" aria-labelledby="guide-title">
+        <div class="guide-intro"><p class="section-kicker">A LITTLE GUIDE</p><h2 id="guide-title">从想法，到出发。</h2><p>不用一次想好全部，跟着三步慢慢安排。</p></div>
+        <ol class="guide-steps"><li><span aria-hidden="true">01</span><div><h3>说说你的周末</h3><p>填写时间、预算和喜好，确认旅行条件。</p></div></li><li><span aria-hidden="true">02</span><div><h3>选一份合适的安排</h3><p>查看候选或主题路线，再决定载入哪一份。</p></div></li><li><span aria-hidden="true">03</span><div><h3>在地图上慢慢调整</h3><p>修改每一站，核对交通与费用，再保存或导出。</p></div></li></ol>
+      </section>
       <section id="weekend-plan" class="weekend-plan" aria-label="开始规划周末旅行">
         <div class="editorial-heading"><div><p class="section-kicker">01 / YOUR WEEKEND</p><h2>你的周末，你来定义。</h2></div><p>几天时间，怎样出行，想去哪里。<br>把想法写下来，从一份可调整的安排开始。</p></div>
         ${briefEntryHTML()}
+        <div class="planning-demo"><div><strong>还没想好去哪？</strong><span>先看洛阳五个地点怎样分成两天，演示不会修改当前行程。</span></div><button data-try-planning>看看规划示例 <span aria-hidden="true">↗</span></button></div>
       </section>
       <section id="theme-routes" class="theme-routes" aria-labelledby="routes-title">
         <div class="editorial-heading"><div><p class="section-kicker">02 / CURATED JOURNEYS</p><h2 id="routes-title">三条路线，三种河南。</h2></div><p>古都、街巷与山水。<br>选一段喜欢的旅程，再按自己的节奏调整。</p></div>
         <div class="gallery-grid">
           <article class="feature-route">
             <div class="feature-media"><img src="${esc(r.image)}" alt="${esc(r.photoLabel)}" loading="lazy" width="1200" height="800"><span class="route-number">JOURNEY 0${PRESETS.indexOf(r)+1}</span></div>
-            <div class="feature-content"><p class="section-kicker">${esc(editorial.theme)}</p><h3>${esc(editorial.title)}</h3><p class="feature-subtitle">${esc(r.story||r.subtitle)}</p><div class="feature-bottom"><div class="feature-days">${days.map(d=>'<div><b>DAY 0'+d.day+'</b><span>'+esc(d.city)+'</span></div>').join('')}</div><button class="feature-cta" data-start-route="${r.id}">规划这条路线 <span aria-hidden="true">↗</span></button></div></div>
+            <div class="feature-content"><p class="section-kicker">${esc(editorial.theme)}</p><p class="route-facts">${r.days} 天 · ${r.stops.length} 站 · ${esc(editorial.cities.join(" / "))}</p><h3>${esc(editorial.title)}</h3><p class="feature-subtitle">${esc(r.story||r.subtitle)}</p><div class="feature-bottom"><div class="feature-days">${days.map(d=>'<div><b>DAY 0'+d.day+'</b><span>'+esc(d.city)+'</span></div>').join('')}</div><button class="feature-cta" data-start-route="${r.id}">规划这条路线 <span aria-hidden="true">↗</span></button></div></div>
           </article>
-          <div class="route-sidebar">${PRESETS.filter(p=>p.id!==r.id).map(p=>'<button class="side-route" data-feature-route="'+p.id+'"><div class="side-media"><img src="'+esc(p.image)+'" alt="'+esc(p.photoLabel)+'" loading="lazy" width="1200" height="800"></div><div class="side-copy"><small>'+esc(routeEditorial[p.id].theme.split(' / ')[0])+' · '+p.days+' 天 / '+p.stops.length+' 站</small><strong>'+esc(p.title)+' <span aria-hidden="true">↗</span></strong><span>'+esc(p.subtitle)+'</span></div></button>').join('')}</div>
+          <div class="route-sidebar">${PRESETS.filter(p=>p.id!==r.id).map(p=>'<button class="side-route" data-feature-route="'+p.id+'"><div class="side-media"><img src="'+esc(p.image)+'" alt="'+esc(p.photoLabel)+'" loading="lazy" width="1200" height="800"></div><div class="side-copy"><small>'+esc(routeEditorial[p.id].theme.split(' / ')[0])+' · '+p.days+' 天 / '+p.stops.length+' 站</small><strong>'+esc(p.title)+' <span aria-hidden="true">↗</span></strong><span>'+esc(p.subtitle)+'</span><em>查看路线 <span aria-hidden="true">→</span></em></div></button>').join('')}</div>
         </div>
       </section>
       <section class="gallery-footer" aria-labelledby="cities-title"><div><p class="section-kicker">03 / EXPLORE HENAN</p><h2 id="cities-title">从一座城，展开旅程。</h2><p>在地图上发现好去处，把每一站放进自己的行程。</p></div><div class="city-atlas">${['郑州','洛阳','开封','焦作','安阳','三门峡'].map((c,i)=>'<button data-atlas-city="'+c+'"><span class="city-index">0'+(i+1)+'</span><b>'+c+'</b><small>'+CATALOG.filter(p=>p.city===c).length+' 个精选去处</small><span class="city-arrow" aria-hidden="true">↗</span></button>').join('')}</div></section>
