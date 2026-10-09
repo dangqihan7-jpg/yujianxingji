@@ -8,8 +8,9 @@ const get=selector=>{
   return nodes.get(selector);
 };
 class MapFixture{
-  constructor(){if(throwOnCreate)throw Error('fixture initialization failure');this.handlers={};maps.push(this)}
+  constructor(){if(throwOnCreate)throw Error('fixture initialization failure');this.handlers={};this.size={width:600,height:450};maps.push(this)}
   on(name,callback){this.handlers[name]=callback}
+  getSize(){return this.size} setStatus(status){this.status=status}
   add(){} remove(){} setFitView(){} destroy(){this.destroyed=true}
 }
 const context={document:{querySelector:get,querySelectorAll:()=>[],createElement:()=>({remove(){this.removed=true}}),head:{append(script){scripts.push(script)}}},location:{origin:'https://fixture.test'},navigator:{},AMap:{Map:MapFixture},Map,Set,URL,Blob,console,setTimeout:(callback,ms)=>{const id=++nextTimer;timers.set(id,{callback,ms});return id},clearTimeout:id=>timers.delete(id)};
@@ -31,4 +32,14 @@ run('connectMap()');const stale=scripts.at(-1);run('connectMap()');const latest=
 throwOnCreate=true;run('connectMap()');scripts.at(-1).onload();assert.equal(run('mapConnection'),'failed');assert(get('#map').innerHTML.includes('id="schematic"'));
 // Photo-gallery entry must not initialize a map inside a hidden container.
 throwOnCreate=false;context.document.body={dataset:{view:'gallery'}};run('connectMap()');const beforeHidden=maps.length;scripts.at(-1).onload();assert.equal(run('mapConnection'),'standby');assert.equal(maps.length,beforeHidden);run("setView('planner')");assert.equal(context.document.body.dataset.view,'planner');assert.equal(maps.length,beforeHidden+1);maps.at(-1).handlers.complete();assert.equal(run('mapConnection'),'ready');
-console.log('Passed: late SDK recovery, truthful connection status, retry, stale-attempt isolation and fallback after initialization failure.');
+// Hidden containers stop automatic sizing; zero-sized canvas state recovers without changing a draft.
+const visible=maps.at(-1),draft=run('JSON.stringify(compactDraft())');
+run("setView('gallery')");assert.equal(visible.status.resizeEnable,false);
+visible.size={width:0,height:0};run("setView('planner')");
+assert.equal(visible.destroyed,true);assert.equal(maps.length,beforeHidden+2);
+assert.equal(run('JSON.stringify(compactDraft())'),draft);
+visible.handlers.complete();assert.equal(run('mapConnection'),'loading','A destroyed map must not mark its replacement ready');
+maps.at(-1).handlers.complete();assert.equal(run('mapConnection'),'ready');
+const stable=maps.length;run("setView('gallery');setView('planner')");
+assert.equal(maps.length,stable,'A healthy canvas is reused');assert.equal(maps.at(-1).status.resizeEnable,true);
+console.log('Passed: late SDK recovery, truthful connection status, retry, stale-attempt isolation and fallback after initialization failure, hidden-container sizing and zero-size canvas recovery.');

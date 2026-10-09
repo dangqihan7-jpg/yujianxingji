@@ -5,8 +5,8 @@ function initializeMap(attempt=mapAttempt){
   if(attempt!==mapAttempt||map)return;
   try{
     $('#map').innerHTML='';map=new AMap.Map('map',{zoom:8,center:[113.5,34.8],resizeEnable:true});mapConnection='loading';showMapStatus();
-    map.on('complete',()=>{if(attempt!==mapAttempt)return;clearTimeout(mapTimer);mapConnection='ready';showMapStatus()});
-    mapTimer=setTimeout(()=>{if(attempt!==mapAttempt||mapConnection==='ready')return;mapConnection='slow';showMapStatus()},12000);renderMap();fit();
+    const instance=map;map.on('complete',()=>{if(attempt!==mapAttempt||map!==instance)return;clearTimeout(mapTimer);mapConnection='ready';showMapStatus()});
+    mapTimer=setTimeout(()=>{if(attempt!==mapAttempt||map!==instance||mapConnection==='ready')return;mapConnection='slow';showMapStatus()},12000);renderMap();fit();
   }catch{map?.destroy?.();map=null;markers=[];line=null;renderMap();mapConnection='failed';showMapStatus()}
 }
 function routeDays(preset){return Array.from({length:preset.days},(_,i)=>{const stops=preset.stops.filter(s=>s[1]===i+1).map(s=>CATALOG.find(p=>p.id===s[0]));return {day:i+1,city:[...new Set(stops.map(p=>p.city))].join(' / '),names:stops.map(p=>p.name).join('、')}})}
@@ -46,13 +46,31 @@ function renderGallery(){
   if(pendingText)$('#brieftext').value=pendingText;
 }
 
+function revealPlannerMap(){
+  if(mapConnection==='standby')initializeMap();
+  map?.setStatus?.({resizeEnable:true});
+  const redraw=()=>{
+    if(activeView!=='planner')return;
+    // A hidden map can retain a zero-sized WebGL canvas after a breakpoint change.
+    const size=map?.getSize?.(),canvas=$('#map').querySelector?.('canvas');
+    if(map&&mapConnection==='ready'&&((size&&(size.width<1||size.height<1))||(canvas&&(canvas.width<1||canvas.height<1)))){
+      clearTimeout(mapTimer);map.destroy();map=null;markers=[];line=null;initializeMap();
+    }
+    if(typeof Event==='function')globalThis.dispatchEvent?.(new Event('resize'));
+    renderMap();fit();
+  };
+  if(typeof requestAnimationFrame==='function')requestAnimationFrame(redraw);else redraw();
+}
 function setView(view){
-  if(!['gallery','planner','overview','decision'].includes(view))return;activeView=view;document.body&&(document.body.dataset.view=view);
+  if(!['gallery','planner','overview','decision'].includes(view))return;
+  if(view!=='planner')map?.setStatus?.({resizeEnable:false});
+  activeView=view;document.body&&(document.body.dataset.view=view);
   document.querySelectorAll('.view-nav [data-view]').forEach(b=>{b.setAttribute?.('aria-current',b.dataset.view===view?'page':'false')});
   if(view==='gallery')renderGallery();if(view==='overview')renderOverview();if(view==='decision')renderDecision();
-  if(view==='planner'){if(mapConnection==='standby')initializeMap();if(typeof Event==='function')globalThis.dispatchEvent?.(new Event('resize'));renderMap();fit();}
+  if(view==='planner')revealPlannerMap();
   globalThis.scrollTo?.({top:0,behavior:'instant'});
 }
+
 function draftMetrics(stops,days,limit,rest=0){
   const daily=Array.from({length:days},(_,i)=>stops.filter(s=>s.day===i+1));
   const times=daily.map(list=>list.reduce((n,s)=>n+s.duration,0)+(list.length?rest:0));
