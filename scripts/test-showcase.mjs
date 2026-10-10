@@ -22,7 +22,16 @@ assert(get('#gallery').innerHTML.includes('data-open-sources'),'Mobile gallery m
 const hydrating=run('JSON.stringify(compactDraft())');get('#gallery').onclick({target:{closest:s=>s==='[data-atlas-city]'?{dataset:{atlasCity:'洛阳'}}:null}});
 get('#overview').onclick({target:{closest:s=>s==='[data-folio-place]'?{dataset:{folioPlace:CATALOG[0].id}}:null}});
 assert.equal(run('JSON.stringify(compactDraft())'),hydrating,'Gallery and overview must not edit the draft while saved state is loading');
-run('saveBooting=false');get('#gallery').onclick({target:{closest:s=>s==='[data-start-route]'?{dataset:{startRoute:'luoyang'}}:null}});
+run('saveBooting=false');
+await run("openDetail({...CATALOG.find(p=>p.id==='hn-luoyi'),name:'过期地点名称',image:'https://invalid.example/stale.jpg',photos:[{url:'https://invalid.example/stale.jpg'}],routing:{id:'fixture',name:'洛邑古城入口'}})");
+assert.equal(get('#detailtitle').textContent,'洛邑古城');assert(get('#detailbody').innerHTML.includes('洛阳 · 洛邑古城 · 精选实景'));assert(get('#detailbody').innerHTML.includes(run("CATALOG.find(p=>p.id==='hn-luoyi').image")));assert(!get('#detailbody').innerHTML.includes('invalid.example'),'Saved curated places must not override current verified photos');assert(get('#detailbody').innerHTML.includes('洛邑古城入口'),'Canonical refresh retains confirmed routing');get('#detail').close();
+const previewDraft=run('JSON.stringify(compactDraft())'),galleryBefore=get('#gallery').innerHTML;
+get('#brieftext').value='洛阳两天，公交慢游';
+get('#gallery').onclick({target:{closest:s=>s==='[data-feature-route]'?{dataset:{featureRoute:'classic'}}:null}});
+assert.equal(run('featuredRouteId'),'classic');assert.equal(get('#gallery').innerHTML,galleryBefore,'Preview must not redraw the hero or input');assert.equal(get('#brieftext').value,'洛阳两天，公交慢游');assert.equal(run('JSON.stringify(compactDraft())'),previewDraft,'Preview must not replace the current itinerary');
+assert(get('#theme-routes').innerHTML.includes('第 3 天'),'Preview exposes all route days before loading');
+run("previewFeaturedRoute('invalid')");assert.equal(run('featuredRouteId'),'classic');
+get('#gallery').onclick({target:{closest:s=>s==='[data-start-route]'?{dataset:{startRoute:'luoyang'}}:null}});
 assert.equal(body.dataset.view,'planner');assert.equal(run('trip.length'),5);
 run("setView('overview')");assert.equal(body.dataset.view,'overview');assert(get('#overview').innerHTML.includes('DAY 02'));assert(get('#overview').innerHTML.includes('站间交通待核算'));
 run('trip.forEach(s=>s.day=1);renderTrip()');await run('generate()');assert(get('#advicebody').innerHTML.includes('调整前 / 调整后'));assert(get('#advicebody').innerHTML.includes('交通尚需按新顺序核算'));
