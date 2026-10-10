@@ -77,16 +77,18 @@ X2.5 请求不发送 response_format、tools 或 thinking_budget。仅对 MaaS �
 
 ## 实景照片
 
-- 如意湖：xiquinhosilva，CC BY 2.0，已缩放。https://commons.wikimedia.org/wiki/File:Ruyi_Lake_25514-Zhengzhou_(49067715743).jpg
-- 龙门石窟奉先寺：Gary Todd，CC0 1.0，已缩放。https://commons.wikimedia.org/wiki/File:Vairocana,_Fengxian_Temple,_Longmen_Grottoes_(10240207654).jpg
-- 开封龙亭：Gary Todd，CC0 1.0，已缩放。https://commons.wikimedia.org/wiki/File:Dragon_Pavilion_01.jpg
+2026-10-10 更新了五张较旧照片。首页优先展示 2024—2026 年实景，拍摄日期来自原始照片说明，不能视为今日景区状态。云台山和如意湖暂未找到更近期且许可清楚的合适替代图，仍标明原拍摄日期。
 
-- 河南博物院：drnan tu，CC BY-SA 2.0，已缩放。https://commons.wikimedia.org/wiki/File:Henan_Museum_pic_1.jpg
-- 少林寺山门：Windmemories，CC BY-SA 4.0，已缩放。https://commons.wikimedia.org/wiki/File:20241103_Gate_of_Shaolin_Temple.jpg
-- 云台山红石峡：Gary Todd，CC0 1.0，已缩放。https://commons.wikimedia.org/wiki/File:2018_Yuntai_Mountain_Red-stone_Gorge_02.jpg
-- 白马寺：A1AA1A，CC0 1.0，已缩放。https://commons.wikimedia.org/wiki/File:%E7%99%BD%E9%A9%AC%E5%AF%BA-White_Horse_Temple.jpg
+- 如意湖：xiquinhosilva / Wikimedia Commons · CC BY 2.0 · 拍摄于 2019-09-14 · 已缩放；缩略图裁切显示。[照片来源](https://commons.wikimedia.org/wiki/File:Ruyi_Lake_25514-Zhengzhou_(49067715743).jpg) · [许可](https://creativecommons.org/licenses/by/2.0/)
+- 河南博物院：Nishino Asuka / Wikimedia Commons · CC BY-SA 4.0 · 拍摄于 2024-11-20 · 使用 1280px 版本；缩略图裁切显示。[照片来源](https://commons.wikimedia.org/wiki/File:Henan_Museum_in_November_2024.jpg) · [许可](https://creativecommons.org/licenses/by-sa/4.0/)
+- 嵩山少林寺：Windmemories / Wikimedia Commons · CC BY-SA 4.0 · 拍摄于 2024-11-03 · 已缩放与压缩。[照片来源](https://commons.wikimedia.org/wiki/File:20241103_Gate_of_Shaolin_Temple.jpg) · [许可](https://creativecommons.org/licenses/by-sa/4.0/)
+- 龙门石窟：Rongcan Lu / Wikimedia Commons · CC0 1.0 · 拍摄于 2025-05-04 · 使用 1280px 版本；缩略图裁切显示。[照片来源](https://commons.wikimedia.org/wiki/File:Lushena_Buddha_statue_in_Longmen_Grottoes,_Luoyang.jpg) · [许可](https://creativecommons.org/publicdomain/zero/1.0/)
+- 白马寺：Yumeto / Wikimedia Commons · CC BY-SA 4.0 · 拍摄于 2025-05-29 · 使用 1280px 版本；缩略图裁切显示。[照片来源](https://commons.wikimedia.org/wiki/File:20250529_Dafo_Dian.jpg) · [许可](https://creativecommons.org/licenses/by-sa/4.0/)
+- 洛邑古城：Windmemories / Wikimedia Commons · CC BY-SA 4.0 · 拍摄于 2024-12-15 · 已缩放、压缩；缩略图裁切显示。[照片来源](https://commons.wikimedia.org/wiki/File:20241215_Luoyi_Ancient_City.jpg) · [许可](https://creativecommons.org/licenses/by-sa/4.0/)
+- 洛阳博物馆：Tim Wu / Wikimedia Commons · CC BY-SA 4.0 · 拍摄于 2024-09-29 · 已缩放、压缩；缩略图裁切显示。[照片来源](https://commons.wikimedia.org/wiki/File:Exterior,_Luoyang_Museum_20240929.jpg) · [许可](https://creativecommons.org/licenses/by-sa/4.0/)
+- 龙亭公园：Yumeto / Wikimedia Commons · CC BY-SA 4.0 · 拍摄于 2025-05-31 · 使用 1280px 版本；缩略图裁切显示。[照片来源](https://commons.wikimedia.org/wiki/File:20250531_Long_Ting.jpg) · [许可](https://creativecommons.org/licenses/by-sa/4.0/)
+- 清明上河园：Yumeto / Wikimedia Commons · CC BY-SA 4.0 · 拍摄于 2025-05-31 · 使用 1280px 版本；缩略图裁切显示。[照片来源](https://commons.wikimedia.org/wiki/File:20250531_Shangshan_Men.jpg) · [许可](https://creativecommons.org/licenses/by-sa/4.0/)
+- 云台山：Gary Todd / Wikimedia Commons · CC0 1.0 · 拍摄于 2018-05-20 · 已缩放与压缩。[照片来源](https://commons.wikimedia.org/wiki/File:2018_Yuntai_Mountain_Red-stone_Gorge_02.jpg) · [许可](https://creativecommons.org/publicdomain/zero/1.0/)
+- 红旗渠：Windmemories / Wikimedia Commons · CC BY-SA 4.0 · 拍摄于 2026-08-15 · 已缩放、压缩；缩略图裁切显示。[照片来源](https://commons.wikimedia.org/wiki/File:20260815_Red_Flag_Canal_05.jpg) · [许可](https://creativecommons.org/licenses/by-sa/4.0/)
 
-- 清明上河园：Gary Todd，CC0 1.0，已缩放压缩。https://commons.wikimedia.org/wiki/File:2014_Millennium_City_Park_Towers_and_Lake.jpg
-- 洛邑古城：Windmemories，CC BY-SA 4.0，已缩放压缩。https://commons.wikimedia.org/wiki/File:20241215_Luoyi_Ancient_City.jpg
-- 洛阳博物馆：Tim Wu，CC BY-SA 4.0，已缩放压缩。https://commons.wikimedia.org/wiki/File:Exterior,_Luoyang_Museum_20240929.jpg
-- 红旗渠青年洞：Windmemories，CC BY-SA 4.0，已缩放压缩。https://commons.wikimedia.org/wiki/File:20260815_Red_Flag_Canal_05.jpg
+照片更新流程与此次替换记录见 [照片维护文档](docs/photo-maintenance.md)。

@@ -17,7 +17,7 @@ window.fetch=async function(path,options){try{const u=new URL(path,'https://offl
 })();
 </script>`;
 html=html.replace('<script>',shim+'<script>');
-for(const name of [...new Set(CATALOG.filter(p=>p.image).map(p=>p.image.split('/').at(-1).replace('.jpg','')))])html=html.replaceAll('/assets/'+name+'.jpg','data:image/jpeg;base64,'+(await readFile(new URL(name+'.jpg',base))).toString('base64'));
+for(const image of new Set(CATALOG.filter(p=>p.image).map(p=>p.image))){const name=new URL(image,'https://offline.test').pathname.split('/').at(-1);html=html.replaceAll(image,'data:image/jpeg;base64,'+(await readFile(new URL(name,base))).toString('base64'))}
 html=html.replace('/favicon.svg','data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 64 64%22%3E%3Crect width=%2264%22 height=%2264%22 rx=%2218%22 fill=%22%23103947%22/%3E%3Ctext x=%2212%22 y=%2245%22 font-size=%2240%22 fill=%22white%22%3E行%3C/text%3E%3C/svg%3E');
 await writeFile(new URL('index-offline.html',base),html);
 console.log('Offline demo created with embedded image and the same itinerary validation.');

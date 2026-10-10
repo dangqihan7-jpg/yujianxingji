@@ -23,8 +23,11 @@
       "duration": 90,
       "image": "/assets/ruyi.jpg",
       "reference": "https://commons.wikimedia.org/wiki/File:Ruyi_Lake_25514-Zhengzhou_(49067715743).jpg",
-      "credit": "xiquinhosilva / Wikimedia Commons · CC BY 2.0 · 已缩放",
-      "visitTip": "适合安排在城市游览结束后，放慢节奏沿湖散步。"
+      "credit": "xiquinhosilva / Wikimedia Commons · CC BY 2.0 · 拍摄于 2019-09-14 · 已缩放；缩略图裁切显示",
+      "visitTip": "适合安排在城市游览结束后，放慢节奏沿湖散步。",
+      "photoTakenAt": "2019-09-14",
+      "photoReference": "https://commons.wikimedia.org/wiki/File:Ruyi_Lake_25514-Zhengzhou_(49067715743).jpg",
+      "licenseUrl": "https://creativecommons.org/licenses/by/2.0/"
     },
     {
       "id": "hn-henan-museum",
@@ -40,11 +43,13 @@
       "theme": "文博寻踪",
       "duration": 150,
       "reference": "https://www.henan.gov.cn/2020/07-24/1745005.html",
-      "image": "/assets/henan-museum.jpg",
-      "photoReference": "https://commons.wikimedia.org/wiki/File:Henan_Museum_pic_1.jpg",
-      "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0/",
-      "credit": "drnan tu (Drnantu) / Wikimedia Commons · CC BY-SA 2.0 · 拍摄于 2008-07-02 · 已缩放与压缩",
-      "visitTip": "先看自己感兴趣的展厅，再留时间细看文物；预约成功后再确定当天顺序。"
+      "image": "/assets/henan-museum.jpg?v=47bdca5404f7",
+      "photoReference": "https://commons.wikimedia.org/wiki/File:Henan_Museum_in_November_2024.jpg",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+      "credit": "Nishino Asuka / Wikimedia Commons · CC BY-SA 4.0 · 拍摄于 2024-11-20 · 使用 1280px 版本；缩略图裁切显示",
+      "visitTip": "先看自己感兴趣的展厅，再留时间细看文物；预约成功后再确定当天顺序。",
+      "photoTakenAt": "2024-11-20",
+      "photoCaption": "郑州河南博物院主建筑与院名外墙实景。"
     },
     {
       "id": "hn-erqi",
@@ -78,7 +83,8 @@
       "image": "/assets/shaolin-temple.jpg",
       "photoReference": "https://commons.wikimedia.org/wiki/File:20241103_Gate_of_Shaolin_Temple.jpg",
       "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
-      "credit": "Windmemories / Wikimedia Commons · CC BY-SA 4.0 · 拍摄于 2024-11-03 · 已缩放与压缩"
+      "credit": "Windmemories / Wikimedia Commons · CC BY-SA 4.0 · 拍摄于 2024-11-03 · 已缩放与压缩",
+      "photoTakenAt": "2024-11-03"
     },
     {
       "id": "hn-only-henan",
@@ -108,11 +114,14 @@
       "description": "沿伊河观看石窟造像与石刻艺术，感受世界文化遗产的历史厚度。建议穿舒适的鞋，并预留步行和讲解时间。",
       "theme": "世界遗产",
       "duration": 180,
-      "image": "/assets/longmen.jpg",
-      "credit": "Gary Todd / Wikimedia Commons · CC0 1.0 · 已缩放",
-      "photoReference": "https://commons.wikimedia.org/wiki/File:Vairocana,_Fengxian_Temple,_Longmen_Grottoes_(10240207654).jpg",
+      "image": "/assets/longmen.jpg?v=0c985c39fd45",
+      "credit": "Rongcan Lu / Wikimedia Commons · CC0 1.0 · 拍摄于 2025-05-04 · 使用 1280px 版本；缩略图裁切显示",
+      "photoReference": "https://commons.wikimedia.org/wiki/File:Lushena_Buddha_statue_in_Longmen_Grottoes,_Luoyang.jpg",
       "reference": "https://hct.henan.gov.cn/2025/06-17/3170379.html",
-      "visitTip": "建议以石窟造像和河岸步行为主，额外留出景区内部步行时间。"
+      "visitTip": "建议以石窟造像和河岸步行为主，额外留出景区内部步行时间。",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "photoTakenAt": "2025-05-04",
+      "photoCaption": "龙门石窟奉先寺卢舍那大佛与崖壁雕刻实景。"
     },
     {
       "id": "hn-whitehorse",
@@ -128,11 +137,13 @@
       "theme": "古寺文化",
       "duration": 120,
       "reference": "https://hct.henan.gov.cn/2025/05-21/3160322.html",
-      "image": "/assets/white-horse-temple.jpg",
-      "photoReference": "https://commons.wikimedia.org/wiki/File:%E7%99%BD%E9%A9%AC%E5%AF%BA-White_Horse_Temple.jpg",
-      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
-      "credit": "A1AA1A / Wikimedia Commons · CC0 1.0 · 拍摄于 2014-06-08 · 已缩放与压缩",
-      "visitTip": "确认前往的寺院入口，把往返市区的交通单独核算。"
+      "image": "/assets/white-horse-temple.jpg?v=526b7d9789da",
+      "photoReference": "https://commons.wikimedia.org/wiki/File:20250529_Dafo_Dian.jpg",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+      "credit": "Yumeto / Wikimedia Commons · CC BY-SA 4.0 · 拍摄于 2025-05-29 · 使用 1280px 版本；缩略图裁切显示",
+      "visitTip": "确认前往的寺院入口，把往返市区的交通单独核算。",
+      "photoTakenAt": "2025-05-29",
+      "photoCaption": "洛阳白马寺大佛殿前院落与香炉实景。"
     },
     {
       "id": "hn-luoyi",
@@ -153,7 +164,8 @@
       "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
       "photoCaption": "洛邑古城航拍视角，文峰塔、新潭与传统建筑群同框。",
       "credit": "Windmemories / Wikimedia Commons · CC BY-SA 4.0 · 拍摄于 2024-12-15 · 已缩放、压缩；缩略图裁切显示",
-      "visitTip": "可以留作老城散步的一站，夜游时需把返程时间算进行程。"
+      "visitTip": "可以留作老城散步的一站，夜游时需把返程时间算进行程。",
+      "photoTakenAt": "2024-12-15"
     },
     {
       "id": "hn-luoyang-museum",
@@ -174,7 +186,8 @@
       "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
       "photoCaption": "洛阳博物馆正立面与广场实景。",
       "credit": "Tim Wu / Wikimedia Commons · CC BY-SA 4.0 · 拍摄于 2024-09-29 · 已缩放、压缩；缩略图裁切显示",
-      "visitTip": "适合先了解城市历史，再带着线索去看古迹。"
+      "visitTip": "适合先了解城市历史，再带着线索去看古迹。",
+      "photoTakenAt": "2024-09-29"
     },
     {
       "id": "hn-xigong",
@@ -205,11 +218,14 @@
       "description": "从龙亭建筑与园林认识开封的古都气质。与清明上河园组合时，建议为园区之间的交通留出余量。",
       "theme": "宋都风华",
       "duration": 90,
-      "image": "/assets/kaifeng.jpg",
-      "credit": "Gary Todd / Wikimedia Commons · CC0 1.0 · 已缩放",
-      "photoReference": "https://commons.wikimedia.org/wiki/File:Dragon_Pavilion_01.jpg",
+      "image": "/assets/kaifeng.jpg?v=3d8a2a215abd",
+      "credit": "Yumeto / Wikimedia Commons · CC BY-SA 4.0 · 拍摄于 2025-05-31 · 使用 1280px 版本；缩略图裁切显示",
+      "photoReference": "https://commons.wikimedia.org/wiki/File:20250531_Long_Ting.jpg",
       "reference": "https://www.henan.gov.cn/2020/07-24/1745005.html",
-      "visitTip": "适合以古建筑与园林细节为主，和同区域景点组合。"
+      "visitTip": "适合以古建筑与园林细节为主，和同区域景点组合。",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+      "photoTakenAt": "2025-05-31",
+      "photoCaption": "开封龙亭大殿与台阶正面实景。"
     },
     {
       "id": "hn-qingming",
@@ -225,12 +241,13 @@
       "theme": "宋韵体验",
       "duration": 240,
       "reference": "https://hct.henan.gov.cn/2024/12-19/3101345.html",
-      "image": "/assets/hn-qingming.jpg",
-      "photoReference": "https://commons.wikimedia.org/wiki/File:2014_Millennium_City_Park_Towers_and_Lake.jpg",
-      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
-      "photoCaption": "清明上河园湖畔楼阁实景，前景为黄色荷花造型装置。",
-      "credit": "Gary Todd / Wikimedia Commons · CC0 1.0 · 拍摄于 2014-04-26 · 已缩放、压缩；缩略图裁切显示",
-      "visitTip": "先查看当日演出安排，再围绕想看的场次选择园内游览顺序。"
+      "image": "/assets/hn-qingming.jpg?v=f0b0422d2298",
+      "photoReference": "https://commons.wikimedia.org/wiki/File:20250531_Shangshan_Men.jpg",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+      "photoCaption": "清明上河园上善门夜景，龙形灯饰与亮灯城门同框。",
+      "credit": "Yumeto / Wikimedia Commons · CC BY-SA 4.0 · 拍摄于 2025-05-31 · 使用 1280px 版本；缩略图裁切显示",
+      "visitTip": "先查看当日演出安排，再围绕想看的场次选择园内游览顺序。",
+      "photoTakenAt": "2025-05-31"
     },
     {
       "id": "hn-kaifeng-fu",
@@ -280,7 +297,8 @@
       "photoReference": "https://commons.wikimedia.org/wiki/File:2018_Yuntai_Mountain_Red-stone_Gorge_02.jpg",
       "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
       "credit": "Gary Todd / Wikimedia Commons · CC0 1.0 · 拍摄于 2018-05-20 · 已缩放与压缩",
-      "visitTip": "当天以山水游览为主，景区内部车程和步道时间另外预留。"
+      "visitTip": "当天以山水游览为主，景区内部车程和步道时间另外预留。",
+      "photoTakenAt": "2018-05-20"
     },
     {
       "id": "hn-chenjiagou",
@@ -346,7 +364,8 @@
       "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
       "photoCaption": "红旗渠青年洞洞口与渠水实景，崖壁可见“青年洞”题字。",
       "credit": "Windmemories / Wikimedia Commons · CC BY-SA 4.0 · 拍摄于 2026-08-15 · 已缩放、压缩；缩略图裁切显示",
-      "visitTip": "先决定参观分水苑还是青年洞；照片展示青年洞，交通定位须选择实际前往的区域。"
+      "visitTip": "先决定参观分水苑还是青年洞；照片展示青年洞，交通定位须选择实际前往的区域。",
+      "photoTakenAt": "2026-08-15"
     },
     {
       "id": "hn-dikeng",
@@ -434,7 +453,7 @@
           90
         ]
       ],
-      "image": "/assets/longmen.jpg",
+      "image": "/assets/longmen.jpg?v=0c985c39fd45",
       "photoLabel": "龙门石窟奉先寺实景",
       "kicker": "文化寻踪 / ZHENG · BIAN · LUO",
       "story": "从郑州的文博与湖畔，到开封的宋都园林，再到洛阳的石窟与老城，按城市分日体验中原文化。"
@@ -473,7 +492,7 @@
           90
         ]
       ],
-      "image": "/assets/white-horse-temple.jpg",
+      "image": "/assets/white-horse-temple.jpg?v=526b7d9789da",
       "photoLabel": "洛阳白马寺实景",
       "kicker": "古都慢游 / LUOYANG",
       "story": "第一天串联石窟与文博，第二天安排古寺、街巷风味和老城散步，留出城市两端之间的交通时间。"

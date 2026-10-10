@@ -1,5 +1,6 @@
 let activeView='gallery',featuredRouteId='luoyang',comparisonRecord=null,planningBusy=false;
-const heroPlaces=['hn-yuntai','hn-longmen','hn-qingming','hn-ruyi','hn-redflag'].map(id=>CATALOG.find(p=>p.id===id)).filter(p=>p?.image);
+const heroPlaces=['hn-qingming','hn-longmen','hn-luoyi','hn-henan-museum','hn-redflag'].map(id=>CATALOG.find(p=>p.id===id)).filter(p=>p?.image);
+const heroPhotoLabel=place=>place.city+' · '+place.name+(place.photoTakenAt?' · 拍摄于 '+place.photoTakenAt:'')+' · 照片说明 ↗';
 const heroReducedMotion=()=>Boolean(globalThis.matchMedia?.('(prefers-reduced-motion: reduce)').matches);
 let heroPhotoIndex=0,heroAutoplay=!heroReducedMotion(),heroTimer=0,heroHover=false,heroFocus=false,heroVisible=true,heroObserver;
 function scheduleHeroRotation(){
@@ -11,7 +12,7 @@ function updateHeroPhoto(){
   const place=heroPlaces[heroPhotoIndex];if(!place)return;
   $('#hero-slideshow').querySelectorAll?.('[data-hero-slide]').forEach((img,i)=>{img.classList.toggle('is-active',i===heroPhotoIndex);img.setAttribute('aria-hidden',String(i!==heroPhotoIndex))});
   $('#hero-slideshow').querySelectorAll?.('[data-hero-photo]').forEach((button,i)=>{button.classList.toggle('is-active',i===heroPhotoIndex);button.setAttribute('aria-pressed',String(i===heroPhotoIndex))});
-  $('#hero-photo-source').textContent=place.city+' · '+place.name+' · 照片说明 ↗';$('#hero-photo-source').dataset.photoPlace=place.id;
+  $('#hero-photo-source').textContent=heroPhotoLabel(place);$('#hero-photo-source').dataset.photoPlace=place.id;
   $('#hero-photo-count').textContent=String(heroPhotoIndex+1).padStart(2,'0')+' / '+String(heroPlaces.length).padStart(2,'0');
   $('#hero-toggle').textContent=heroAutoplay?'Ⅱ':'▶';$('#hero-toggle').setAttribute?.('aria-label',heroAutoplay?'暂停照片轮播':'播放照片轮播');$('#hero-toggle').setAttribute?.('aria-pressed',String(heroAutoplay));
 }
@@ -70,7 +71,7 @@ function renderGallery(){
         <p class="hero-description">走进古都的日常，或去山水间慢下来。<br>从你的时间与预算出发，安排一段刚刚好的旅程。</p>
         <div class="hero-actions"><button class="primary" data-gallery-scroll="weekend-plan">开始规划 <span aria-hidden="true">↗</span></button><button class="hero-secondary" data-gallery-scroll="theme-routes">探索主题路线 <span aria-hidden="true">↓</span></button></div>
       </div>
-      <div class="hero-bottom"><div class="hero-photo-meta"><span id="hero-photo-count">${String(heroPhotoIndex+1).padStart(2,'0')} / ${String(heroPlaces.length).padStart(2,'0')}</span><button id="hero-photo-source" data-photo-place="${esc(hero.id)}">${esc(hero.city+' · '+hero.name)} · 照片说明 ↗</button><button id="hero-toggle" data-hero-toggle aria-label="${heroAutoplay?'暂停照片轮播':'播放照片轮播'}" aria-pressed="${String(heroAutoplay)}">${heroAutoplay?'Ⅱ':'▶'}</button></div><div class="hero-gallery-controls"><button class="hero-arrow" data-hero-step="-1" aria-label="上一张照片">←</button><nav class="hero-thumbnails" aria-label="选择河南实景照片">${heroPlaces.map((p,i)=>'<button data-hero-photo="'+i+'" class="hero-thumbnail '+(i===heroPhotoIndex?'is-active':'')+'" aria-label="查看'+esc(p.city+' · '+p.name)+'照片" aria-pressed="'+String(i===heroPhotoIndex)+'"><img src="'+esc(p.image)+'" alt="" width="96" height="64"><span>'+esc(p.name)+'</span></button>').join('')}</nav><button class="hero-arrow" data-hero-step="1" aria-label="下一张照片">→</button></div></div>
+      <div class="hero-bottom"><div class="hero-photo-meta"><span id="hero-photo-count">${String(heroPhotoIndex+1).padStart(2,'0')} / ${String(heroPlaces.length).padStart(2,'0')}</span><button id="hero-photo-source" data-photo-place="${esc(hero.id)}">${esc(heroPhotoLabel(hero))}</button><button id="hero-toggle" data-hero-toggle aria-label="${heroAutoplay?'暂停照片轮播':'播放照片轮播'}" aria-pressed="${String(heroAutoplay)}">${heroAutoplay?'Ⅱ':'▶'}</button></div><div class="hero-gallery-controls"><button class="hero-arrow" data-hero-step="-1" aria-label="上一张照片">←</button><nav class="hero-thumbnails" aria-label="选择河南实景照片">${heroPlaces.map((p,i)=>'<button data-hero-photo="'+i+'" class="hero-thumbnail '+(i===heroPhotoIndex?'is-active':'')+'" aria-label="查看'+esc(p.city+' · '+p.name)+'照片" aria-pressed="'+String(i===heroPhotoIndex)+'"><img src="'+esc(p.image)+'" alt="" width="96" height="64"><span>'+esc(p.name)+'</span></button>').join('')}</nav><button class="hero-arrow" data-hero-step="1" aria-label="下一张照片">→</button></div></div>
     </section>
     <div class="gallery-inner">
       <section class="planning-guide" aria-labelledby="guide-title">
