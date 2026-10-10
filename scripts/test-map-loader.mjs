@@ -19,8 +19,8 @@ vm.runInContext(HTML.split('<script>')[1].split('</script>')[0].replace(/\ninit\
 const run=source=>vm.runInContext(source,context);
 run('connectMap()');assert.equal(run('mapConnection'),'unconfigured');assert.equal(scripts.length,0);
 run("cfg={mapConfigured:true,mapKey:'fixture-public-key'};connectMap()");assert.equal(run('mapConnection'),'loading');assert(get('#connectstatus').innerHTML.includes('正在加载'));
-assert.equal(scripts.length,1);assert.equal([...timers.values()][0].ms,12000);
-[...timers.values()][0].callback();assert.equal(run('mapConnection'),'slow');assert.equal(get('#mapretry').hidden,false);
+assert.equal(scripts.length,1);assert.equal(timers.get(run('mapTimer')).ms,12000);
+timers.get(run('mapTimer')).callback();assert.equal(run('mapConnection'),'slow');assert.equal(get('#mapretry').hidden,false);
 // A late SDK load must recover even after the slow-connection notice.
 scripts[0].onload();assert.equal(maps.length,1);maps[0].handlers.complete();assert.equal(run('mapConnection'),'ready');assert.equal(get('#mapretry').hidden,true);
 run("updateCity('洛阳')");assert(get('#mapstatus').textContent.includes('已加载'));

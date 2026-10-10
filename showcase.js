@@ -1,4 +1,30 @@
 let activeView='gallery',featuredRouteId='luoyang',comparisonRecord=null,planningBusy=false;
+const heroPlaces=['hn-yuntai','hn-longmen','hn-qingming','hn-ruyi','hn-redflag'].map(id=>CATALOG.find(p=>p.id===id)).filter(p=>p?.image);
+const heroReducedMotion=()=>Boolean(globalThis.matchMedia?.('(prefers-reduced-motion: reduce)').matches);
+let heroPhotoIndex=0,heroAutoplay=!heroReducedMotion(),heroTimer=0,heroHover=false,heroFocus=false,heroVisible=true,heroObserver;
+function scheduleHeroRotation(){
+  clearTimeout(heroTimer);heroTimer=0;
+  if(!heroAutoplay||activeView!=='gallery'||document.hidden||heroHover||heroFocus||!heroVisible||heroPlaces.length<2)return;
+  heroTimer=setTimeout(()=>{heroTimer=0;if(!document.querySelector('dialog[open]'))selectHeroPhoto((heroPhotoIndex+1)%heroPlaces.length);else scheduleHeroRotation()},6000);
+}
+function updateHeroPhoto(){
+  const place=heroPlaces[heroPhotoIndex];if(!place)return;
+  $('#hero-slideshow').querySelectorAll?.('[data-hero-slide]').forEach((img,i)=>{img.classList.toggle('is-active',i===heroPhotoIndex);img.setAttribute('aria-hidden',String(i!==heroPhotoIndex))});
+  $('#hero-slideshow').querySelectorAll?.('[data-hero-photo]').forEach((button,i)=>{button.classList.toggle('is-active',i===heroPhotoIndex);button.setAttribute('aria-pressed',String(i===heroPhotoIndex))});
+  $('#hero-photo-source').textContent=place.city+' · '+place.name+' · 照片说明 ↗';$('#hero-photo-source').dataset.photoPlace=place.id;
+  $('#hero-photo-count').textContent=String(heroPhotoIndex+1).padStart(2,'0')+' / '+String(heroPlaces.length).padStart(2,'0');
+  $('#hero-toggle').textContent=heroAutoplay?'Ⅱ':'▶';$('#hero-toggle').setAttribute?.('aria-label',heroAutoplay?'暂停照片轮播':'播放照片轮播');$('#hero-toggle').setAttribute?.('aria-pressed',String(heroAutoplay));
+}
+function selectHeroPhoto(index){if(!Number.isInteger(index)||index<0||index>=heroPlaces.length)return;heroPhotoIndex=index;updateHeroPhoto();scheduleHeroRotation()}
+function initializeHeroSlideshow(){
+  const hero=$('#hero-slideshow');heroHover=false;heroFocus=false;heroVisible=true;heroObserver?.disconnect();
+  hero.onpointerenter=()=>{heroHover=true;scheduleHeroRotation()};hero.onpointerleave=()=>{heroHover=false;scheduleHeroRotation()};
+  hero.onfocusin=()=>{heroFocus=true;scheduleHeroRotation()};hero.onfocusout=e=>{heroFocus=Boolean(hero.contains?.(e.relatedTarget));scheduleHeroRotation()};
+  if(typeof IntersectionObserver==='function'){heroObserver=new IntersectionObserver(entries=>{heroVisible=entries[0].isIntersecting;scheduleHeroRotation()},{threshold:0});heroObserver.observe(hero)}
+  updateHeroPhoto();scheduleHeroRotation();
+}
+document.addEventListener?.('visibilitychange',scheduleHeroRotation);
+globalThis.matchMedia?.('(prefers-reduced-motion: reduce)').addEventListener?.('change',()=>{if(heroReducedMotion())heroAutoplay=false;updateHeroPhoto();scheduleHeroRotation()});
 const routeEditorial={classic:{title:'郑汴洛 · 古都三日',theme:'中原古都 / CULTURAL JOURNEY',cities:['郑州','开封','洛阳']},luoyang:{title:'洛阳 · 两日慢游',theme:'河洛慢游 / SLOW TRAVEL',cities:['洛阳']},taihang:{title:'太行 · 山水两日',theme:'山水与人文 / MOUNTAIN JOURNEY',cities:['焦作','安阳']}};
 function renderHeaderCount(){$('#headertripcount').textContent=String(trip.length)}
 function initializeMap(attempt=mapAttempt){
@@ -34,17 +60,17 @@ function previewFeaturedRoute(id){
 function renderGallery(){
   const pendingText=$('#brieftext')?.value||'';
   const r=PRESETS.find(p=>p.id===featuredRouteId)||PRESETS[0];
-  const hero=CATALOG.find(p=>p.image==='/assets/yuntai-mountain.jpg');
+  const hero=heroPlaces[heroPhotoIndex];
   $('#gallery').innerHTML=`
-    <section class="journey-hero" aria-labelledby="hero-title">
-      <img class="hero-image" src="${esc(hero?.image||r.image)}" alt="${esc(hero?.photoCaption||hero?.name||'河南山水实景')}" fetchpriority="high" width="1200" height="800">
+    <section id="hero-slideshow" class="journey-hero" aria-labelledby="hero-title" aria-roledescription="照片轮播">
+      ${heroPlaces.map((p,i)=>'<img class="hero-image '+(i===heroPhotoIndex?'is-active':'')+'" data-hero-slide aria-hidden="'+String(i!==heroPhotoIndex)+'" src="'+esc(p.image)+'" alt="'+esc(p.photoCaption||p.city+' · '+p.name+'实景')+'" fetchpriority="'+(i===heroPhotoIndex?'high':'low')+'" width="1400" height="933">').join('')}
       <div class="hero-content">
         <p class="hero-eyebrow">HENAN · A WEEKEND AWAY</p>
         <h2 id="hero-title">豫见行迹<span>把周末，交给河南。</span></h2>
         <p class="hero-description">走进古都的日常，或去山水间慢下来。<br>从你的时间与预算出发，安排一段刚刚好的旅程。</p>
         <div class="hero-actions"><button class="primary" data-gallery-scroll="weekend-plan">开始规划 <span aria-hidden="true">↗</span></button><button class="hero-secondary" data-gallery-scroll="theme-routes">探索主题路线 <span aria-hidden="true">↓</span></button></div>
       </div>
-      <div class="hero-bottom"><span>慢一点，遇见多一点。</span><button data-open-sources>${esc(hero?.name||'河南实景')} · 实景照片与来源 ↗</button></div>
+      <div class="hero-bottom"><div class="hero-photo-meta"><span id="hero-photo-count">${String(heroPhotoIndex+1).padStart(2,'0')} / ${String(heroPlaces.length).padStart(2,'0')}</span><button id="hero-photo-source" data-photo-place="${esc(hero.id)}">${esc(hero.city+' · '+hero.name)} · 照片说明 ↗</button><button id="hero-toggle" data-hero-toggle aria-label="${heroAutoplay?'暂停照片轮播':'播放照片轮播'}" aria-pressed="${String(heroAutoplay)}">${heroAutoplay?'Ⅱ':'▶'}</button></div><div class="hero-gallery-controls"><button class="hero-arrow" data-hero-step="-1" aria-label="上一张照片">←</button><nav class="hero-thumbnails" aria-label="选择河南实景照片">${heroPlaces.map((p,i)=>'<button data-hero-photo="'+i+'" class="hero-thumbnail '+(i===heroPhotoIndex?'is-active':'')+'" aria-label="查看'+esc(p.city+' · '+p.name)+'照片" aria-pressed="'+String(i===heroPhotoIndex)+'"><img src="'+esc(p.image)+'" alt="" width="96" height="64"><span>'+esc(p.name)+'</span></button>').join('')}</nav><button class="hero-arrow" data-hero-step="1" aria-label="下一张照片">→</button></div></div>
     </section>
     <div class="gallery-inner">
       <section class="planning-guide" aria-labelledby="guide-title">
@@ -63,6 +89,7 @@ function renderGallery(){
       <footer class="atlas-footer"><div class="atlas-signature">豫见行迹 <span>HENAN JOURNEY ATLAS</span></div><p>${new Set(CATALOG.map(p=>p.city)).size} 座城市 · ${CATALOG.length} 个精选去处 · 门票与预约请在出发前确认</p><div class="gallery-utility"><button class="try-plan" data-try-planning>体验规划对照 ↗</button><button class="gallery-sources" data-open-sources>资料与照片来源</button></div></footer>
     </div>`;
   if(pendingText)$('#brieftext').value=pendingText;
+  initializeHeroSlideshow();
 }
 
 function revealPlannerMap(){
@@ -87,6 +114,7 @@ function setView(view){
   document.querySelectorAll('.view-nav [data-view]').forEach(b=>{b.setAttribute?.('aria-current',b.dataset.view===view?'page':'false')});
   if(view==='gallery')renderGallery();if(view==='overview')renderOverview();if(view==='decision')renderDecision();
   if(view==='planner')revealPlannerMap();
+  scheduleHeroRotation();
   globalThis.scrollTo?.({top:0,behavior:'instant'});
 }
 
@@ -137,7 +165,7 @@ async function showPlanningExample(){
     $('#applyexample').onclick=()=>{if(snapshot!==JSON.stringify(compactDraft())){toast('当前行程已改变，请重新打开示例');$('#advice').close();return}checkpoint();decisionState={...validateDecisionState(),records:decisionState.records,intent:validateIntent({city:'洛阳',days:2,maxHours:6,restMinutes:30}),source:'rules'};trip=after;currentPresetId='luoyang';$('#days').value='2';$('#start').value='09:00';$('#maxhours').value='6';$('#restmins').value='30';$('#city').value='洛阳';day=1;setFilter('all');presetState();renderAll();comparisonRecord={before,afterSnapshot:JSON.stringify(compactDraft())};search();setView('overview');$('#advice').close();toast('已载入示例安排，原行程可以撤销恢复')};
   }catch(e){toast(e.message)}
 }
-$('#gallery').onclick=e=>{const photo=e.target.closest('[data-photo-place]');if(photo){openDetail(CATALOG.find(p=>p.id===photo.dataset.photoPlace));return}const jump=e.target.closest('[data-gallery-scroll]');if(jump){const target=document.getElementById(jump.dataset.galleryScroll);target?.scrollIntoView({behavior:globalThis.matchMedia?.('(prefers-reduced-motion: reduce)').matches?'instant':'smooth',block:'start'});if(jump.dataset.galleryScroll==='weekend-plan')$('#brieftext').focus({preventScroll:true});return}const prompt=e.target.closest('[data-brief-example]');if(prompt){$('#brieftext').value=prompt.dataset.briefExample;return}if(e.target.closest('[data-parse-brief]')){openBrief($('#brieftext').value);return}if(e.target.closest('[data-manual-brief]')){openBrief();return}if(e.target.closest('[data-open-sources]')){$('#connect').showModal();return}const example=e.target.closest('[data-try-planning]');if(example){showPlanningExample();return}const start=e.target.closest('[data-start-route]'),feature=e.target.closest('[data-feature-route]'),city=e.target.closest('[data-atlas-city]');if(start){if(saveBooting){toast('正在读取已保存行程，请稍后开始规划');return}loadPreset(start.dataset.startRoute);setView('planner')}else if(feature){previewFeaturedRoute(feature.dataset.featureRoute)}else if(city){if(saveBooting){toast('正在读取已保存行程，请稍后操作');return}setView('planner');selectCity(city.dataset.atlasCity)}};
+$('#gallery').onclick=e=>{const heroPhoto=e.target.closest('[data-hero-photo]'),heroStep=e.target.closest('[data-hero-step]');if(heroPhoto){selectHeroPhoto(Number(heroPhoto.dataset.heroPhoto));return}if(heroStep){selectHeroPhoto((heroPhotoIndex+Number(heroStep.dataset.heroStep)+heroPlaces.length)%heroPlaces.length);return}if(e.target.closest('[data-hero-toggle]')){heroAutoplay=!heroAutoplay;updateHeroPhoto();scheduleHeroRotation();return}const photo=e.target.closest('[data-photo-place]');if(photo){openDetail(CATALOG.find(p=>p.id===photo.dataset.photoPlace));return}const jump=e.target.closest('[data-gallery-scroll]');if(jump){const target=document.getElementById(jump.dataset.galleryScroll);target?.scrollIntoView({behavior:globalThis.matchMedia?.('(prefers-reduced-motion: reduce)').matches?'instant':'smooth',block:'start'});if(jump.dataset.galleryScroll==='weekend-plan')$('#brieftext').focus({preventScroll:true});return}const prompt=e.target.closest('[data-brief-example]');if(prompt){$('#brieftext').value=prompt.dataset.briefExample;return}if(e.target.closest('[data-parse-brief]')){openBrief($('#brieftext').value);return}if(e.target.closest('[data-manual-brief]')){openBrief();return}if(e.target.closest('[data-open-sources]')){$('#connect').showModal();return}const example=e.target.closest('[data-try-planning]');if(example){showPlanningExample();return}const start=e.target.closest('[data-start-route]'),feature=e.target.closest('[data-feature-route]'),city=e.target.closest('[data-atlas-city]');if(start){if(saveBooting){toast('正在读取已保存行程，请稍后开始规划');return}loadPreset(start.dataset.startRoute);setView('planner')}else if(feature){previewFeaturedRoute(feature.dataset.featureRoute)}else if(city){if(saveBooting){toast('正在读取已保存行程，请稍后操作');return}setView('planner');selectCity(city.dataset.atlasCity)}};
 $('#overview').onclick=e=>{const action=e.target.closest('[data-overview-action]'),edit=e.target.closest('[data-edit-day]'),place=e.target.closest('[data-folio-place]');if(action){if(saveBooting&&action.dataset.overviewAction==='plan'){toast('正在读取已保存行程，请稍后操作');return}if(action.dataset.overviewAction==='check')setView('decision');if(action.dataset.overviewAction==='edit')setView('planner');if(action.dataset.overviewAction==='plan')generate();if(action.dataset.overviewAction==='print')globalThis.print?.();if(action.dataset.overviewAction==='export')$('#export').onclick()}else if(edit){if(saveBooting){toast('正在读取已保存行程，请稍后操作');return}day=Number(edit.dataset.editDay);setView('planner');const cities=[...new Set(dayStops().map(s=>s.place.city).filter(Boolean))];selectCity(cities.length===1?cities[0]:'河南');renderTrip();renderMap()}else if(place){if(saveBooting){toast('正在读取已保存行程，请稍后操作');return}setView('planner');focusPlace(trip.find(s=>s.place.id===place.dataset.folioPlace)?.place)}};
 document.querySelectorAll('.site-header [data-view]').forEach(button=>button.onclick=e=>{e.preventDefault?.();setView(button.dataset.view)});
 renderGallery();renderOverview();renderHeaderCount();
