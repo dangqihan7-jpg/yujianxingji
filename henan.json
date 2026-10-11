@@ -411,6 +411,118 @@
       "theme": "黄河湿地",
       "duration": 90,
       "reference": "https://hct.henan.gov.cn/2023/05-20/2746303.html"
+    },
+    {
+      "id": "hn-wansui",
+      "name": "万岁山武侠城",
+      "aliases": [
+        "万岁山",
+        "万岁山大宋武侠城",
+        "大宋武侠城"
+      ],
+      "city": "开封",
+      "category": "scenic",
+      "location": [
+        114.345,
+        34.821
+      ],
+      "address": "开封市龙亭区东京大道中段",
+      "description": "把周末交给江湖：看武侠实景演艺、逛宋式街巷、体验角色互动。建议围绕想看的节目安排半天以上，不把景区当作短暂停留的公园。",
+      "theme": "武侠演艺",
+      "interests": [
+        "culture",
+        "immersive"
+      ],
+      "duration": 300,
+      "reference": "https://hct.henan.gov.cn/2025/09-24/3229991.html",
+      "locationReference": "https://www.amap.com/place/B0FFH1RM9R",
+      "visitTip": "先查看景区当日节目表，再安排入园和返程；演出场次、入场规则及票价以官方公告为准。展示定位在西侧片区，实际前往的入口需要在高德确认。",
+      "weekendPick": true
+    },
+    {
+      "id": "hn-laojunshan",
+      "name": "老君山",
+      "aliases": [
+        "洛阳老君山",
+        "栾川老君山",
+        "老君山风景名胜区"
+      ],
+      "city": "洛阳",
+      "category": "scenic",
+      "location": [
+        111.658,
+        33.739
+      ],
+      "address": "洛阳市栾川县栾川乡七里坪村老君山景区",
+      "description": "去栾川看峰林、山间栈道和金顶道观群，适合把一整天留给山里。这里不在洛阳市区，往返栾川、索道排队与下山都需要单独留出时间。云海和日落受天气影响。",
+      "theme": "伏牛山水",
+      "interests": [
+        "nature"
+      ],
+      "duration": 360,
+      "reference": "https://www.laojunshan.cn/",
+      "locationReference": "https://ditu.amap.com/place/B017B01NH7",
+      "visitTip": "建议单独安排一天，出发前确认预约、索道与天气；看日落时先核对末班索道和返程条件。照片是2025年3月雪后实拍，不代表当前天气。",
+      "planningNotes": [
+        "老君山位于栾川，往返市区、索道排队及下山时间需另行核算。"
+      ],
+      "weekendPick": true,
+      "image": "/assets/laojunshan.jpg?v=ce5f4217cca5",
+      "photoReference": "https://commons.wikimedia.org/wiki/File:Laojun_Mountain_18_March_2025A.jpg",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+      "credit": "Huangdan2060 / Wikimedia Commons · CC BY 4.0 · 拍摄于 2025-03-18 · 使用1280px版本；缩略图裁切显示",
+      "photoTakenAt": "2025-03-18",
+      "photoCaption": "河南洛阳栾川老君山金顶道观群雪后实景，金殿与山峰栈道同框。"
+    },
+    {
+      "id": "hn-yinji",
+      "name": "银基动物王国",
+      "aliases": [
+        "郑州银基动物王国"
+      ],
+      "city": "郑州",
+      "category": "scenic",
+      "location": [
+        113.55,
+        34.486
+      ],
+      "address": "郑州市新密市刘寨镇大鸿路1号银基国际旅游度假区",
+      "description": "以动物观赏、主题游乐和园内演艺安排亲子周末。园区位于新密，需要把往返交通算进一天，项目开放、身高限制与动物展区安排请提前确认。",
+      "theme": "亲子乐园",
+      "interests": [
+        "family"
+      ],
+      "duration": 360,
+      "reference": "https://www.enjoyland.cn/ScenicSpots-1.html",
+      "locationReference": "https://amap.com/place/B0FFKYGE2W",
+      "visitTip": "先按孩子年龄和身高选择项目，留出休息、用餐和排队时间。这里是动物王国，不代表冰雪世界或整个度假区通票。",
+      "weekendPick": true
+    },
+    {
+      "id": "hn-movie-town",
+      "name": "建业电影小镇",
+      "aliases": [
+        "建业·华谊兄弟电影小镇",
+        "建业华谊兄弟电影小镇",
+        "电影小镇"
+      ],
+      "city": "郑州",
+      "category": "scenic",
+      "location": [
+        114.0,
+        34.78
+      ],
+      "address": "郑州市中牟县郑州国际文化创意产业园建业电影小镇",
+      "description": "在电影主题街区看沉浸式演艺、换装逛街，体验电影里的城市记忆。适合预留半天；夜游、具体节目和场次以景区当日安排为准。",
+      "theme": "电影夜游",
+      "interests": [
+        "culture",
+        "immersive"
+      ],
+      "duration": 240,
+      "reference": "https://hct.henan.gov.cn/2025/09-24/3229991.html",
+      "visitTip": "先确认当天演出和夜场安排，再决定到达时间；片区位置仅用于展示，交通核算前请查询并确认高德入口。",
+      "weekendPick": true
     }
   ],
   "routes": [

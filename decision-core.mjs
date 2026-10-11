@@ -8,7 +8,7 @@ export function validateIntent(raw={}){
  if(requiredIds.some(id=>excludedIds.includes(id)))throw Error('同一地点不能同时设为必去和排除');
  const excludedModes=Array.isArray(raw.excludedModes)?[...new Set(raw.excludedModes.filter(v=>['driving','walking','transit'].includes(v)))]:[];
  const mode=nullable('mode',v=>['driving','walking','transit'].includes(v));if(mode&&excludedModes.includes(mode))throw Error('出行方式与排除条件冲突');
- return {city:nullable('city',v=>DECISION_CITIES.includes(v)),days:nullable('days',v=>[1,2,3,4,5,7].includes(v)),mode,maxHours:nullable('maxHours',v=>[6,8,10].includes(v)),restMinutes:nullable('restMinutes',v=>[0,30,60].includes(v)),budget:nullable('budget',v=>Number.isFinite(v)&&v>=0&&v<=100000),avoidCrossCity:typeof raw.avoidCrossCity==='boolean'?raw.avoidCrossCity:null,interests:Array.isArray(raw.interests)?[...new Set(raw.interests.filter(v=>['culture','nature','food'].includes(v)))].slice(0,3):[],requiredIds,excludedIds,excludedModes};
+ return {city:nullable('city',v=>DECISION_CITIES.includes(v)),days:nullable('days',v=>[1,2,3,4,5,7].includes(v)),mode,maxHours:nullable('maxHours',v=>[6,8,10].includes(v)),restMinutes:nullable('restMinutes',v=>[0,30,60].includes(v)),budget:nullable('budget',v=>Number.isFinite(v)&&v>=0&&v<=100000),avoidCrossCity:typeof raw.avoidCrossCity==='boolean'?raw.avoidCrossCity:null,interests:Array.isArray(raw.interests)?[...new Set(raw.interests.filter(v=>['culture','nature','food','immersive','family'].includes(v)))].slice(0,5):[],requiredIds,excludedIds,excludedModes};
 }
 export function parseIntentRules(input,catalog){
  const t=String(input).normalize('NFKC').trim();if(!t||t.length>600)throw Error('请用 1–600 字描述旅行需求');
@@ -42,14 +42,15 @@ export function parseIntentRules(input,catalog){
   for(const mention of classify(clause,mentions,/(?:(?:不要|不想|不)(?:乘坐|坐|乘|选|用|走)?|排除|避免)\s*$/, /^\s*(?:都|也)?(?:(?:不要|不想|不)(?:乘坐|坐|乘|选|用|走)?|排除|避免)/)) (mention.negative?excludedModes:positiveModes).push(mention.value);
  }
  const mode=positiveModes.filter(v=>!excludedModes.includes(v)).at(-1)||null;
- const interests=[...(/博物|古城|古都|文化|历史|石窟|寺/.test(t)?['culture']:[]),...(/山水|自然|峡谷|爬山/.test(t)?['nature']:[]),...(/美食|小吃|吃/.test(t)?['food']:[])];
+ const interests=[...(/博物|古城|古都|文化|历史|石窟|寺/.test(t)?['culture']:[]),...(/山水|自然|峡谷|爬山|登山|云海|金顶/.test(t)?['nature']:[]),...(/美食|小吃|吃/.test(t)?['food']:[]),...(/武侠|演艺|演出|戏剧|电影|沉浸|夜游|互动/.test(t)?['immersive']:[]),...(/亲子|带娃|孩子|儿童|动物|乐园/.test(t)?['family']:[])];
  const requiredIds=[],excludedIds=[];
  for(const clause of clauses){
   const mentions=[];
-  for(const place of catalog){let from=0,index;while((index=clause.indexOf(place.name,from))>=0){mentions.push({value:place.id,word:place.name,index});from=index+place.name.length}}
+  for(const place of catalog){const matches=[];for(const word of new Set([place.name,...(place.aliases||[])].filter(v=>typeof v==='string'&&v))){let from=0,index;while((index=clause.indexOf(word,from))>=0){matches.push({value:place.id,word,index});from=index+word.length}}mentions.push(...matches.filter(m=>!matches.some(other=>other.word.length>m.word.length&&other.index<=m.index&&other.index+other.word.length>=m.index+m.word.length)))}
   for(const mention of classify(clause,mentions,/(?:不去|不想去|不要去|不安排|不要|避开|排除|不考虑|取消)\s*$/, /^\s*(?:都|也)?(?:不去|不去了|不要|不安排|排除|取消)/)) (mention.negative?excludedIds:requiredIds).push(mention.value);
  }
  const budgetValue=budget?number(budget[1]):null,budgetSupported=budgetValue!=null&&Number.isFinite(budgetValue)&&budgetValue>=0&&budgetValue<=100000&&Math.abs(budgetValue*100-Math.round(budgetValue*100))<1e-7;
+ if(!city&&!cities.length){const inferred=[...new Set(catalog.filter(p=>requiredIds.includes(p.id)&&!excludedIds.includes(p.id)).map(p=>p.city))];if(inferred.length===1)city=inferred[0]}
  const value={city,days:d&&[1,2,3,4,5,7].includes(number(d[1]))?number(d[1]):!d&&/周末/.test(t)?2:null,mode,maxHours:h&&[6,8,10].includes(number(h[1]))?number(h[1]):!h&&/慢游|轻松|长辈/.test(t)?6:null,restMinutes:/休息.{0,4}(?:半小时|30分钟)/.test(t)?30:/休息.{0,4}(?:一小时|60分钟)/.test(t)?60:/不.{0,2}休息/.test(t)?0:null,budget:budgetSupported?budgetValue:null,avoidCrossCity:/不跨城|只.{0,2}一个城市|只玩洛阳|只玩开封/.test(t)?true:null,interests,requiredIds:requiredIds.filter(id=>!excludedIds.includes(id)),excludedIds,excludedModes};
  const fields=validateIntent(value),unresolved=[];if(cities.length>1){fields.city='河南';unresolved.push('识别到多个城市，请确认是否接受跨城。')}if(/带长辈|少走|腿|爬山|无障碍/.test(t))unresolved.push('体力与无障碍条件尚需核对景区道路，不能仅凭文字保证。');
  if(d&&!fields.days)unresolved.push('识别到 '+(Number.isFinite(number(d[1]))?number(d[1]):d[1])+' 天；当前可选 1–5 天或 7 天，请手动确认天数。');
@@ -76,6 +77,7 @@ export function auditDecision(draft,traffic=[]){
   if(intent.avoidCrossCity&&cities.length>1)conflicts.push('不跨城条件与当天 '+cities.join('、')+' 冲突');
   if(draft.mode==='transit'&&cities.length>1)pending.push('城际公共交通尚未核算');
   if(!hasTraffic)pending.push('站间交通待核算');if(stops.some(s=>s.place.city==null))pending.push('部分地点所属城市待确认');
+  for(const stop of stops)pending.push(...(CATALOG.find(p=>p.id===stop.place.id)?.planningNotes||[]));
   const previousDay=Array.from({length:i},(_,j)=>j+1).reverse().find(day=>draft.stops.some(s=>s.day===day)),previousStops=previousDay?draft.stops.filter(s=>s.day===previousDay):[],previous=previousStops.at(-1),first=stops[0];
   if(first&&previous){if(!previous.place.city||!first.place.city)pending.push('与上一个游览日之间的交通与城市待确认');else if(previous.place.city!==first.place.city)pending.push('第 '+previousDay+' 天至第 '+(i+1)+' 天的 '+previous.place.city+' → '+first.place.city+' 城际交通尚未核算');}
   return {day:i+1,stops:stops.length,cities,visit,travel,knownMinutes,hasTraffic,conflicts,pending,status:conflicts.length?'conflict':pending.length?'pending':stops.length?'checked':'empty'};

@@ -25,7 +25,7 @@ assert.equal(run('currentPresetId'),'luoyang');
 assert.equal(run('mapConnection'),'unconfigured');
 assert(run('trip.some(s=>s.place.image?.startsWith("data:image/jpeg;base64,"))'));
 assert(get('#presets').innerHTML.includes('data:image/jpeg;base64,'));
-assert.equal((get('#photocredits').innerHTML.match(/照片来源/g)||[]).length,11);
+assert.equal((get('#photocredits').innerHTML.match(/照片来源/g)||[]).length,CATALOG.filter(p=>p.image).length);
 run("$('#export').onclick()");
 assert(exportedBlob.size<100000,'Photo data must not exceed the import size limit');
 const exportedText=await exportedBlob.text(),exported=JSON.parse(exportedText);
@@ -50,4 +50,4 @@ for(const image of new Set(CATALOG.filter(p=>p.image).map(p=>p.image))){
   assert.equal(response.status,200);assert.equal(response.headers.get('Content-Type'),'image/jpeg');
   assert((await response.arrayBuffer()).byteLength>1000);
 }
-console.log('Passed: offline presets and photos, compact export/import round trip, restored details, rule advice and eleven image routes.');
+console.log('Passed: offline presets and photos, compact export/import round trip, restored details, rule advice and all catalog image routes.');

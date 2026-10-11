@@ -5,6 +5,16 @@ const fields=parseIntentRules('洛阳周末两天，人均预算300元，只坐�
 assert.equal(fields.city,'洛阳');assert.equal(fields.days,2);assert.equal(fields.budget,300);assert.equal(fields.mode,'transit');assert.equal(fields.maxHours,6);assert.equal(fields.avoidCrossCity,true);
 assert.equal(parseIntentRules('开封六天',CATALOG).fields.days,null);assert.equal(parseIntentRules('河南美食',CATALOG).fields.budget,null);assert(parseIntentRules('焦作带长辈两天',CATALOG).unresolved.length);
 assert.throws(()=>validateIntent({budget:-1}));assert.throws(()=>validateIntent({days:50}));
+const wuxia=parseIntentRules('周末两天，去万岁山看武侠演艺',CATALOG).fields;
+assert.equal(wuxia.city,'开封');assert.deepEqual(wuxia.requiredIds,['hn-wansui']);assert(wuxia.interests.includes('immersive'));
+const aliases=parseIntentRules('万岁山武侠城和电影小镇不去，想去栾川老君山',CATALOG).fields;
+assert.deepEqual(new Set(aliases.excludedIds),new Set(['hn-wansui','hn-movie-town']));assert.deepEqual(aliases.requiredIds,['hn-laojunshan']);assert.equal(aliases.city,'洛阳');
+assert(parseIntentRules('郑州两天带娃亲子游',CATALOG).fields.interests.includes('family'));
+assert(!parseIntentRules('想去银基冰雪世界',CATALOG).fields.requiredIds.includes('hn-yinji'),'The resort brand must not force a different park');
+assert.deepEqual(validateIntent({interests:['family','immersive','invented']}).interests,['family','immersive']);
+const mountain=CATALOG.find(p=>p.id==='hn-laojunshan');
+const mountainAudit=auditDecision({days:1,maxHours:8,restMinutes:30,stops:[{place:mountain,day:1,duration:360}]});
+assert.equal(mountainAudit.status,'pending');assert(mountainAudit.daily[0].pending.some(s=>s.includes('栾川')),'One mountain stop does not imply all-day transport is verified');
 const route=PRESETS.find(p=>p.id==='luoyang'),draft={days:2,start:'09:00',mode:'transit',maxHours:6,restMinutes:30,stops:route.stops.map(([id,,duration])=>({place:CATALOG.find(p=>p.id===id),day:1,duration}))};
 let audit=auditDecision({...draft,decision:{intent:fields}});assert(audit.conflicts>0);assert(audit.pending>0);assert.equal(audit.budget.status,'pending');assert(audit.daily[0].travel===null);
 audit=auditDecision({...draft,decision:{intent:fields,expenses:{tickets:120,food:100,lodging:90,transport:30,other:0}}});assert.equal(audit.budget.status,'conflict');assert.equal(audit.budget.subtotal,340);
