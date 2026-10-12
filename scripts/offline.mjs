@@ -1,5 +1,5 @@
 import {readFile,writeFile} from 'node:fs/promises';
-import worker,{HTML,CATALOG,validateDraft,rulePlan,validRouting} from '../worker/index.js';
+import worker,{HTML,CATALOG,CITY_GUIDES,validateDraft,rulePlan,validRouting} from '../worker/index.js';
 const base=new URL('../',import.meta.url);
 let html=HTML;
 const demo=CATALOG;
@@ -7,6 +7,7 @@ const decisionCore=(await readFile(new URL('decision-core.mjs',base),'utf8')).re
 const shim=`<script>
 (()=>{
 const offlinePlaces=${JSON.stringify(demo)};
+const CITY_GUIDES=${JSON.stringify(CITY_GUIDES)};
 function fail(message){throw Error(message)}
 ${decisionCore}
 const coordinates=${'v=>Array.isArray(v)&&v.length===2&&v.every(Number.isFinite)&&Math.abs(v[0])<=180&&Math.abs(v[1])<=90'};

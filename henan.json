@@ -1,11 +1,446 @@
 {
   "cities": [
-    "郑州",
-    "洛阳",
-    "开封",
-    "焦作",
-    "安阳",
-    "三门峡"
+    {
+      "name": "郑州",
+      "id": "zhengzhou",
+      "region": "都市中原",
+      "tagline": "文博、戏剧与亲子周末",
+      "intro": "城市文博、湖畔散步和中牟戏剧体验都能安排进周末；登封与新密适合单独安排一天。",
+      "aliases": [
+        "郑州市",
+        "登封",
+        "新密",
+        "新郑",
+        "巩义",
+        "荥阳",
+        "中牟"
+      ],
+      "highlights": [
+        "hn-only-henan",
+        "hn-yinji",
+        "hn-fangte"
+      ],
+      "routeId": "zhengzhou-weekend",
+      "food": "烩面、胡辣汤",
+      "reference": "https://hct.henan.gov.cn/2024/12-19/3101345.html",
+      "contentCheckedAt": "2026-10-11"
+    },
+    {
+      "name": "洛阳",
+      "id": "luoyang",
+      "region": "河洛豫西",
+      "tagline": "古都夜游，也去山野",
+      "intro": "市区可以看石窟、文博和国风夜景；老君山、鸡冠洞和重渡沟在栾川，按县域单独分日。",
+      "aliases": [
+        "洛阳市",
+        "栾川",
+        "嵩县",
+        "新安",
+        "偃师",
+        "孟津",
+        "伊川"
+      ],
+      "highlights": [
+        "hn-laojunshan",
+        "hn-yingtian",
+        "hn-luoyi"
+      ],
+      "routeId": "luoyang",
+      "food": "水席、牛肉汤",
+      "reference": "https://www.laojunshan.cn/",
+      "contentCheckedAt": "2026-10-11"
+    },
+    {
+      "name": "开封",
+      "id": "kaifeng",
+      "region": "都市中原",
+      "tagline": "宋都街巷与武侠演艺",
+      "intro": "万岁山、清明上河园适合给演出留足时间，古寺、文博和夜市适合放慢节奏串联。",
+      "aliases": [
+        "开封市",
+        "兰考",
+        "尉氏",
+        "通许",
+        "杞县"
+      ],
+      "highlights": [
+        "hn-wansui",
+        "hn-qingming",
+        "hn-gulou"
+      ],
+      "routeId": "kaifeng-weekend",
+      "food": "小笼灌汤包、羊肉汤",
+      "reference": "https://hct.henan.gov.cn/2025/09-24/3229991.html",
+      "contentCheckedAt": "2026-10-11"
+    },
+    {
+      "name": "平顶山",
+      "id": "pingdingshan",
+      "region": "伏牛豫南",
+      "tagline": "湖畔休闲，伏牛登山",
+      "intro": "城市湖岸、鲁山尧山、舞钢山湖与汝州人文分属不同片区，周末先选一个主方向。",
+      "aliases": [
+        "平顶山市",
+        "鲁山",
+        "汝州",
+        "舞钢",
+        "宝丰",
+        "郏县",
+        "叶县"
+      ],
+      "highlights": [
+        "hn-yaoshan",
+        "hn-baigui",
+        "hn-erlangshan"
+      ],
+      "routeId": "pingdingshan-weekend",
+      "food": "当地面食与时令小吃",
+      "reference": "https://www.pds.gov.cn/upload/files/2021/6/2/平顶山市国民经济和社会发展第十二个五年规划纲要.pdf",
+      "contentCheckedAt": "2026-10-11"
+    },
+    {
+      "name": "安阳",
+      "id": "anyang",
+      "region": "太行豫北",
+      "tagline": "殷商文博与林州山水",
+      "intro": "市区适合殷商和文字文博；林州的红旗渠与太行大峡谷应另留县域往返和步行时间。",
+      "aliases": [
+        "安阳市",
+        "林州",
+        "汤阴",
+        "内黄",
+        "滑县"
+      ],
+      "highlights": [
+        "hn-yinxu",
+        "hn-writing",
+        "hn-taihang-canyon"
+      ],
+      "routeId": "anyang-weekend",
+      "food": "道口烧鸡、扁粉菜",
+      "reference": "https://hct.henan.gov.cn/2025/06-17/3170379.html",
+      "contentCheckedAt": "2026-10-11"
+    },
+    {
+      "name": "鹤壁",
+      "id": "hebi",
+      "region": "太行豫北",
+      "tagline": "运河古城与淇县山水",
+      "intro": "浚县古城、大伾山可分段慢游；云梦山、古灵山在淇县，先确认两片区之间的交通。",
+      "aliases": [
+        "鹤壁市",
+        "浚县",
+        "淇县"
+      ],
+      "highlights": [
+        "hn-junxian",
+        "hn-dapishan",
+        "hn-yunmeng"
+      ],
+      "routeId": "hebi-weekend",
+      "food": "浚县子馍、当地面食",
+      "reference": "https://hct.henan.gov.cn/2023/01-19/2676728.html",
+      "contentCheckedAt": "2026-10-11"
+    },
+    {
+      "name": "新乡",
+      "id": "xinxiang",
+      "region": "太行豫北",
+      "tagline": "南太行峡谷与乡村",
+      "intro": "宝泉、八里沟、万仙山各自值得集中游览，先选一个主景区；卫辉人文可作为另一日方向。",
+      "aliases": [
+        "新乡市",
+        "辉县",
+        "卫辉",
+        "长垣",
+        "获嘉",
+        "原阳",
+        "延津",
+        "封丘"
+      ],
+      "highlights": [
+        "hn-baoquan",
+        "hn-baligou",
+        "hn-wanxianshan"
+      ],
+      "routeId": "xinxiang-weekend",
+      "food": "当地面食与时令小吃",
+      "reference": "https://www.baoquanlvyou.com/",
+      "contentCheckedAt": "2026-10-11"
+    },
+    {
+      "name": "焦作",
+      "id": "jiaozuo",
+      "region": "太行豫北",
+      "tagline": "山谷、太极与乡村文化",
+      "intro": "云台山、青天河、神农山是不同游线，山区一天选一处，另一日可安排陈家沟或乡村文化。",
+      "aliases": [
+        "焦作市",
+        "修武",
+        "沁阳",
+        "孟州",
+        "温县",
+        "博爱",
+        "武陟"
+      ],
+      "highlights": [
+        "hn-yuntai",
+        "hn-shennong",
+        "hn-dananpo"
+      ],
+      "routeId": "jiaozuo-weekend",
+      "food": "武陟砂锅、四宝药膳",
+      "reference": "https://hct.henan.gov.cn/2023/01-20/2677769.html",
+      "contentCheckedAt": "2026-10-11"
+    },
+    {
+      "name": "濮阳",
+      "id": "puyang",
+      "region": "太行豫北",
+      "tagline": "杂技文化与城市湖岸",
+      "intro": "市区遗址、园林和龙湖适合慢游；杂技体验先查具体场馆和演出，再留出往返时间。",
+      "aliases": [
+        "濮阳市",
+        "清丰",
+        "南乐",
+        "范县",
+        "台前"
+      ],
+      "highlights": [
+        "hn-dongbeizhuang",
+        "hn-qicheng",
+        "hn-puyang-longhu"
+      ],
+      "routeId": "puyang-weekend",
+      "food": "当地面食与时令小吃",
+      "reference": "https://www.henan.gov.cn/2020/07-24/1745005.html",
+      "contentCheckedAt": "2026-10-11"
+    },
+    {
+      "name": "许昌",
+      "id": "xuchang",
+      "region": "都市中原",
+      "tagline": "曹魏夜游、钧瓷与商贸",
+      "intro": "曹魏街区、春秋楼和胖东来可安排市区游；神垕古镇位于禹州，钧瓷体验与往返另外预留。",
+      "aliases": [
+        "许昌市",
+        "禹州",
+        "鄢陵",
+        "襄城"
+      ],
+      "highlights": [
+        "hn-pangdonglai",
+        "hn-caowei",
+        "hn-shenhou"
+      ],
+      "routeId": "xuchang-weekend",
+      "food": "神垕豆腐菜、禹州杂炣",
+      "reference": "https://wgl.xuchang.gov.cn/whdt/20260403/ef81d5b4-bc28-420f-9bd4-5a33a9687480.html",
+      "contentCheckedAt": "2026-10-11"
+    },
+    {
+      "name": "漯河",
+      "id": "luohe",
+      "region": "都市中原",
+      "tagline": "滨河慢游与文字研学",
+      "intro": "沿沙澧河慢走，也可选文字文化或亲子园区；郾城古桥与其他片区的交通单独安排。",
+      "aliases": [
+        "漯河市",
+        "临颍",
+        "舞阳"
+      ],
+      "highlights": [
+        "hn-shali",
+        "hn-birdpark",
+        "hn-xushen"
+      ],
+      "routeId": "luohe-weekend",
+      "food": "当地面食与时令小吃",
+      "reference": "https://www.henan.gov.cn/2023/01-30/2680736.html",
+      "contentCheckedAt": "2026-10-11"
+    },
+    {
+      "name": "三门峡",
+      "id": "sanmenxia",
+      "region": "河洛豫西",
+      "tagline": "黄河、彩陶与地坑院",
+      "intro": "湖滨文博和黄河湿地适合城市慢游；陕州地坑院、灵宝函谷关、卢氏峡谷需要独立转场。",
+      "aliases": [
+        "三门峡市",
+        "灵宝",
+        "渑池",
+        "卢氏",
+        "陕州"
+      ],
+      "highlights": [
+        "hn-dikeng",
+        "hn-miaodigou",
+        "hn-hangu"
+      ],
+      "routeId": "sanmenxia-weekend",
+      "food": "陕州十碗席、佛手糖糕",
+      "reference": "https://hct.henan.gov.cn/2024/12-19/3101345.html",
+      "contentCheckedAt": "2026-10-11"
+    },
+    {
+      "name": "南阳",
+      "id": "nanyang",
+      "region": "伏牛豫南",
+      "tagline": "卧龙文化与伏牛山水",
+      "intro": "市区三国文化、社旗古镇、内乡县衙、西峡山水分布较广，周末先确定主片区与往返。",
+      "aliases": [
+        "南阳市",
+        "内乡",
+        "西峡",
+        "淅川",
+        "社旗",
+        "邓州",
+        "南召",
+        "桐柏",
+        "唐河",
+        "新野",
+        "方城",
+        "镇平"
+      ],
+      "highlights": [
+        "hn-wolong",
+        "hn-laojieling",
+        "hn-dinosaur"
+      ],
+      "routeId": "nanyang-weekend",
+      "food": "当地面食与时令小吃",
+      "reference": "https://www.henan.gov.cn/2024/05-20/2995965.html",
+      "contentCheckedAt": "2026-10-11"
+    },
+    {
+      "name": "商丘",
+      "id": "shangqiu",
+      "region": "豫东人文",
+      "tagline": "古城书院与永城汉文化",
+      "intro": "古城、书院和城市湖岸适合分段慢游，芒砀山在永城，另安排一天体验汉文化。",
+      "aliases": [
+        "商丘市",
+        "永城",
+        "睢县",
+        "宁陵",
+        "民权",
+        "虞城",
+        "夏邑",
+        "柘城"
+      ],
+      "highlights": [
+        "hn-shangqiu-city",
+        "hn-mangdang",
+        "hn-riyuehu"
+      ],
+      "routeId": "shangqiu-weekend",
+      "food": "当地面食与时令小吃",
+      "reference": "https://hct.henan.gov.cn/2023/06-20/2764000.html",
+      "contentCheckedAt": "2026-10-11"
+    },
+    {
+      "name": "信阳",
+      "id": "xinyang",
+      "region": "大别茶乡",
+      "tagline": "湖山茶园与乡村微度假",
+      "intro": "南湾湖、鸡公山、茶园和村落提供不同节奏的豫南体验，游船、采茶与沙滩活动先看季节和天气。",
+      "aliases": [
+        "信阳市",
+        "罗山",
+        "光山",
+        "新县",
+        "固始",
+        "商城",
+        "淮滨",
+        "潢川",
+        "息县"
+      ],
+      "highlights": [
+        "hn-nanwan",
+        "hn-xingxiuchuan",
+        "hn-wenxin"
+      ],
+      "routeId": "xinyang-weekend",
+      "food": "信阳炖菜、毛尖茶",
+      "reference": "https://xinyang.gov.cn/2026/04-13/779872.html",
+      "contentCheckedAt": "2026-10-11"
+    },
+    {
+      "name": "周口",
+      "id": "zhoukou",
+      "region": "豫东人文",
+      "tagline": "伏羲文化与亲子周末",
+      "intro": "淮阳陵庙与龙湖适合分段参观，市区民俗、动物世界及鹿邑老子文化按片区分日。",
+      "aliases": [
+        "周口市",
+        "鹿邑",
+        "淮阳",
+        "项城",
+        "沈丘",
+        "商水",
+        "太康",
+        "西华",
+        "扶沟",
+        "郸城"
+      ],
+      "highlights": [
+        "hn-taihao",
+        "hn-zhoukou-zoo",
+        "hn-huaiyang-longhu"
+      ],
+      "routeId": "zhoukou-weekend",
+      "food": "当地面食与时令小吃",
+      "reference": "https://wglj.zhoukou.gov.cn/sitesources/whgdlyj/page_pc/wzsy/gzdt/article650680d2e0604e7d81e77613a6168317.html",
+      "contentCheckedAt": "2026-10-11"
+    },
+    {
+      "name": "驻马店",
+      "id": "zhumadian",
+      "region": "伏牛豫南",
+      "tagline": "奇石山野与驿站夜游",
+      "intro": "嵖岈山、老乐山和汝南寺院各需往返时间，皇家驿站可作为市区街区体验。",
+      "aliases": [
+        "驻马店市",
+        "遂平",
+        "确山",
+        "汝南",
+        "泌阳",
+        "新蔡",
+        "平舆",
+        "正阳",
+        "西平",
+        "上蔡"
+      ],
+      "highlights": [
+        "hn-chayashan",
+        "hn-royal-post",
+        "hn-laoleshan"
+      ],
+      "routeId": "zhumadian-weekend",
+      "food": "当地面食与时令小吃",
+      "reference": "https://www.henan.gov.cn/2020/07-24/1745005.html",
+      "contentCheckedAt": "2026-10-11"
+    },
+    {
+      "name": "济源",
+      "id": "jiyuan",
+      "region": "河洛豫西",
+      "tagline": "王屋山与黄河峡谷",
+      "intro": "王屋山、五龙口和黄河三峡各选一条游线，济渎庙可补充市区人文体验。",
+      "aliases": [
+        "济源市",
+        "济源示范区"
+      ],
+      "highlights": [
+        "hn-wangwu",
+        "hn-huanghe-three",
+        "hn-jidu"
+      ],
+      "routeId": "jiyuan-weekend",
+      "food": "当地面食与时令小吃",
+      "reference": "https://wglj.jiyuan.gov.cn/14204/15220/19023/19035/t993787.html",
+      "contentCheckedAt": "2026-10-11"
+    }
   ],
   "places": [
     {
@@ -49,7 +484,10 @@
       "credit": "Nishino Asuka / Wikimedia Commons · CC BY-SA 4.0 · 拍摄于 2024-11-20 · 使用 1280px 版本；缩略图裁切显示",
       "visitTip": "先看自己感兴趣的展厅，再留时间细看文物；预约成功后再确定当天顺序。",
       "photoTakenAt": "2024-11-20",
-      "photoCaption": "郑州河南博物院主建筑与院名外墙实景。"
+      "photoCaption": "郑州河南博物院主建筑与院名外墙实景。",
+      "aliases": [
+        "河南博物馆"
+      ]
     },
     {
       "id": "hn-erqi",
@@ -84,7 +522,11 @@
       "photoReference": "https://commons.wikimedia.org/wiki/File:20241103_Gate_of_Shaolin_Temple.jpg",
       "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
       "credit": "Windmemories / Wikimedia Commons · CC BY-SA 4.0 · 拍摄于 2024-11-03 · 已缩放与压缩",
-      "photoTakenAt": "2024-11-03"
+      "photoTakenAt": "2024-11-03",
+      "aliases": [
+        "少林寺",
+        "登封少林寺"
+      ]
     },
     {
       "id": "hn-only-henan",
@@ -99,7 +541,11 @@
       "description": "以戏剧呈现河南的土地与故事。适合预留半天以上，具体剧目、场次和票务请查看当日官方安排。",
       "theme": "戏剧体验",
       "duration": 300,
-      "reference": "https://hct.henan.gov.cn/2024/12-19/3101345.html"
+      "reference": "https://hct.henan.gov.cn/2024/12-19/3101345.html",
+      "aliases": [
+        "只有河南",
+        "戏剧幻城"
+      ]
     },
     {
       "id": "hn-longmen",
@@ -143,7 +589,10 @@
       "credit": "Yumeto / Wikimedia Commons · CC BY-SA 4.0 · 拍摄于 2025-05-29 · 使用 1280px 版本；缩略图裁切显示",
       "visitTip": "确认前往的寺院入口，把往返市区的交通单独核算。",
       "photoTakenAt": "2025-05-29",
-      "photoCaption": "洛阳白马寺大佛殿前院落与香炉实景。"
+      "photoCaption": "洛阳白马寺大佛殿前院落与香炉实景。",
+      "aliases": [
+        "洛阳白马寺"
+      ]
     },
     {
       "id": "hn-luoyi",
@@ -187,7 +636,10 @@
       "photoCaption": "洛阳博物馆正立面与广场实景。",
       "credit": "Tim Wu / Wikimedia Commons · CC BY-SA 4.0 · 拍摄于 2024-09-29 · 已缩放、压缩；缩略图裁切显示",
       "visitTip": "适合先了解城市历史，再带着线索去看古迹。",
-      "photoTakenAt": "2024-09-29"
+      "photoTakenAt": "2024-09-29",
+      "aliases": [
+        "洛博"
+      ]
     },
     {
       "id": "hn-xigong",
@@ -328,7 +780,10 @@
       "description": "从甲骨文与考古发现认识商代文明。博物馆与遗址参观需要分别确认入场安排，建议预留充分的讲解时间。",
       "theme": "文明溯源",
       "duration": 180,
-      "reference": "https://hct.henan.gov.cn/2025/06-17/3170379.html"
+      "reference": "https://hct.henan.gov.cn/2025/06-17/3170379.html",
+      "aliases": [
+        "殷墟新馆"
+      ]
     },
     {
       "id": "hn-writing",
@@ -365,7 +820,10 @@
       "photoCaption": "红旗渠青年洞洞口与渠水实景，崖壁可见“青年洞”题字。",
       "credit": "Windmemories / Wikimedia Commons · CC BY-SA 4.0 · 拍摄于 2026-08-15 · 已缩放、压缩；缩略图裁切显示",
       "visitTip": "先决定参观分水苑还是青年洞；照片展示青年洞，交通定位须选择实际前往的区域。",
-      "photoTakenAt": "2026-08-15"
+      "photoTakenAt": "2026-08-15",
+      "aliases": [
+        "林州红旗渠"
+      ]
     },
     {
       "id": "hn-dikeng",
@@ -380,7 +838,11 @@
       "description": "走进地平线下的村落，了解独特的民居空间与民俗文化。非遗展演和节庆活动以当日安排为准。",
       "theme": "民居非遗",
       "duration": 150,
-      "reference": "https://hct.henan.gov.cn/2024/12-19/3101345.html"
+      "reference": "https://hct.henan.gov.cn/2024/12-19/3101345.html",
+      "aliases": [
+        "地坑院",
+        "三门峡地坑院"
+      ]
     },
     {
       "id": "hn-guoguo",
@@ -410,7 +872,10 @@
       "description": "沿湿地步行，感受黄河岸边的生态景观。观鸟受季节与天气影响，不保证到访时能看到天鹅。",
       "theme": "黄河湿地",
       "duration": 90,
-      "reference": "https://hct.henan.gov.cn/2023/05-20/2746303.html"
+      "reference": "https://hct.henan.gov.cn/2023/05-20/2746303.html",
+      "aliases": [
+        "三门峡天鹅湖"
+      ]
     },
     {
       "id": "hn-wansui",
@@ -523,6 +988,1920 @@
       "reference": "https://hct.henan.gov.cn/2025/09-24/3229991.html",
       "visitTip": "先确认当天演出和夜场安排，再决定到达时间；片区位置仅用于展示，交通核算前请查询并确认高德入口。",
       "weekendPick": true
+    },
+    {
+      "id": "hn-fangte",
+      "name": "郑州方特欢乐世界",
+      "city": "郑州",
+      "category": "scenic",
+      "theme": "亲子乐园",
+      "duration": 360,
+      "interests": [
+        "family"
+      ],
+      "aliases": [
+        "方特欢乐世界"
+      ],
+      "description": "用一整天体验主题游乐，先按同行者身高与兴趣选项目，再安排休息。",
+      "visitTip": "欢乐世界、梦幻王国等园区票务不同，先确认所购园区；高峰排队另计。",
+      "reference": "https://www.henan.gov.cn/2020/07-24/1745005.html",
+      "contentCheckedAt": "2026-10-11",
+      "location": [
+        113.932376,
+        34.767309
+      ],
+      "district": "中牟县",
+      "address": "郑州市中牟县 · 郑汴物流大道与人文路交叉口",
+      "locationReference": "https://www.amap.com/place/B017316M60",
+      "locationNote": "参考高德景区或片区点位，具体交通入口需确认。"
+    },
+    {
+      "id": "hn-yingtian",
+      "name": "应天门遗址博物馆",
+      "city": "洛阳",
+      "category": "scenic",
+      "theme": "古都夜游",
+      "duration": 120,
+      "interests": [
+        "culture",
+        "immersive"
+      ],
+      "aliases": [
+        "应天门"
+      ],
+      "description": "看隋唐宫城门阙与遗址展示，可与老城散步分时安排。",
+      "visitTip": "室内参观、外观夜景和演艺票务不同，灯光与节目以当天公告为准。",
+      "reference": "https://hct.henan.gov.cn/2025/05-21/3160322.html",
+      "contentCheckedAt": "2026-10-11",
+      "location": [
+        112.460805,
+        34.67599
+      ],
+      "district": "老城区",
+      "address": "洛阳市老城区 · 定鼎南路23号",
+      "locationReference": "https://www.amap.com/place/B0FFIRTVVC",
+      "locationNote": "参考高德景区或片区点位，具体交通入口需确认。"
+    },
+    {
+      "id": "hn-mingtang",
+      "name": "隋唐洛阳城明堂天堂景区",
+      "city": "洛阳",
+      "category": "scenic",
+      "theme": "古都文化",
+      "duration": 150,
+      "interests": [
+        "culture",
+        "immersive"
+      ],
+      "aliases": [
+        "明堂天堂"
+      ],
+      "description": "在复建建筑与遗址展示之间了解隋唐洛阳城，适合古都文化与国风体验。",
+      "visitTip": "明堂天堂与应天门是不同参观区域，不把购票或演艺互相替代。",
+      "reference": "https://hct.henan.gov.cn/2025/05-21/3160322.html",
+      "contentCheckedAt": "2026-10-11",
+      "location": [
+        112.459829,
+        34.680653
+      ],
+      "district": "老城区",
+      "address": "洛阳市老城区 · 唐宫路毛线市场对面(应天门地铁站C2口步行200米)",
+      "locationReference": "https://www.amap.com/place/B0HKOHI3AW",
+      "locationNote": "参考高德景区或片区点位，具体交通入口需确认。"
+    },
+    {
+      "id": "hn-jiguandong",
+      "name": "鸡冠洞",
+      "city": "洛阳",
+      "category": "scenic",
+      "theme": "溶洞自然",
+      "duration": 180,
+      "interests": [
+        "nature"
+      ],
+      "aliases": [
+        "栾川鸡冠洞"
+      ],
+      "description": "走入栾川的溶洞，看钟乳石与地下空间，作为县域山水游的一站。",
+      "visitTip": "洞内有台阶与湿滑路面，先确认体力、开放与县城交通。",
+      "reference": "https://www.henan.gov.cn/2020/07-24/1745005.html",
+      "contentCheckedAt": "2026-10-11",
+      "location": [
+        111.570571,
+        33.783207
+      ],
+      "district": "栾川县",
+      "address": "洛阳市栾川县 · 栾川乡双堂村七组35号",
+      "locationReference": "https://www.amap.com/place/B017B00F6F",
+      "locationNote": "参考高德景区或片区点位，具体交通入口需确认。",
+      "planningNotes": [
+        "鸡冠洞的往返交通、景区内部交通与天气需另行确认。"
+      ]
+    },
+    {
+      "id": "hn-chongdugou",
+      "name": "重渡沟",
+      "city": "洛阳",
+      "category": "scenic",
+      "theme": "山水乡村",
+      "duration": 300,
+      "interests": [
+        "nature"
+      ],
+      "aliases": [
+        "栾川重渡沟"
+      ],
+      "description": "沿溪流与林间步道慢走，留半天以上体验栾川的山谷与乡村。",
+      "visitTip": "多条游线需按体力选择，往返市区、景区交通和住宿另行安排。",
+      "reference": "https://www.henan.gov.cn/2020/07-24/1745005.html",
+      "contentCheckedAt": "2026-10-11",
+      "location": [
+        111.733536,
+        33.947946
+      ],
+      "district": "栾川县",
+      "address": "洛阳市栾川县 · 潭头镇重渡村",
+      "locationReference": "https://www.amap.com/place/B017B00F67",
+      "locationNote": "参考高德景区或片区点位，具体交通入口需确认。",
+      "planningNotes": [
+        "重渡沟的往返交通、景区内部交通与天气需另行确认。"
+      ]
+    },
+    {
+      "id": "hn-xiangguo",
+      "name": "大相国寺",
+      "city": "开封",
+      "category": "scenic",
+      "theme": "古都文化",
+      "duration": 90,
+      "interests": [
+        "culture"
+      ],
+      "aliases": [
+        "开封大相国寺"
+      ],
+      "description": "在宋都中心看寺院建筑与文化，与周边街巷安排短程慢游。",
+      "visitTip": "尊重寺院参观秩序，法会、开放及门票以现场公告为准。",
+      "reference": "https://www.henan.gov.cn/2020/07-24/1745005.html",
+      "contentCheckedAt": "2026-10-11",
+      "location": [
+        114.354678,
+        34.791769
+      ],
+      "district": "鼓楼区",
+      "address": "开封市鼓楼区 · 自由路西段36号",
+      "locationReference": "https://www.amap.com/place/B017A00AH4",
+      "locationNote": "参考高德景区或片区点位，具体交通入口需确认。"
+    },
+    {
+      "id": "hn-kaifeng-museum",
+      "name": "开封市博物馆",
+      "city": "开封",
+      "category": "scenic",
+      "theme": "文博文化",
+      "duration": 150,
+      "interests": [
+        "culture",
+        "family"
+      ],
+      "aliases": [
+        "开封博物馆"
+      ],
+      "description": "从文物与展陈了解开封，把室内文博作为周末行程中的一段。",
+      "visitTip": "核对时高德点位标注暂停开放，请先向运营方确认。确认新馆位置、预约与闭馆日，避免导航到旧馆。",
+      "reference": "https://hct.henan.gov.cn/2022/09-27/2614177.html",
+      "contentCheckedAt": "2026-10-11",
+      "location": [
+        114.253818,
+        34.803533
+      ],
+      "district": "龙亭区",
+      "address": "开封市龙亭区 · 六大街与郑开大道交叉口",
+      "locationReference": "https://www.amap.com/place/B017A0NJ3Q",
+      "locationNote": "参考高德景区或片区点位，具体交通入口需确认。",
+      "planningEligible": false,
+      "availabilityNote": "核对时高德点位标注暂停开放，请先向运营方确认。",
+      "planningNotes": [
+        "开封市博物馆的开放状态尚未确认，已排除出自动选点；确认开放后再安排。"
+      ]
+    },
+    {
+      "id": "hn-gulou",
+      "name": "鼓楼夜市",
+      "city": "开封",
+      "category": "food",
+      "theme": "街巷美食",
+      "duration": 90,
+      "interests": [
+        "food"
+      ],
+      "aliases": [
+        "开封鼓楼夜市"
+      ],
+      "description": "在鼓楼附近逛夜市、尝小吃，按个人口味和实际价格选择摊位。",
+      "visitTip": "夜市出摊、天气及客流会变化；餐饮预算按现场消费记录。",
+      "reference": "https://www.henan.gov.cn/2021/12-07/2361046.html",
+      "contentCheckedAt": "2026-10-11",
+      "location": [
+        114.355996,
+        34.793914
+      ],
+      "district": "鼓楼区",
+      "address": "开封市鼓楼区 · 鼓楼街",
+      "locationReference": "https://www.amap.com/place/B017A0N05A",
+      "locationNote": "参考高德景区或片区点位，具体交通入口需确认。"
+    },
+    {
+      "id": "hn-qingtian",
+      "name": "青天河",
+      "city": "焦作",
+      "category": "scenic",
+      "theme": "山水自然",
+      "duration": 300,
+      "interests": [
+        "nature"
+      ],
+      "aliases": [
+        "青天河景区"
+      ],
+      "description": "去博爱县看峡谷与水面，把山水游线与往返车程一起安排。",
+      "visitTip": "游船、步道与季节开放分别确认，不能按城市公园时长估算。",
+      "reference": "https://www.henan.gov.cn/2020/07-24/1745005.html",
+      "contentCheckedAt": "2026-10-11",
+      "location": [
+        113.010419,
+        35.341171
+      ],
+      "district": "博爱县",
+      "address": "焦作市博爱县 · 寨豁乡青南路",
+      "locationReference": "https://www.amap.com/place/B018700YZ0",
+      "locationNote": "参考高德景区或片区点位，具体交通入口需确认。",
+      "planningNotes": [
+        "青天河的往返交通、景区内部交通与天气需另行确认。"
+      ]
+    },
+    {
+      "id": "hn-shennong",
+      "name": "神农山",
+      "city": "焦作",
+      "category": "scenic",
+      "theme": "山水登山",
+      "duration": 300,
+      "interests": [
+        "nature"
+      ],
+      "aliases": [
+        "神农山景区"
+      ],
+      "description": "在沁阳体验山地步道与峰岭景观，选择与体力相符的登山路线。",
+      "visitTip": "山区天气、索道和末班交通需确认，单独预留往返。",
+      "reference": "https://oss.henan.gov.cn/typtfile/20240327/29099b3e9c374770814306ef7329ff3f.pdf",
+      "contentCheckedAt": "2026-10-11",
+      "location": [
+        112.811187,
+        35.212985
+      ],
+      "district": "沁阳市",
+      "address": "焦作市沁阳市 · 沁阳市",
+      "locationReference": "https://www.amap.com/place/B0HDXH8IRQ",
+      "locationNote": "参考高德景区或片区点位，具体交通入口需确认。",
+      "planningNotes": [
+        "神农山的往返交通、景区内部交通与天气需另行确认。"
+      ]
+    },
+    {
+      "id": "hn-dananpo",
+      "name": "大南坡村",
+      "city": "焦作",
+      "category": "scenic",
+      "theme": "乡村文化",
+      "duration": 120,
+      "interests": [
+        "culture"
+      ],
+      "aliases": [
+        "大南坡"
+      ],
+      "description": "去修武村落看看乡村公共空间与文化生活，适合放慢节奏走一走。",
+      "visitTip": "书店、展览与活动开放不固定，先向运营方确认。",
+      "reference": "https://oss.henan.gov.cn/typtfile/20240327/29099b3e9c374770814306ef7329ff3f.pdf",
+      "contentCheckedAt": "2026-10-11",
+      "location": [
+        113.324247,
+        35.345578
+      ],
+      "district": "修武县",
+      "address": "焦作市修武县 · 大南村",
+      "locationReference": "https://www.amap.com/place/B0G0LCJXLL",
+      "locationNote": "村落或古城片区展示，参考附近公共机构点位，具体参观入口需确认。"
+    },
+    {
+      "id": "hn-taihang-canyon",
+      "name": "太行大峡谷",
+      "city": "安阳",
+      "category": "scenic",
+      "theme": "山水自然",
+      "duration": 360,
+      "interests": [
+        "nature"
+      ],
+      "aliases": [
+        "林州太行大峡谷"
+      ],
+      "description": "在林州体验太行峡谷与山地风景，不将不同山谷游线压缩成短暂停留。",
+      "visitTip": "确认桃花谷等游线、景区车和步道开放；林州往返市区另算。",
+      "reference": "https://www.henan.gov.cn/2020/07-24/1745005.html",
+      "contentCheckedAt": "2026-10-11",
+      "location": [
+        113.718171,
+        36.175703
+      ],
+      "district": "林州市",
+      "address": "安阳市林州市 · 石板岩镇林石线",
+      "locationReference": "https://www.amap.com/place/B017401QJ3",
+      "locationNote": "参考高德景区或片区点位，具体交通入口需确认。",
+      "planningNotes": [
+        "太行大峡谷的往返交通、景区内部交通与天气需另行确认。"
+      ]
+    },
+    {
+      "id": "hn-yuefei",
+      "name": "汤阴岳飞庙",
+      "city": "安阳",
+      "category": "scenic",
+      "theme": "历史文化",
+      "duration": 90,
+      "interests": [
+        "culture"
+      ],
+      "aliases": [
+        "岳飞庙",
+        "岳飞纪念馆"
+      ],
+      "description": "在汤阴看岳飞纪念建筑与历史展示，适合人文主题的短程参观。",
+      "visitTip": "与安阳市区有距离，先确认入口、营业与同行交通。",
+      "reference": "https://www.henan.gov.cn/2020/07-24/1745005.html",
+      "contentCheckedAt": "2026-10-11",
+      "location": [
+        114.35503,
+        35.920083
+      ],
+      "district": "汤阴县",
+      "address": "安阳市汤阴县 · 文化街142号",
+      "locationReference": "https://www.amap.com/place/B017401LUK",
+      "locationNote": "参考高德景区或片区点位，具体交通入口需确认。"
+    },
+    {
+      "id": "hn-hangu",
+      "name": "函谷关历史文化旅游区",
+      "city": "三门峡",
+      "category": "scenic",
+      "theme": "历史文化",
+      "duration": 150,
+      "interests": [
+        "culture"
+      ],
+      "aliases": [
+        "灵宝函谷关"
+      ],
+      "description": "去灵宝了解关隘与老子文化，把它作为县域人文游的一站。",
+      "visitTip": "此处为灵宝函谷关，洛阳新安汉函谷关是另一处地点。",
+      "reference": "https://oss.henan.gov.cn/typtfile/20240327/29099b3e9c374770814306ef7329ff3f.pdf",
+      "contentCheckedAt": "2026-10-11",
+      "location": [
+        110.926788,
+        34.632324
+      ],
+      "district": "灵宝市",
+      "address": "三门峡市灵宝市 · 函谷关古文化旅游区",
+      "locationReference": "https://www.amap.com/place/B018E005O3",
+      "locationNote": "参考高德景区或片区点位，具体交通入口需确认。"
+    },
+    {
+      "id": "hn-miaodigou",
+      "name": "庙底沟博物馆",
+      "city": "三门峡",
+      "category": "scenic",
+      "theme": "文博文化",
+      "duration": 120,
+      "interests": [
+        "culture",
+        "family"
+      ],
+      "aliases": [
+        "庙底沟"
+      ],
+      "description": "从彩陶与遗址展示了解庙底沟文化，适合亲子文博参观。",
+      "visitTip": "博物馆与遗址公园的可进入区域、预约和闭馆日需分别确认。",
+      "reference": "https://oss.henan.gov.cn/typtfile/20240327/29099b3e9c374770814306ef7329ff3f.pdf",
+      "contentCheckedAt": "2026-10-11",
+      "location": [
+        111.159601,
+        34.77256
+      ],
+      "district": "湖滨区",
+      "address": "三门峡市湖滨区 · 召公西路与迎宾大道交叉口东北200米",
+      "locationReference": "https://www.amap.com/place/B0HGNGKXH0",
+      "locationNote": "参考高德景区或片区点位，具体交通入口需确认。"
+    },
+    {
+      "id": "hn-yuxi-canyon",
+      "name": "豫西大峡谷",
+      "city": "三门峡",
+      "category": "scenic",
+      "theme": "山水自然",
+      "duration": 300,
+      "interests": [
+        "nature"
+      ],
+      "aliases": [
+        "卢氏豫西大峡谷"
+      ],
+      "description": "去卢氏体验峡谷与溪流，留足县域往返和游览时间。",
+      "visitTip": "核对时高德点位标注暂停开放，请先向运营方确认。漂流是季节项目，不默认全年开放，天气与项目票务另查。",
+      "reference": "https://www.henan.gov.cn/2020/07-24/1745005.html",
+      "contentCheckedAt": "2026-10-11",
+      "location": [
+        111.150992,
+        34.239471
+      ],
+      "district": "卢氏县",
+      "address": "三门峡市卢氏县 · 官道口镇新坪村",
+      "locationReference": "https://www.amap.com/place/B018E009VH",
+      "locationNote": "参考高德景区或片区点位，具体交通入口需确认。",
+      "planningEligible": false,
+      "availabilityNote": "核对时高德点位标注暂停开放，请先向运营方确认。",
+      "planningNotes": [
+        "豫西大峡谷的开放状态尚未确认，已排除出自动选点；确认开放后再安排。"
+      ]
+    },
+    {
+      "id": "hn-yaoshan",
+      "name": "尧山",
+      "city": "平顶山",
+      "category": "scenic",
+      "theme": "山水登山",
+      "duration": 360,
+      "interests": [
+        "nature"
+      ],
+      "aliases": [
+        "石人山",
+        "尧山风景区"
+      ],
+      "description": "在鲁山看伏牛山峰林，安排一天体验山地风景。",
+      "visitTip": "尧山与中原大佛参观区域不同；索道、步道、天气与返程另确认。",
+      "reference": "https://www.pds.gov.cn/upload/files/2021/6/2/平顶山市国民经济和社会发展第十二个五年规划纲要.pdf",
+      "contentCheckedAt": "2026-10-11",
+      "location": [
+        112.270149,
+        33.722896
+      ],
+      "district": "鲁山县",
+      "address": "平顶山市鲁山县 · 尧山镇西竹园村",
+      "locationReference": "https://www.amap.com/place/B01770NGUN",
+      "locationNote": "参考高德景区或片区点位，具体交通入口需确认。",
+      "planningNotes": [
+        "尧山的往返交通、景区内部交通与天气需另行确认。"
+      ]
+    },
+    {
+      "id": "hn-erlangshan",
+      "name": "二郎山",
+      "city": "平顶山",
+      "category": "scenic",
+      "theme": "山水自然",
+      "duration": 240,
+      "interests": [
+        "nature"
+      ],
+      "aliases": [
+        "舞钢二郎山"
+      ],
+      "description": "去舞钢看山湖相伴的景观，按可进入游线安排半日慢游。",
+      "visitTip": "与平顶山市区有距离，游船、步道和活动需核实。",
+      "reference": "https://www.pds.gov.cn/upload/files/2021/6/2/平顶山市国民经济和社会发展第十二个五年规划纲要.pdf",
+      "contentCheckedAt": "2026-10-11",
+      "location": [
+        113.566036,
+        33.26678
+      ],
+      "district": "舞钢市",
+      "address": "平顶山市舞钢市 · 尹集镇",
+      "locationReference": "https://www.amap.com/place/B017700X9N",
+      "locationNote": "参考高德景区或片区点位，具体交通入口需确认。",
+      "planningNotes": [
+        "二郎山的往返交通、景区内部交通与天气需另行确认。"
+      ]
+    },
+    {
+      "id": "hn-fengxue",
+      "name": "风穴寺",
+      "city": "平顶山",
+      "category": "scenic",
+      "theme": "历史文化",
+      "duration": 120,
+      "interests": [
+        "culture"
+      ],
+      "aliases": [
+        "汝州风穴寺"
+      ],
+      "description": "在汝州山麓看寺院与古建筑，适合人文和建筑爱好者。",
+      "visitTip": "尊重宗教场所秩序，确认入口与汝州往返交通。",
+      "reference": "https://www.pds.gov.cn/upload/files/2021/6/2/平顶山市国民经济和社会发展第十二个五年规划纲要.pdf",
+      "contentCheckedAt": "2026-10-11",
+      "location": [
+        112.895163,
+        34.222456
+      ],
+      "district": "汝州市",
+      "address": "平顶山市汝州市 · 风穴路985号",
+      "locationReference": "https://www.amap.com/place/B017700U4D",
+      "locationNote": "参考高德景区或片区点位，具体交通入口需确认。"
+    },
+    {
+      "id": "hn-baigui",
+      "name": "白龟湖国家城市湿地公园",
+      "city": "平顶山",
+      "category": "scenic",
+      "theme": "湖畔自然",
+      "duration": 90,
+      "interests": [
+        "nature"
+      ],
+      "aliases": [
+        "白龟湖",
+        "白龟湖湿地公园"
+      ],
+      "description": "沿开放的湖岸步道散步，把城市休闲留给湖边的晚风。",
+      "visitTip": "水库工程、水位和岸线开放会影响景观，不保证满水或季节鸟群。",
+      "reference": "https://www.pds.gov.cn/contents/1027/49790.html",
+      "contentCheckedAt": "2026-10-11",
+      "location": [
+        113.162419,
+        33.770059
+      ],
+      "district": "新华区",
+      "address": "平顶山市新华区 · 长安大道1号",
+      "locationReference": "https://www.amap.com/place/B0FFITSEUS",
+      "locationNote": "参考高德景区或片区点位，具体交通入口需确认。"
+    },
+    {
+      "id": "hn-junxian",
+      "name": "浚县古城",
+      "city": "鹤壁",
+      "category": "scenic",
+      "theme": "古城文化",
+      "duration": 180,
+      "interests": [
+        "culture",
+        "immersive"
+      ],
+      "aliases": [
+        "浚县古城景区"
+      ],
+      "description": "沿运河与街巷散步，看古城建筑和民俗文化。",
+      "visitTip": "庙会和演艺有季节或场次限制，不默认到访时正在演出。",
+      "reference": "https://hct.henan.gov.cn/2023/01-19/2676728.html",
+      "contentCheckedAt": "2026-10-11",
+      "location": [
+        114.546949,
+        35.67085
+      ],
+      "district": "浚县",
+      "address": "鹤壁市浚县 · 北大街96号",
+      "locationReference": "https://www.amap.com/place/B0FFIQX2MS",
+      "locationNote": "村落或古城片区展示，参考附近公共机构点位，具体参观入口需确认。"
+    },
+    {
+      "id": "hn-dapishan",
+      "name": "大伾山",
+      "city": "鹤壁",
+      "category": "scenic",
+      "theme": "历史山水",
+      "duration": 150,
+      "interests": [
+        "culture",
+        "nature"
+      ],
+      "aliases": [
+        "浚县大伾山"
+      ],
+      "description": "去浚县看石刻、寺院与山城景观，可与古城分段游览。",
+      "visitTip": "山路与台阶需按体力选择，文物区域开放另确认。",
+      "reference": "https://hct.henan.gov.cn/2023/01-19/2676728.html",
+      "contentCheckedAt": "2026-10-11",
+      "location": [
+        114.559523,
+        35.662542
+      ],
+      "district": "浚县",
+      "address": "鹤壁市浚县 · 浚县",
+      "locationReference": "https://www.amap.com/place/B0188008TZ",
+      "locationNote": "参考高德景区或片区点位，具体交通入口需确认。"
+    },
+    {
+      "id": "hn-yunmeng",
+      "name": "云梦山",
+      "city": "鹤壁",
+      "category": "scenic",
+      "theme": "山水文化",
+      "duration": 240,
+      "interests": [
+        "culture",
+        "nature"
+      ],
+      "aliases": [
+        "淇县云梦山"
+      ],
+      "description": "在淇县看山谷与文化景观，安排半天以上游览。",
+      "visitTip": "与浚县古城是不同片区，县域转场、步道和天气另核算。",
+      "reference": "https://www.henan.gov.cn/2020/07-24/1745005.html",
+      "contentCheckedAt": "2026-10-11",
+      "location": [
+        114.091939,
+        35.614487
+      ],
+      "district": "淇县",
+      "address": "鹤壁市淇县 · 淇县",
+      "locationReference": "https://www.amap.com/place/B0FFFQ164S",
+      "locationNote": "参考高德景区或片区点位，具体交通入口需确认。",
+      "planningNotes": [
+        "云梦山的往返交通、景区内部交通与天气需另行确认。"
+      ]
+    },
+    {
+      "id": "hn-guling",
+      "name": "古灵山",
+      "city": "鹤壁",
+      "category": "scenic",
+      "theme": "山水文化",
+      "duration": 180,
+      "interests": [
+        "culture",
+        "nature"
+      ],
+      "aliases": [
+        "淇县古灵山"
+      ],
+      "description": "在淇县山地景区看自然与文化景观，按体力选择游线。",
+      "visitTip": "景区活动和开放区域以当日公告为准，不与云梦山共用门票。",
+      "reference": "https://www.henan.gov.cn/2020/07-24/1745005.html",
+      "contentCheckedAt": "2026-10-11",
+      "location": [
+        114.123483,
+        35.681149
+      ],
+      "district": "淇县",
+      "address": "鹤壁市淇县 · 026乡道",
+      "locationReference": "https://www.amap.com/place/B0188005M9",
+      "locationNote": "参考高德景区或片区点位，具体交通入口需确认。",
+      "planningNotes": [
+        "古灵山的往返交通、景区内部交通与天气需另行确认。"
+      ]
+    },
+    {
+      "id": "hn-baoquan",
+      "name": "河南宝泉旅游区",
+      "city": "新乡",
+      "category": "scenic",
+      "theme": "峡谷自然",
+      "duration": 360,
+      "interests": [
+        "nature",
+        "family"
+      ],
+      "aliases": [
+        "宝泉",
+        "宝泉旅游区"
+      ],
+      "description": "去辉县看碧水与峡谷，给山水和景区交通留出一整天。",
+      "visitTip": "大峡谷与崖天下等产品范围不同，先确认票种、天气和游线。",
+      "reference": "https://www.baoquanlvyou.com/",
+      "contentCheckedAt": "2026-10-11",
+      "location": [
+        113.484805,
+        35.450397
+      ],
+      "district": "辉县市",
+      "address": "新乡市辉县市 · 薄壁镇西沈庄村北宝下路",
+      "locationReference": "https://www.amap.com/place/B017500O3G",
+      "locationNote": "参考高德景区或片区点位，具体交通入口需确认。",
+      "planningNotes": [
+        "河南宝泉旅游区的往返交通、景区内部交通与天气需另行确认。"
+      ]
+    },
+    {
+      "id": "hn-baligou",
+      "name": "八里沟",
+      "city": "新乡",
+      "category": "scenic",
+      "theme": "山水自然",
+      "duration": 360,
+      "interests": [
+        "nature"
+      ],
+      "aliases": [
+        "八里沟景区"
+      ],
+      "description": "沿南太行山谷与瀑布游线走一走，适合集中安排一天。",
+      "visitTip": "八里沟、天界山、九莲山游线与票务需核对，景区车和台阶另留时间。",
+      "reference": "https://ct.xinxiang.gov.cn/xwzx/gzdt/1288585.html",
+      "contentCheckedAt": "2026-10-11",
+      "location": [
+        113.571244,
+        35.614005
+      ],
+      "district": "辉县市",
+      "address": "新乡市辉县市 · 上八里镇和寺庵村",
+      "locationReference": "https://www.amap.com/place/B0FFGWHX6N",
+      "locationNote": "参考高德景区或片区点位，具体交通入口需确认。",
+      "planningNotes": [
+        "八里沟的往返交通、景区内部交通与天气需另行确认。"
+      ]
+    },
+    {
+      "id": "hn-wanxianshan",
+      "name": "万仙山",
+      "city": "新乡",
+      "category": "scenic",
+      "theme": "山水乡村",
+      "duration": 360,
+      "interests": [
+        "nature"
+      ],
+      "aliases": [
+        "万仙山景区",
+        "郭亮"
+      ],
+      "description": "在辉县看太行山村与山地风景，按道路条件规划游线。",
+      "visitTip": "郭亮、南坪等区域交通方式需确认，车辆通行与演艺不作保证。",
+      "reference": "https://ct.xinxiang.gov.cn/xwzx/gzdt/1288585.html",
+      "contentCheckedAt": "2026-10-11",
+      "location": [
+        113.62621,
+        35.7267
+      ],
+      "district": "辉县市",
+      "address": "新乡市辉县市 · 万仙山景区-红岩大峡谷东北侧",
+      "locationReference": "https://www.amap.com/place/B0FFGEZP04",
+      "locationNote": "参考高德景区或片区点位，具体交通入口需确认。",
+      "planningNotes": [
+        "万仙山的往返交通、景区内部交通与天气需另行确认。"
+      ]
+    },
+    {
+      "id": "hn-bigan",
+      "name": "比干庙",
+      "city": "新乡",
+      "category": "scenic",
+      "theme": "历史文化",
+      "duration": 90,
+      "interests": [
+        "culture"
+      ],
+      "aliases": [
+        "卫辉比干庙"
+      ],
+      "description": "去卫辉看纪念建筑与历史文化，适合作为人文游的一站。",
+      "visitTip": "与辉县山区距离较远，另安排县域往返和开放确认。",
+      "reference": "https://ct.xinxiang.gov.cn/xwzx/gzdt/1288585.html",
+      "contentCheckedAt": "2026-10-11",
+      "location": [
+        114.087471,
+        35.465913
+      ],
+      "district": "卫辉市",
+      "address": "新乡市卫辉市 · 比干庙村",
+      "locationReference": "https://www.amap.com/place/B01750128S",
+      "locationNote": "参考高德景区或片区点位，具体交通入口需确认。"
+    },
+    {
+      "id": "hn-qicheng",
+      "name": "戚城文物景区",
+      "city": "濮阳",
+      "category": "scenic",
+      "theme": "历史文化",
+      "duration": 90,
+      "interests": [
+        "culture"
+      ],
+      "aliases": [
+        "戚城",
+        "戚城遗址公园"
+      ],
+      "description": "在市区了解戚城遗址与历史展示，把文化参观安排进城市慢游。",
+      "visitTip": "遗址本体与展陈开放可能不同，以现场可进入区域为准。",
+      "reference": "https://oss.henan.gov.cn/typtfile/20240327/29099b3e9c374770814306ef7329ff3f.pdf",
+      "contentCheckedAt": "2026-10-11",
+      "location": [
+        115.032006,
+        35.752292
+      ],
+      "district": "华龙区",
+      "address": "濮阳市华龙区 · 京开路南段134号",
+      "locationReference": "https://www.amap.com/place/B0189008DZ",
+      "locationNote": "参考高德景区或片区点位，具体交通入口需确认。"
+    },
+    {
+      "id": "hn-pushang",
+      "name": "濮上园",
+      "city": "濮阳",
+      "category": "scenic",
+      "theme": "城市自然",
+      "duration": 120,
+      "interests": [
+        "nature",
+        "family"
+      ],
+      "aliases": [
+        "濮上园景区"
+      ],
+      "description": "在市区园林与水边散步，按天气选择轻松的户外行程。",
+      "visitTip": "滑雪等季节项目不等于常年园区内容，项目营业和票务另确认。",
+      "reference": "https://www.henan.gov.cn/2020/07-24/1745005.html",
+      "contentCheckedAt": "2026-10-11",
+      "location": [
+        114.952606,
+        35.781415
+      ],
+      "district": "华龙区",
+      "address": "濮阳市华龙区 · 皇甫路街道黄河路西段(近绿色庄园)",
+      "locationReference": "https://www.amap.com/place/B0HBK4PK1F",
+      "locationNote": "参考高德景区或片区点位，具体交通入口需确认。"
+    },
+    {
+      "id": "hn-dongbeizhuang",
+      "name": "东北庄杂技文化旅游区",
+      "city": "濮阳",
+      "category": "scenic",
+      "theme": "杂技演艺",
+      "duration": 180,
+      "interests": [
+        "culture",
+        "immersive"
+      ],
+      "aliases": [
+        "东北庄",
+        "濮阳国际杂技文化产业园"
+      ],
+      "description": "走进濮阳杂技文化片区，了解乡土技艺，并按当日排期选择演出。",
+      "visitTip": "文化园、剧场和其他收费项目先确认具体运营入口与场次。",
+      "reference": "https://www.henan.gov.cn/2020/07-24/1745005.html",
+      "contentCheckedAt": "2026-10-11",
+      "location": [
+        115.185327,
+        35.796762
+      ],
+      "district": "华龙区",
+      "address": "濮阳市华龙区 · 东北庄",
+      "locationReference": "https://www.amap.com/place/B0FFIXQDQ0",
+      "locationNote": "参考高德景区或片区点位，具体交通入口需确认。"
+    },
+    {
+      "id": "hn-puyang-longhu",
+      "name": "濮阳龙湖",
+      "city": "濮阳",
+      "category": "scenic",
+      "theme": "湖畔自然",
+      "duration": 90,
+      "interests": [
+        "nature"
+      ],
+      "aliases": [
+        "濮阳龙湖风景区"
+      ],
+      "description": "沿示范区龙湖开放岸线散步，安排一段城市微度假。",
+      "visitTip": "龙秀喷泉、沙滩或游船是否开放另查；不是周口淮阳龙湖。",
+      "reference": "https://pyxinqu.puyang.gov.cn/newsinfo/7825618.html",
+      "contentCheckedAt": "2026-10-11",
+      "location": [
+        115.046174,
+        35.803598
+      ],
+      "district": "华龙区",
+      "address": "濮阳市华龙区 · 华龙区",
+      "locationReference": "https://www.amap.com/place/B0L62CUFQR",
+      "locationNote": "参考高德景区或片区点位，具体交通入口需确认。"
+    },
+    {
+      "id": "hn-caowei",
+      "name": "曹魏古城",
+      "city": "许昌",
+      "category": "scenic",
+      "theme": "古城夜游",
+      "duration": 150,
+      "interests": [
+        "culture",
+        "immersive",
+        "food"
+      ],
+      "aliases": [
+        "许昌曹魏古城"
+      ],
+      "description": "在魏都区街巷里逛曹魏主题街区，按当天活动体验城市夜生活。",
+      "visitTip": "街区与收费演出范围不同，节目场次、餐饮与营业另确认。",
+      "reference": "https://wgl.xuchang.gov.cn/whdt/20260403/ef81d5b4-bc28-420f-9bd4-5a33a9687480.html",
+      "contentCheckedAt": "2026-10-11",
+      "location": [
+        113.827909,
+        34.028188
+      ],
+      "district": "魏都区",
+      "address": "许昌市魏都区 · 东大街道春秋广场南大街",
+      "locationReference": "https://www.amap.com/place/B0FFM10M80",
+      "locationNote": "参考高德景区或片区点位，具体交通入口需确认。"
+    },
+    {
+      "id": "hn-chunqiu",
+      "name": "春秋楼",
+      "city": "许昌",
+      "category": "scenic",
+      "theme": "三国文化",
+      "duration": 90,
+      "interests": [
+        "culture"
+      ],
+      "aliases": [
+        "许昌春秋楼"
+      ],
+      "description": "在市区看关羽主题建筑与展陈，适合三国文化爱好者。",
+      "visitTip": "确认春秋楼、文庙区域和当日预约，不默认存在优惠。",
+      "reference": "https://www.xuchang.gov.cn/zjxc/005010/20260520/f1b19a68-8722-4c4f-8c21-231921ab6b84.html",
+      "contentCheckedAt": "2026-10-11",
+      "location": [
+        113.828194,
+        34.025814
+      ],
+      "district": "魏都区",
+      "address": "许昌市魏都区 · 文庙前街春秋广场",
+      "locationReference": "https://www.amap.com/place/B0FFGBFV0K",
+      "locationNote": "参考高德景区或片区点位，具体交通入口需确认。"
+    },
+    {
+      "id": "hn-shenhou",
+      "name": "神垕古镇",
+      "city": "许昌",
+      "category": "scenic",
+      "theme": "古镇手作",
+      "duration": 240,
+      "interests": [
+        "culture"
+      ],
+      "aliases": [
+        "神垕",
+        "禹州神垕古镇"
+      ],
+      "description": "去禹州神垕看老街与钧瓷文化，有兴趣可预约手作体验。",
+      "visitTip": "手作店铺、体验费用与开窑活动需单独确认，禹州往返另留时间。",
+      "reference": "https://wgl.xuchang.gov.cn/whdt/20260403/ef81d5b4-bc28-420f-9bd4-5a33a9687480.html",
+      "contentCheckedAt": "2026-10-11",
+      "location": [
+        113.230888,
+        34.115768
+      ],
+      "district": "禹州市",
+      "address": "许昌市禹州市 · 神垕镇市场街中段",
+      "locationReference": "https://www.amap.com/place/B0FFHOKWJJ",
+      "locationNote": "参考高德景区或片区点位，具体交通入口需确认。"
+    },
+    {
+      "id": "hn-pangdonglai",
+      "name": "胖东来天使城",
+      "city": "许昌",
+      "category": "scenic",
+      "theme": "城市生活",
+      "duration": 120,
+      "interests": [
+        "family"
+      ],
+      "aliases": [
+        "胖东来",
+        "天使城"
+      ],
+      "description": "把许昌商贸体验加入周末行程，按购物需求安排停留。",
+      "visitTip": "明确选择天使城门店；闭店安排、排队与停车先查官方公告，不混同其他门店。",
+      "reference": "https://wgl.xuchang.gov.cn/whdt/20260403/ef81d5b4-bc28-420f-9bd4-5a33a9687480.html",
+      "contentCheckedAt": "2026-10-11",
+      "location": [
+        113.846681,
+        34.03593
+      ],
+      "district": "魏都区",
+      "address": "许昌市魏都区 · 建安大道与八龙路交叉口东北角建安文化广场内",
+      "locationReference": "https://www.amap.com/place/B0J6YS04RS",
+      "locationNote": "参考高德景区或片区点位，具体交通入口需确认。"
+    },
+    {
+      "id": "hn-baling",
+      "name": "灞陵桥景区",
+      "city": "许昌",
+      "category": "scenic",
+      "theme": "三国文化",
+      "duration": 90,
+      "interests": [
+        "culture"
+      ],
+      "aliases": [
+        "灞陵桥",
+        "许昌灞陵桥"
+      ],
+      "description": "在许昌看三国故事相关的园林与纪念建筑。",
+      "visitTip": "典故、演艺与实际开放分开看，门票优惠以当前公告为准。",
+      "reference": "https://www.xuchang.gov.cn/zjxc/005010/20260520/f1b19a68-8722-4c4f-8c21-231921ab6b84.html",
+      "contentCheckedAt": "2026-10-11",
+      "location": [
+        113.784981,
+        34.020829
+      ],
+      "district": "魏都区",
+      "address": "许昌市魏都区 · 许继大道西段2781号",
+      "locationReference": "https://www.amap.com/place/B01760MSTO",
+      "locationNote": "参考高德景区或片区点位，具体交通入口需确认。"
+    },
+    {
+      "id": "hn-shali",
+      "name": "沙澧河风景区",
+      "city": "漯河",
+      "category": "scenic",
+      "theme": "城市自然",
+      "duration": 90,
+      "interests": [
+        "nature"
+      ],
+      "aliases": [
+        "沙澧河"
+      ],
+      "description": "沿开放的沙河、澧河滨水步道走走，留一段城市慢游时间。",
+      "visitTip": "岸线修复、汛期管控和夜间照明会变化，按开放区域游览。",
+      "reference": "https://www.henan.gov.cn/2023/01-30/2680736.html",
+      "contentCheckedAt": "2026-10-11",
+      "location": [
+        114.021809,
+        33.579558
+      ],
+      "district": "郾城区",
+      "address": "漯河市郾城区 · 沙北路附近",
+      "locationReference": "https://www.amap.com/place/B0FFF8P9WO",
+      "locationNote": "参考高德景区或片区点位，具体交通入口需确认。"
+    },
+    {
+      "id": "hn-xushen",
+      "name": "许慎文化园",
+      "city": "漯河",
+      "category": "scenic",
+      "theme": "文博文化",
+      "duration": 120,
+      "interests": [
+        "culture",
+        "family"
+      ],
+      "aliases": [
+        "许慎文化园景区"
+      ],
+      "description": "通过园林与文字文化展示认识许慎，适合亲子文博体验。",
+      "visitTip": "讲解、体验活动、预约与营业需单独核实。",
+      "reference": "https://www.henan.gov.cn/2023/01-30/2680736.html",
+      "contentCheckedAt": "2026-10-11",
+      "location": [
+        114.099771,
+        33.610394
+      ],
+      "district": "召陵区",
+      "address": "漯河市召陵区 · 龙江路与中山路交叉口东800米路北",
+      "locationReference": "https://www.amap.com/place/B018B0M9TX",
+      "locationNote": "参考高德景区或片区点位，具体交通入口需确认。"
+    },
+    {
+      "id": "hn-birdpark",
+      "name": "神州鸟园",
+      "city": "漯河",
+      "category": "scenic",
+      "theme": "亲子乐园",
+      "duration": 240,
+      "interests": [
+        "family",
+        "nature"
+      ],
+      "aliases": [
+        "漯河神州鸟园"
+      ],
+      "description": "把鸟类与园区游乐安排成半天以上的亲子体验。",
+      "visitTip": "项目身高年龄限制、演艺场次与园区开放按当前公告确认。",
+      "reference": "https://www.henan.gov.cn/2023/01-30/2680736.html",
+      "contentCheckedAt": "2026-10-11",
+      "location": [
+        114.019897,
+        33.547351
+      ],
+      "district": "源汇区",
+      "address": "漯河市源汇区 · 泰山路南段",
+      "locationReference": "https://www.amap.com/place/B0FFG62JZ0",
+      "locationNote": "参考高德景区或片区点位，具体交通入口需确认。",
+      "planningNotes": [
+        "神州鸟园的往返交通、景区内部交通与天气需另行确认。"
+      ]
+    },
+    {
+      "id": "hn-xiaoshang",
+      "name": "小商桥",
+      "city": "漯河",
+      "category": "scenic",
+      "theme": "历史文化",
+      "duration": 90,
+      "interests": [
+        "culture"
+      ],
+      "aliases": [
+        "小商桥景区"
+      ],
+      "description": "在小商桥片区了解古桥与相关历史文化，安排短程参观。",
+      "visitTip": "与市区有距离，确认游览入口与实际开放，不把古桥当作通行道路。",
+      "reference": "https://www.henan.gov.cn/2023/01-30/2680736.html",
+      "contentCheckedAt": "2026-10-11",
+      "location": [
+        113.969888,
+        33.717015
+      ],
+      "district": "临颍县",
+      "address": "漯河市临颍县 · 皇帝庙乡商桥村",
+      "locationReference": "https://www.amap.com/place/B018B00137",
+      "locationNote": "参考高德景区或片区点位，具体交通入口需确认。"
+    },
+    {
+      "id": "hn-luowan",
+      "name": "漯湾古镇",
+      "city": "漯河",
+      "category": "scenic",
+      "theme": "街区夜游",
+      "duration": 150,
+      "interests": [
+        "culture",
+        "immersive"
+      ],
+      "aliases": [
+        "漯湾古镇景区"
+      ],
+      "description": "去主题街区散步、看建筑与夜间氛围，按排期选择演艺。",
+      "visitTip": "演出和灯光会调整，不沿用往年节庆场次，交通与返程另留时间。",
+      "reference": "https://www.henan.gov.cn/2023/01-30/2680736.html",
+      "contentCheckedAt": "2026-10-11",
+      "location": [
+        113.954631,
+        33.553195
+      ],
+      "district": "源汇区",
+      "address": "漯河市源汇区 · 柳江西路与五台山南路交汇处附近",
+      "locationReference": "https://www.amap.com/place/B0G2B9D38B",
+      "locationNote": "参考高德景区或片区点位，具体交通入口需确认。"
+    },
+    {
+      "id": "hn-wolong",
+      "name": "卧龙岗文化园",
+      "city": "南阳",
+      "category": "scenic",
+      "theme": "历史文化",
+      "duration": 180,
+      "interests": [
+        "culture"
+      ],
+      "aliases": [
+        "卧龙岗",
+        "南阳武侯祠"
+      ],
+      "description": "在南阳市区了解诸葛亮与三国文化，给建筑、展陈和步行留足时间。",
+      "visitTip": "武侯祠和文化园实际参观范围、票务及预约先核对。",
+      "reference": "https://www.henan.gov.cn/2024/05-20/2995965.html",
+      "contentCheckedAt": "2026-10-11",
+      "location": [
+        112.506184,
+        32.975546
+      ],
+      "district": "卧龙区",
+      "address": "南阳市卧龙区 · 卧龙路766号",
+      "locationReference": "https://www.amap.com/place/B017900KLA",
+      "locationNote": "参考高德景区或片区点位，具体交通入口需确认。"
+    },
+    {
+      "id": "hn-shedian",
+      "name": "赊店古镇",
+      "city": "南阳",
+      "category": "scenic",
+      "theme": "古镇文化",
+      "duration": 180,
+      "interests": [
+        "culture"
+      ],
+      "aliases": [
+        "赊店",
+        "社旗赊店古镇"
+      ],
+      "description": "去社旗看古镇街巷与商业文化，体验县域人文慢游。",
+      "visitTip": "山陕会馆等具体场馆票务另确认，社旗往返不计入游览时长。",
+      "reference": "https://www.henan.gov.cn/2024/05-20/2995965.html",
+      "contentCheckedAt": "2026-10-11",
+      "location": [
+        112.945634,
+        33.055033
+      ],
+      "district": "社旗县",
+      "address": "南阳市社旗县 · 永庆街与永泰街交叉口",
+      "locationReference": "https://www.amap.com/place/B0FFLNSB76",
+      "locationNote": "参考高德景区或片区点位，具体交通入口需确认。"
+    },
+    {
+      "id": "hn-neixiang",
+      "name": "内乡县衙博物馆",
+      "city": "南阳",
+      "category": "scenic",
+      "theme": "历史文化",
+      "duration": 120,
+      "interests": [
+        "culture"
+      ],
+      "aliases": [
+        "内乡县衙"
+      ],
+      "description": "通过县衙建筑与展陈了解传统地方治理和民俗文化。",
+      "visitTip": "实景演艺有单独排期，内乡与市区往返交通另核算。",
+      "reference": "https://www.henan.gov.cn/2024/05-20/2995965.html",
+      "contentCheckedAt": "2026-10-11",
+      "location": [
+        111.849046,
+        33.048412
+      ],
+      "district": "内乡县",
+      "address": "南阳市内乡县 · 县衙东路88号",
+      "locationReference": "https://www.amap.com/place/B017901L2N",
+      "locationNote": "参考高德景区或片区点位，具体交通入口需确认。"
+    },
+    {
+      "id": "hn-laojieling",
+      "name": "老界岭",
+      "city": "南阳",
+      "category": "scenic",
+      "theme": "山水登山",
+      "duration": 360,
+      "interests": [
+        "nature"
+      ],
+      "aliases": [
+        "西峡老界岭"
+      ],
+      "description": "去西峡看伏牛山风景，单独留出一天和山区交通。",
+      "visitTip": "与洛阳老君山是不同景区；索道、山路、天气与返程时间需确认。",
+      "reference": "https://www.henan.gov.cn/2024/05-20/2995965.html",
+      "contentCheckedAt": "2026-10-11",
+      "location": [
+        111.770368,
+        33.641173
+      ],
+      "district": "西峡县",
+      "address": "南阳市西峡县 · 311国道太平镇东坪村",
+      "locationReference": "https://www.amap.com/place/B0179009MO",
+      "locationNote": "参考高德景区或片区点位，具体交通入口需确认。",
+      "planningNotes": [
+        "老界岭的往返交通、景区内部交通与天气需另行确认。"
+      ]
+    },
+    {
+      "id": "hn-dinosaur",
+      "name": "西峡恐龙遗迹园",
+      "city": "南阳",
+      "category": "scenic",
+      "theme": "亲子研学",
+      "duration": 180,
+      "interests": [
+        "family",
+        "culture"
+      ],
+      "aliases": [
+        "恐龙遗迹园",
+        "西峡恐龙园"
+      ],
+      "description": "在西峡了解恐龙遗迹与地学展示，适合亲子研学。",
+      "visitTip": "园区项目、讲解和营业先查当前公告，与老界岭转场时间另留。",
+      "reference": "https://www.henan.gov.cn/2024/05-20/2995965.html",
+      "contentCheckedAt": "2026-10-11",
+      "location": [
+        111.687912,
+        33.230136
+      ],
+      "district": "西峡县",
+      "address": "南阳市西峡县 · 丹水镇三里庙村",
+      "locationReference": "https://www.amap.com/place/B0G3VXEC4B",
+      "locationNote": "参考高德景区或片区点位，具体交通入口需确认。"
+    },
+    {
+      "id": "hn-shangqiu-city",
+      "name": "商丘古城",
+      "city": "商丘",
+      "category": "scenic",
+      "theme": "古城文化",
+      "duration": 180,
+      "interests": [
+        "culture"
+      ],
+      "aliases": [
+        "商丘古文化旅游区",
+        "归德府城"
+      ],
+      "description": "沿古城街巷了解归德府城的历史，按开放区域安排慢游。",
+      "visitTip": "城墙、展馆和街区不是统一票务，施工与参观范围先确认。",
+      "reference": "https://hct.henan.gov.cn/2023/06-20/2764000.html",
+      "contentCheckedAt": "2026-10-11",
+      "location": [
+        115.616259,
+        34.381246
+      ],
+      "district": "睢阳区",
+      "address": "商丘市睢阳区 · 中山大街",
+      "locationReference": "https://www.amap.com/place/B0FFGDYZGH",
+      "locationNote": "参考高德景区或片区点位，具体交通入口需确认。"
+    },
+    {
+      "id": "hn-yingtian-academy",
+      "name": "应天书院",
+      "city": "商丘",
+      "category": "scenic",
+      "theme": "历史文化",
+      "duration": 90,
+      "interests": [
+        "culture"
+      ],
+      "aliases": [
+        "应天府书院",
+        "商丘应天书院"
+      ],
+      "description": "在商丘古城南湖附近了解书院文化，与古城分段参观。",
+      "visitTip": "现有建筑为复建展示，不与洛阳应天门混同，预约和开放另查。",
+      "reference": "https://hct.henan.gov.cn/2023/06-20/2764000.html",
+      "contentCheckedAt": "2026-10-11",
+      "location": [
+        115.620104,
+        34.370673
+      ],
+      "district": "睢阳区",
+      "address": "商丘市睢阳区 · 环城南路",
+      "locationReference": "https://www.amap.com/place/B017202NFN",
+      "locationNote": "参考高德景区或片区点位，具体交通入口需确认。"
+    },
+    {
+      "id": "hn-mangdang",
+      "name": "芒砀山汉文化旅游区",
+      "city": "商丘",
+      "category": "scenic",
+      "theme": "汉文化",
+      "duration": 300,
+      "interests": [
+        "culture"
+      ],
+      "aliases": [
+        "芒砀山",
+        "永城芒砀山"
+      ],
+      "description": "去永城看汉文化遗址与展陈，把县域人文安排成半天以上。",
+      "visitTip": "多个参观点与票种需选择，永城往返商丘交通另算。",
+      "reference": "https://english.henan.gov.cn/2020/07-12/1706365.html",
+      "contentCheckedAt": "2026-10-11",
+      "location": [
+        116.516364,
+        34.169632
+      ],
+      "district": "永城市",
+      "address": "商丘市永城市 · 芒山镇僖山村",
+      "locationReference": "https://www.amap.com/place/B017200VNQ",
+      "locationNote": "参考高德景区或片区点位，具体交通入口需确认。"
+    },
+    {
+      "id": "hn-riyuehu",
+      "name": "商丘日月湖",
+      "city": "商丘",
+      "category": "scenic",
+      "theme": "湖畔自然",
+      "duration": 90,
+      "interests": [
+        "nature"
+      ],
+      "aliases": [
+        "商丘日月湖景区"
+      ],
+      "description": "沿湖散步，给商丘城市游留一段轻松的水岸时间。",
+      "visitTip": "夜景灯光、喷泉与岸线开放可能变化，不保证固定表演。",
+      "reference": "https://hct.henan.gov.cn/2019/05-17/793992.html",
+      "contentCheckedAt": "2026-10-11",
+      "location": [
+        115.674557,
+        34.372556
+      ],
+      "district": "睢阳区",
+      "address": "商丘市睢阳区 · 中州路与鸿宾路交叉口",
+      "locationReference": "https://www.amap.com/place/B0FFGEPD6R",
+      "locationNote": "参考高德景区或片区点位，具体交通入口需确认。"
+    },
+    {
+      "id": "hn-jigongshan",
+      "name": "鸡公山",
+      "city": "信阳",
+      "category": "scenic",
+      "theme": "山水登山",
+      "duration": 360,
+      "interests": [
+        "nature",
+        "culture"
+      ],
+      "aliases": [
+        "鸡公山风景区"
+      ],
+      "description": "看豫南山林与山地建筑，留出一天慢慢游览。",
+      "visitTip": "山上山下交通、步道、天气和最后返程需核对，云海不作保证。",
+      "reference": "https://xinyang.gov.cn/2026/04-13/779872.html",
+      "contentCheckedAt": "2026-10-11",
+      "location": [
+        114.076363,
+        31.812064
+      ],
+      "district": "浉河区",
+      "address": "信阳市浉河区 · 107国道旁",
+      "locationReference": "https://www.amap.com/place/B0178006G5",
+      "locationNote": "参考高德景区或片区点位，具体交通入口需确认。",
+      "planningNotes": [
+        "鸡公山的往返交通、景区内部交通与天气需另行确认。"
+      ]
+    },
+    {
+      "id": "hn-nanwan",
+      "name": "南湾湖",
+      "city": "信阳",
+      "category": "scenic",
+      "theme": "湖山茶乡",
+      "duration": 240,
+      "interests": [
+        "nature"
+      ],
+      "aliases": [
+        "南湾湖风景区"
+      ],
+      "description": "去南湾湖看湖岛与茶乡风景，按可用航线选择游览。",
+      "visitTip": "游船受天气和运营影响，码头、班次、票务与回程先确认。",
+      "reference": "https://xinyang.gov.cn/2026/04-13/779872.html",
+      "contentCheckedAt": "2026-10-11",
+      "location": [
+        114.004627,
+        32.125469
+      ],
+      "district": "浉河区",
+      "address": "信阳市浉河区 · 南湖大街188号",
+      "locationReference": "https://www.amap.com/place/B0178002UB",
+      "locationNote": "参考高德景区或片区点位，具体交通入口需确认。",
+      "planningNotes": [
+        "南湾湖的往返交通、景区内部交通与天气需另行确认。"
+      ]
+    },
+    {
+      "id": "hn-haotang",
+      "name": "郝堂村",
+      "city": "信阳",
+      "category": "scenic",
+      "theme": "乡村自然",
+      "duration": 150,
+      "interests": [
+        "nature",
+        "culture"
+      ],
+      "aliases": [
+        "郝堂",
+        "诗画郝堂"
+      ],
+      "description": "在平桥乡村沿村道与田园慢走，体验豫南村落生活。",
+      "visitTip": "荷花有季节限制，农家活动和民宿需事先联系，不默认全年相同景色。",
+      "reference": "https://xinyang.gov.cn/2026/04-13/779872.html",
+      "contentCheckedAt": "2026-10-11",
+      "location": [
+        114.213646,
+        32.060176
+      ],
+      "district": "平桥区",
+      "address": "信阳市平桥区 · 郝堂村",
+      "locationReference": "https://www.amap.com/place/B0FFGKHI36",
+      "locationNote": "参考高德景区或片区点位，具体交通入口需确认。"
+    },
+    {
+      "id": "hn-wenxin",
+      "name": "文新茶村",
+      "city": "信阳",
+      "category": "scenic",
+      "theme": "茶乡自然",
+      "duration": 150,
+      "interests": [
+        "nature",
+        "culture"
+      ],
+      "aliases": [
+        "信阳文新茶村"
+      ],
+      "description": "去浉河茶山看看茶园与茶文化，有兴趣可预约品茶体验。",
+      "visitTip": "采茶有季节与园区限制，活动费用、开放与山路停车另核实。",
+      "reference": "https://xinyang.gov.cn/2026/04-13/779872.html",
+      "contentCheckedAt": "2026-10-11",
+      "location": [
+        113.91843,
+        32.013989
+      ],
+      "district": "浉河区",
+      "address": "信阳市浉河区 · 浉河港镇白龙潭村",
+      "locationReference": "https://www.amap.com/place/B0FFIXQDPB",
+      "locationNote": "参考高德景区或片区点位，具体交通入口需确认。"
+    },
+    {
+      "id": "hn-xingxiuchuan",
+      "name": "星宿川沙滩营地",
+      "city": "信阳",
+      "category": "scenic",
+      "theme": "亲子休闲",
+      "duration": 180,
+      "interests": [
+        "family",
+        "nature"
+      ],
+      "aliases": [
+        "星宿川"
+      ],
+      "description": "在出山店水库片区体验沙滩营地，把亲子休闲安排成半日。",
+      "visitTip": "人工沙滩不是真实海岸，水上项目、天气、营业和票务先确认。",
+      "reference": "https://m.xinyang.gov.cn/2025/05-07/603427.html",
+      "contentCheckedAt": "2026-10-11",
+      "location": [
+        113.930819,
+        32.259177
+      ],
+      "district": "浉河区",
+      "address": "信阳市浉河区 · 游河乡山淮村星宿川露营基地018号",
+      "locationReference": "https://www.amap.com/place/B0J1RZMYIO",
+      "locationNote": "参考高德景区或片区点位，具体交通入口需确认。",
+      "planningNotes": [
+        "星宿川沙滩营地的往返交通、景区内部交通与天气需另行确认。"
+      ]
+    },
+    {
+      "id": "hn-taihao",
+      "name": "太昊伏羲陵文化旅游区",
+      "city": "周口",
+      "category": "scenic",
+      "theme": "历史文化",
+      "duration": 180,
+      "interests": [
+        "culture"
+      ],
+      "aliases": [
+        "太昊陵",
+        "太昊伏羲陵"
+      ],
+      "description": "去淮阳了解伏羲文化与陵庙建筑，可与龙湖分段慢游。",
+      "visitTip": "庙会有明确日期，客流、预约和参观范围以当前公告为准。",
+      "reference": "https://wglj.zhoukou.gov.cn/sitesources/whgdlyj/page_pc/wzsy/gzdt/article650680d2e0604e7d81e77613a6168317.html",
+      "contentCheckedAt": "2026-10-11",
+      "location": [
+        114.89551,
+        33.732687
+      ],
+      "district": "淮阳区",
+      "address": "周口市淮阳区 · 太昊伏羲陵文化旅游区",
+      "locationReference": "https://www.amap.com/place/B0L39SRI93",
+      "locationNote": "参考高德景区或片区点位，具体交通入口需确认。"
+    },
+    {
+      "id": "hn-laozi",
+      "name": "老子故里旅游区",
+      "city": "周口",
+      "category": "scenic",
+      "theme": "历史文化",
+      "duration": 180,
+      "interests": [
+        "culture"
+      ],
+      "aliases": [
+        "鹿邑老子故里"
+      ],
+      "description": "在鹿邑了解老子文化，按太清宫、明道宫等区域选择参观。",
+      "visitTip": "参观区域与票务需区分；鹿邑、淮阳、周口市区转场另核算。",
+      "reference": "https://wglj.zhoukou.gov.cn/sitesources/whgdlyj/page_pc/wzsy/gzdt/article650680d2e0604e7d81e77613a6168317.html",
+      "contentCheckedAt": "2026-10-11",
+      "location": [
+        115.553414,
+        33.86091
+      ],
+      "district": "鹿邑县",
+      "address": "周口市鹿邑县 · 太清宫镇紫气大道",
+      "locationReference": "https://www.amap.com/place/B0HBKXUDFP",
+      "locationNote": "参考高德景区或片区点位，具体交通入口需确认。"
+    },
+    {
+      "id": "hn-zhoukou-zoo",
+      "name": "周口野生动物世界",
+      "city": "周口",
+      "category": "scenic",
+      "theme": "亲子乐园",
+      "duration": 300,
+      "interests": [
+        "family"
+      ],
+      "aliases": [
+        "周口野生动物园"
+      ],
+      "description": "用半天以上看动物与园区项目，按同行孩子的节奏安排休息。",
+      "visitTip": "夜场、演艺和游乐项目以当日公告为准，身高年龄限制先确认。",
+      "reference": "https://wglj.zhoukou.gov.cn/sitesources/whgdlyj/page_pc/wzsy/gzdt/article650680d2e0604e7d81e77613a6168317.html",
+      "contentCheckedAt": "2026-10-11",
+      "location": [
+        114.63341,
+        33.682373
+      ],
+      "district": "西华县",
+      "address": "周口市西华县 · 213省道李营小学幼儿园西北870米",
+      "locationReference": "https://www.amap.com/place/B0FFKW8K90",
+      "locationNote": "参考高德景区或片区点位，具体交通入口需确认。"
+    },
+    {
+      "id": "hn-zhoukou-guandi",
+      "name": "周口关帝庙",
+      "city": "周口",
+      "category": "scenic",
+      "theme": "历史文化",
+      "duration": 90,
+      "interests": [
+        "culture"
+      ],
+      "aliases": [
+        "周口关帝庙民俗博物馆"
+      ],
+      "description": "在市区看关帝庙与民俗展示，适合周家口人文慢游。",
+      "visitTip": "不与其他城市关帝庙混同，展陈、预约与开放先确认。",
+      "reference": "https://wglj.zhoukou.gov.cn/sitesources/whgdlyj/page_pc/wzsy/gzdt/article650680d2e0604e7d81e77613a6168317.html",
+      "contentCheckedAt": "2026-10-11",
+      "location": [
+        114.645358,
+        33.631609
+      ],
+      "district": "川汇区",
+      "address": "周口市川汇区 · 富强街号111号",
+      "locationReference": "https://www.amap.com/place/B018A001KA",
+      "locationNote": "参考高德景区或片区点位，具体交通入口需确认。"
+    },
+    {
+      "id": "hn-huaiyang-longhu",
+      "name": "淮阳龙湖",
+      "city": "周口",
+      "category": "scenic",
+      "theme": "湖畔自然",
+      "duration": 90,
+      "interests": [
+        "nature"
+      ],
+      "aliases": [
+        "淮阳龙湖湿地公园"
+      ],
+      "description": "在淮阳开放湖岸散步，与太昊陵留出不同参观时段。",
+      "visitTip": "荷花有季节限制，游船与岸线开放另查；不是濮阳龙湖。",
+      "reference": "https://wglj.zhoukou.gov.cn/sitesources/whgdlyj/page_pc/wzsy/gzdt/articlee8bad9e9120a4261b719e60af3d4d467.html",
+      "contentCheckedAt": "2026-10-11",
+      "location": [
+        114.896725,
+        33.745395
+      ],
+      "district": "淮阳区",
+      "address": "周口市淮阳区 · 大同街25号",
+      "locationReference": "https://www.amap.com/place/B0FFID6LMM",
+      "locationNote": "参考高德景区或片区点位，具体交通入口需确认。"
+    },
+    {
+      "id": "hn-chayashan",
+      "name": "嵖岈山",
+      "city": "驻马店",
+      "category": "scenic",
+      "theme": "山水登山",
+      "duration": 360,
+      "interests": [
+        "nature"
+      ],
+      "aliases": [
+        "嵖岈山风景区"
+      ],
+      "description": "在遂平看山岩与山地景观，按体力选择游线并留足一天。",
+      "visitTip": "山路台阶、天气与景区交通先核实，往返市区单独安排。",
+      "reference": "https://www.henan.gov.cn/2020/07-24/1745005.html",
+      "contentCheckedAt": "2026-10-11",
+      "location": [
+        113.736914,
+        33.121004
+      ],
+      "district": "遂平县",
+      "address": "驻马店市遂平县 · 嵖岈山镇遂嵖路",
+      "locationReference": "https://www.amap.com/place/B018C00E36",
+      "locationNote": "参考高德景区或片区点位，具体交通入口需确认。",
+      "planningNotes": [
+        "嵖岈山的往返交通、景区内部交通与天气需另行确认。"
+      ]
+    },
+    {
+      "id": "hn-royal-post",
+      "name": "皇家驿站",
+      "city": "驻马店",
+      "category": "scenic",
+      "theme": "街区夜游",
+      "duration": 150,
+      "interests": [
+        "culture",
+        "immersive",
+        "food"
+      ],
+      "aliases": [
+        "驻马店皇家驿站"
+      ],
+      "description": "在市区主题街区走走，按当日节目体验驿站文化与夜生活。",
+      "visitTip": "节目、灯光和收费项目会调整，不把规划中的配套当作已开放。",
+      "reference": "https://www.zhumadian.gov.cn/zwgk/zfgb/2023_814/deq/zfgzbg/202407/t20240718_94165.html",
+      "contentCheckedAt": "2026-10-11",
+      "location": [
+        114.003722,
+        32.934523
+      ],
+      "district": "驿城区",
+      "address": "驻马店市驿城区 · 天中山大道与玉兰路交叉口向西500米",
+      "locationReference": "https://www.amap.com/place/B0FFIYJH4L",
+      "locationNote": "参考高德景区或片区点位，具体交通入口需确认。"
+    },
+    {
+      "id": "hn-laoleshan",
+      "name": "老乐山",
+      "city": "驻马店",
+      "category": "scenic",
+      "theme": "山水自然",
+      "duration": 300,
+      "interests": [
+        "nature"
+      ],
+      "aliases": [
+        "老乐山景区"
+      ],
+      "description": "去确山片区体验山林与休闲步道，安排半天以上的户外游览。",
+      "visitTip": "步道、项目与天气先确认，不同山地景区之间另留公路交通。",
+      "reference": "https://www.henan.gov.cn/2020/07-24/1745005.html",
+      "contentCheckedAt": "2026-10-11",
+      "location": [
+        113.915547,
+        32.850851
+      ],
+      "district": "确山县",
+      "address": "驻马店市确山县 · 瓦岗镇",
+      "locationReference": "https://www.amap.com/place/B0FFFWR2AH",
+      "locationNote": "参考高德景区或片区点位，具体交通入口需确认。",
+      "planningNotes": [
+        "老乐山的往返交通、景区内部交通与天气需另行确认。"
+      ]
+    },
+    {
+      "id": "hn-nanhai",
+      "name": "南海禅寺",
+      "city": "驻马店",
+      "category": "scenic",
+      "theme": "文化建筑",
+      "duration": 120,
+      "interests": [
+        "culture"
+      ],
+      "aliases": [
+        "汝南南海禅寺"
+      ],
+      "description": "去汝南看寺院建筑与文化，按参观秩序慢慢游览。",
+      "visitTip": "寺院活动与开放范围先确认，汝南往返交通另核算。",
+      "reference": "https://www.zhumadian.gov.cn/mltz/lyjd/rwjg/202412/t20241213_420870.html",
+      "contentCheckedAt": "2026-10-11",
+      "location": [
+        114.365184,
+        32.993249
+      ],
+      "district": "汝南县",
+      "address": "驻马店市汝南县 · 南海大道",
+      "locationReference": "https://www.amap.com/place/B018C017HM",
+      "locationNote": "参考高德景区或片区点位，具体交通入口需确认。"
+    },
+    {
+      "id": "hn-wangwu",
+      "name": "王屋山",
+      "city": "济源",
+      "category": "scenic",
+      "theme": "山水登山",
+      "duration": 360,
+      "interests": [
+        "nature",
+        "culture"
+      ],
+      "aliases": [
+        "王屋山景区"
+      ],
+      "description": "在王屋镇看山地与道教文化，按体力安排一天游线。",
+      "visitTip": "索道、步道、天气与末班交通先核实，往返市区另留时间。",
+      "reference": "https://wglj.jiyuan.gov.cn/14204/15220/19023/19035/t993787.html",
+      "contentCheckedAt": "2026-10-11",
+      "location": [
+        112.271132,
+        35.142047
+      ],
+      "district": "济源市",
+      "address": "济源市济源市 · 王屋镇愚公村",
+      "locationReference": "https://www.amap.com/place/B056F006RN",
+      "locationNote": "参考高德景区或片区点位，具体交通入口需确认。",
+      "planningNotes": [
+        "王屋山的往返交通、景区内部交通与天气需另行确认。"
+      ]
+    },
+    {
+      "id": "hn-wulongkou",
+      "name": "五龙口",
+      "city": "济源",
+      "category": "scenic",
+      "theme": "山水自然",
+      "duration": 240,
+      "interests": [
+        "nature",
+        "family"
+      ],
+      "aliases": [
+        "五龙口景区"
+      ],
+      "description": "去五龙口看山谷与自然景观，保持与野生动物的安全距离。",
+      "visitTip": "动物出现不作保证，不投喂或追逐，景区车与开放区域先确认。",
+      "reference": "https://wglj.jiyuan.gov.cn/14204/15220/19023/19035/t993787.html",
+      "contentCheckedAt": "2026-10-11",
+      "location": [
+        112.679566,
+        35.188663
+      ],
+      "district": "济源市",
+      "address": "济源市济源市 · 208国道与二广高速交汇处",
+      "locationReference": "https://www.amap.com/place/B056F0M0ZW",
+      "locationNote": "参考高德景区或片区点位，具体交通入口需确认。",
+      "planningNotes": [
+        "五龙口的往返交通、景区内部交通与天气需另行确认。"
+      ]
+    },
+    {
+      "id": "hn-huanghe-three",
+      "name": "黄河三峡",
+      "city": "济源",
+      "category": "scenic",
+      "theme": "黄河山水",
+      "duration": 300,
+      "interests": [
+        "nature"
+      ],
+      "aliases": [
+        "济源黄河三峡"
+      ],
+      "description": "去下冶片区体验黄河峡谷，按游船与岸上游线安排半日以上。",
+      "visitTip": "游船、索道和景区道路受天气与运营影响，航班和往返另核算。",
+      "reference": "https://wglj.jiyuan.gov.cn/14204/15220/19023/19035/t993787.html",
+      "contentCheckedAt": "2026-10-11",
+      "location": [
+        112.141783,
+        35.059889
+      ],
+      "district": "济源市",
+      "address": "济源市济源市 · 下冶镇黄河三峡景区内",
+      "locationReference": "https://www.amap.com/place/B056F0LYR0",
+      "locationNote": "参考高德景区或片区点位，具体交通入口需确认。",
+      "planningNotes": [
+        "黄河三峡的往返交通、景区内部交通与天气需另行确认。"
+      ]
+    },
+    {
+      "id": "hn-jidu",
+      "name": "济渎庙",
+      "city": "济源",
+      "category": "scenic",
+      "theme": "历史文化",
+      "duration": 90,
+      "interests": [
+        "culture"
+      ],
+      "aliases": [
+        "济水之源",
+        "济渎庙景区"
+      ],
+      "description": "在市区看济水文化与古建筑，作为山水游之外的一段人文参观。",
+      "visitTip": "济水之源旅游区包含不同点位，这张卡片指济渎庙，开放另确认。",
+      "reference": "https://wglj.jiyuan.gov.cn/14204/15220/19023/19035/t993787.html",
+      "contentCheckedAt": "2026-10-11",
+      "location": [
+        112.582315,
+        35.108663
+      ],
+      "district": "济源市",
+      "address": "济源市济源市 · 济渎大街1396号",
+      "locationReference": "https://www.amap.com/place/B056F001J9",
+      "locationNote": "参考高德景区或片区点位，具体交通入口需确认。"
     }
   ],
   "routes": [
@@ -632,6 +3011,524 @@
       "photoLabel": "云台山红石峡实景",
       "kicker": "山水之间 / TAIHANG",
       "story": "一天集中体验云台山山水，另一天了解红旗渠。两地之间单独安排交通，不把山区行程排成城市步行游。"
+    },
+    {
+      "id": "zhengzhou-weekend",
+      "title": "郑州 · 文博与戏剧两日",
+      "subtitle": "文博、戏剧与亲子周末",
+      "days": 2,
+      "city": "郑州",
+      "note": "中牟戏剧幻城与市区分日，节目需预约，给返程另留时间。 本路线仅为可编辑组合，游览时长不含实际交通。",
+      "stops": [
+        [
+          "hn-henan-museum",
+          1,
+          150
+        ],
+        [
+          "hn-ruyi",
+          1,
+          90
+        ],
+        [
+          "hn-only-henan",
+          2,
+          360
+        ]
+      ],
+      "kicker": "都市中原 / WEEKEND",
+      "story": "城市文博、湖畔散步和中牟戏剧体验都能安排进周末；登封与新密适合单独安排一天。",
+      "theme": "文博、戏剧与亲子周末",
+      "cities": [
+        "郑州"
+      ],
+      "image": "/assets/henan-museum.jpg?v=47bdca5404f7",
+      "photoLabel": "郑州 · 河南博物院实景"
+    },
+    {
+      "id": "kaifeng-weekend",
+      "title": "开封 · 江湖与宋都两日",
+      "subtitle": "宋都街巷与武侠演艺",
+      "days": 2,
+      "city": "开封",
+      "note": "两座演艺景区分日，按节目排期取舍；夜市消费和返程单独安排。 本路线仅为可编辑组合，游览时长不含实际交通。",
+      "stops": [
+        [
+          "hn-wansui",
+          1,
+          300
+        ],
+        [
+          "hn-qingming",
+          2,
+          240
+        ],
+        [
+          "hn-gulou",
+          2,
+          90
+        ]
+      ],
+      "kicker": "都市中原 / WEEKEND",
+      "story": "万岁山、清明上河园适合给演出留足时间，古寺、文博和夜市适合放慢节奏串联。",
+      "theme": "宋都街巷与武侠演艺",
+      "cities": [
+        "开封"
+      ],
+      "image": "/assets/hn-qingming.jpg?v=f0b0422d2298",
+      "photoLabel": "开封 · 清明上河园实景"
+    },
+    {
+      "id": "pingdingshan-weekend",
+      "title": "平顶山 · 伏牛与湖岸两日",
+      "subtitle": "湖畔休闲，伏牛登山",
+      "days": 2,
+      "city": "平顶山",
+      "note": "鲁山山地与市区湖岸分日，往返、索道和水库岸线开放需确认。 本路线仅为可编辑组合，游览时长不含实际交通。",
+      "stops": [
+        [
+          "hn-yaoshan",
+          1,
+          360
+        ],
+        [
+          "hn-baigui",
+          2,
+          90
+        ]
+      ],
+      "kicker": "伏牛豫南 / WEEKEND",
+      "story": "城市湖岸、鲁山尧山、舞钢山湖与汝州人文分属不同片区，周末先选一个主方向。",
+      "theme": "湖畔休闲，伏牛登山",
+      "cities": [
+        "平顶山"
+      ]
+    },
+    {
+      "id": "anyang-weekend",
+      "title": "安阳 · 殷商与太行两日",
+      "subtitle": "殷商文博与林州山水",
+      "days": 2,
+      "city": "安阳",
+      "note": "市区文博与林州山地分日；山区往返、步道和景区车另核算。 本路线仅为可编辑组合，游览时长不含实际交通。",
+      "stops": [
+        [
+          "hn-yinxu",
+          1,
+          180
+        ],
+        [
+          "hn-writing",
+          1,
+          120
+        ],
+        [
+          "hn-taihang-canyon",
+          2,
+          360
+        ]
+      ],
+      "kicker": "太行豫北 / WEEKEND",
+      "story": "市区适合殷商和文字文博；林州的红旗渠与太行大峡谷应另留县域往返和步行时间。",
+      "theme": "殷商文博与林州山水",
+      "cities": [
+        "安阳"
+      ]
+    },
+    {
+      "id": "hebi-weekend",
+      "title": "鹤壁 · 运河与淇山两日",
+      "subtitle": "运河古城与淇县山水",
+      "days": 2,
+      "city": "鹤壁",
+      "note": "浚县古城和大伾山分段游，第二天淇县山区往返交通另核算。 本路线仅为可编辑组合，游览时长不含实际交通。",
+      "stops": [
+        [
+          "hn-junxian",
+          1,
+          180
+        ],
+        [
+          "hn-dapishan",
+          1,
+          150
+        ],
+        [
+          "hn-yunmeng",
+          2,
+          240
+        ]
+      ],
+      "kicker": "太行豫北 / WEEKEND",
+      "story": "浚县古城、大伾山可分段慢游；云梦山、古灵山在淇县，先确认两片区之间的交通。",
+      "theme": "运河古城与淇县山水",
+      "cities": [
+        "鹤壁"
+      ]
+    },
+    {
+      "id": "xinxiang-weekend",
+      "title": "新乡 · 峡谷与人文两日",
+      "subtitle": "南太行峡谷与乡村",
+      "days": 2,
+      "city": "新乡",
+      "note": "宝泉与卫辉人文分日；大峡谷、崖天下产品先选择，县域转场另核算。 本路线仅为可编辑组合，游览时长不含实际交通。",
+      "stops": [
+        [
+          "hn-baoquan",
+          1,
+          360
+        ],
+        [
+          "hn-bigan",
+          2,
+          90
+        ]
+      ],
+      "kicker": "太行豫北 / WEEKEND",
+      "story": "宝泉、八里沟、万仙山各自值得集中游览，先选一个主景区；卫辉人文可作为另一日方向。",
+      "theme": "南太行峡谷与乡村",
+      "cities": [
+        "新乡"
+      ]
+    },
+    {
+      "id": "jiaozuo-weekend",
+      "title": "焦作 · 山水与太极两日",
+      "subtitle": "山谷、太极与乡村文化",
+      "days": 2,
+      "city": "焦作",
+      "note": "云台山与温县陈家沟分日，不将两地当作城市步行路线。 本路线仅为可编辑组合，游览时长不含实际交通。",
+      "stops": [
+        [
+          "hn-yuntai",
+          1,
+          360
+        ],
+        [
+          "hn-chenjiagou",
+          2,
+          120
+        ]
+      ],
+      "kicker": "太行豫北 / WEEKEND",
+      "story": "云台山、青天河、神农山是不同游线，山区一天选一处，另一日可安排陈家沟或乡村文化。",
+      "theme": "山谷、太极与乡村文化",
+      "cities": [
+        "焦作"
+      ],
+      "image": "/assets/yuntai-mountain.jpg",
+      "photoLabel": "焦作 · 云台山实景"
+    },
+    {
+      "id": "puyang-weekend",
+      "title": "濮阳 · 龙都与杂技两日",
+      "subtitle": "杂技文化与城市湖岸",
+      "days": 2,
+      "city": "濮阳",
+      "note": "先确认杂技文化片区的场馆和演出，再安排龙湖开放岸线与转场。 本路线仅为可编辑组合，游览时长不含实际交通。",
+      "stops": [
+        [
+          "hn-qicheng",
+          1,
+          90
+        ],
+        [
+          "hn-pushang",
+          1,
+          120
+        ],
+        [
+          "hn-dongbeizhuang",
+          2,
+          180
+        ],
+        [
+          "hn-puyang-longhu",
+          2,
+          90
+        ]
+      ],
+      "kicker": "太行豫北 / WEEKEND",
+      "story": "市区遗址、园林和龙湖适合慢游；杂技体验先查具体场馆和演出，再留出往返时间。",
+      "theme": "杂技文化与城市湖岸",
+      "cities": [
+        "濮阳"
+      ]
+    },
+    {
+      "id": "xuchang-weekend",
+      "title": "许昌 · 曹魏与钧瓷两日",
+      "subtitle": "曹魏夜游、钧瓷与商贸",
+      "days": 2,
+      "city": "许昌",
+      "note": "先查胖东来天使城营业与客流；神垕在禹州，手作与往返另外留时间。 本路线仅为可编辑组合，游览时长不含实际交通。",
+      "stops": [
+        [
+          "hn-pangdonglai",
+          1,
+          120
+        ],
+        [
+          "hn-chunqiu",
+          1,
+          90
+        ],
+        [
+          "hn-caowei",
+          1,
+          150
+        ],
+        [
+          "hn-shenhou",
+          2,
+          240
+        ]
+      ],
+      "kicker": "都市中原 / WEEKEND",
+      "story": "曹魏街区、春秋楼和胖东来可安排市区游；神垕古镇位于禹州，钧瓷体验与往返另外预留。",
+      "theme": "曹魏夜游、钧瓷与商贸",
+      "cities": [
+        "许昌"
+      ]
+    },
+    {
+      "id": "luohe-weekend",
+      "title": "漯河 · 文字与滨河两日",
+      "subtitle": "滨河慢游与文字研学",
+      "days": 2,
+      "city": "漯河",
+      "note": "园区和夜游按当日开放安排；滨河岸线、排队与站间交通另确认。 本路线仅为可编辑组合，游览时长不含实际交通。",
+      "stops": [
+        [
+          "hn-xushen",
+          1,
+          120
+        ],
+        [
+          "hn-shali",
+          1,
+          90
+        ],
+        [
+          "hn-birdpark",
+          2,
+          240
+        ],
+        [
+          "hn-luowan",
+          2,
+          120
+        ]
+      ],
+      "kicker": "都市中原 / WEEKEND",
+      "story": "沿沙澧河慢走，也可选文字文化或亲子园区；郾城古桥与其他片区的交通单独安排。",
+      "theme": "滨河慢游与文字研学",
+      "cities": [
+        "漯河"
+      ]
+    },
+    {
+      "id": "sanmenxia-weekend",
+      "title": "三门峡 · 彩陶与地坑院两日",
+      "subtitle": "黄河、彩陶与地坑院",
+      "days": 2,
+      "city": "三门峡",
+      "note": "文博、湖岸与陕州分日；天鹅是季节性景观，不保证当前可见。 本路线仅为可编辑组合，游览时长不含实际交通。",
+      "stops": [
+        [
+          "hn-miaodigou",
+          1,
+          120
+        ],
+        [
+          "hn-swanlake",
+          1,
+          90
+        ],
+        [
+          "hn-dikeng",
+          2,
+          180
+        ]
+      ],
+      "kicker": "河洛豫西 / WEEKEND",
+      "story": "湖滨文博和黄河湿地适合城市慢游；陕州地坑院、灵宝函谷关、卢氏峡谷需要独立转场。",
+      "theme": "黄河、彩陶与地坑院",
+      "cities": [
+        "三门峡"
+      ]
+    },
+    {
+      "id": "nanyang-weekend",
+      "title": "南阳 · 卧龙与赊店两日",
+      "subtitle": "卧龙文化与伏牛山水",
+      "days": 2,
+      "city": "南阳",
+      "note": "市区与社旗古镇分日；如改选西峡山水，另留一天和往返交通。 本路线仅为可编辑组合，游览时长不含实际交通。",
+      "stops": [
+        [
+          "hn-wolong",
+          1,
+          180
+        ],
+        [
+          "hn-shedian",
+          2,
+          180
+        ]
+      ],
+      "kicker": "伏牛豫南 / WEEKEND",
+      "story": "市区三国文化、社旗古镇、内乡县衙、西峡山水分布较广，周末先确定主片区与往返。",
+      "theme": "卧龙文化与伏牛山水",
+      "cities": [
+        "南阳"
+      ]
+    },
+    {
+      "id": "shangqiu-weekend",
+      "title": "商丘 · 古城与汉文化两日",
+      "subtitle": "古城书院与永城汉文化",
+      "days": 2,
+      "city": "商丘",
+      "note": "芒砀山在永城，需单独安排城际/县域交通，可选择当地住宿后返程。 本路线仅为可编辑组合，游览时长不含实际交通。",
+      "stops": [
+        [
+          "hn-shangqiu-city",
+          1,
+          180
+        ],
+        [
+          "hn-yingtian-academy",
+          1,
+          90
+        ],
+        [
+          "hn-mangdang",
+          2,
+          300
+        ]
+      ],
+      "kicker": "豫东人文 / WEEKEND",
+      "story": "古城、书院和城市湖岸适合分段慢游，芒砀山在永城，另安排一天体验汉文化。",
+      "theme": "古城书院与永城汉文化",
+      "cities": [
+        "商丘"
+      ]
+    },
+    {
+      "id": "xinyang-weekend",
+      "title": "信阳 · 茶湖与鸡公山两日",
+      "subtitle": "湖山茶园与乡村微度假",
+      "days": 2,
+      "city": "信阳",
+      "note": "南湾湖游船与鸡公山分日，航线、山地交通和天气先确认。 本路线仅为可编辑组合，游览时长不含实际交通。",
+      "stops": [
+        [
+          "hn-nanwan",
+          1,
+          240
+        ],
+        [
+          "hn-jigongshan",
+          2,
+          360
+        ]
+      ],
+      "kicker": "大别茶乡 / WEEKEND",
+      "story": "南湾湖、鸡公山、茶园和村落提供不同节奏的豫南体验，游船、采茶与沙滩活动先看季节和天气。",
+      "theme": "湖山茶园与乡村微度假",
+      "cities": [
+        "信阳"
+      ]
+    },
+    {
+      "id": "zhoukou-weekend",
+      "title": "周口 · 淮阳与亲子两日",
+      "subtitle": "伏羲文化与亲子周末",
+      "days": 2,
+      "city": "周口",
+      "note": "淮阳与动物世界分日；庙会、荷花、夜场均不保证到访时存在。 本路线仅为可编辑组合，游览时长不含实际交通。",
+      "stops": [
+        [
+          "hn-taihao",
+          1,
+          180
+        ],
+        [
+          "hn-huaiyang-longhu",
+          1,
+          90
+        ],
+        [
+          "hn-zhoukou-zoo",
+          2,
+          300
+        ]
+      ],
+      "kicker": "豫东人文 / WEEKEND",
+      "story": "淮阳陵庙与龙湖适合分段参观，市区民俗、动物世界及鹿邑老子文化按片区分日。",
+      "theme": "伏羲文化与亲子周末",
+      "cities": [
+        "周口"
+      ]
+    },
+    {
+      "id": "zhumadian-weekend",
+      "title": "驻马店 · 山野与驿站两日",
+      "subtitle": "奇石山野与驿站夜游",
+      "days": 2,
+      "city": "驻马店",
+      "note": "遂平登山与市区街区分日，山路、返程与演艺场次另确认。 本路线仅为可编辑组合，游览时长不含实际交通。",
+      "stops": [
+        [
+          "hn-chayashan",
+          1,
+          360
+        ],
+        [
+          "hn-royal-post",
+          2,
+          150
+        ]
+      ],
+      "kicker": "伏牛豫南 / WEEKEND",
+      "story": "嵖岈山、老乐山和汝南寺院各需往返时间，皇家驿站可作为市区街区体验。",
+      "theme": "奇石山野与驿站夜游",
+      "cities": [
+        "驻马店"
+      ]
+    },
+    {
+      "id": "jiyuan-weekend",
+      "title": "济源 · 王屋与济水两日",
+      "subtitle": "王屋山与黄河峡谷",
+      "days": 2,
+      "city": "济源",
+      "note": "山区、市区与五龙口分别确认入口；动物、索道和天气不作保证。 本路线仅为可编辑组合，游览时长不含实际交通。",
+      "stops": [
+        [
+          "hn-wangwu",
+          1,
+          360
+        ],
+        [
+          "hn-jidu",
+          2,
+          90
+        ],
+        [
+          "hn-wulongkou",
+          2,
+          240
+        ]
+      ],
+      "kicker": "河洛豫西 / WEEKEND",
+      "story": "王屋山、五龙口和黄河三峡各选一条游线，济渎庙可补充市区人文体验。",
+      "theme": "王屋山与黄河峡谷",
+      "cities": [
+        "济源"
+      ]
     }
   ]
 }

@@ -5,7 +5,7 @@ import worker,{HTML,CATALOG,PRESETS,validateDraft,validatePlan} from '../worker/
 const call=(path,body,env={})=>worker.fetch(new Request('https://travel.test'+path,body?{method:'POST',headers:{'oai-authenticated-user-id':'fixture'},body:JSON.stringify(body)}:{}),env);
 const data=async r=>({status:r.status,body:await r.json()});
 const list=await data(await call('/api/places?city=郑州&category=all'));
-assert.equal(list.body.source,'curated');assert.equal(list.body.places.length,7);
+assert.equal(list.body.source,'curated');assert.equal(list.body.places.length,8);
 assert.equal((await data(await call('/api/places?city=上海'))).status,400);
 assert.equal((await data(await call('/api/places?category=invalid'))).status,400);
 const draft={days:2,start:'09:00',stops:list.body.places.slice(0,4).map(p=>({place:p,day:1,duration:90}))};
@@ -42,7 +42,7 @@ const registered=[];const context={document:{querySelector:get,querySelectorAll:
 context.fixture=list.body.places;vm.runInContext('places=fixture;renderAll();add(places[0]);add(places[0]);',context);assert.equal(vm.runInContext('trip.length',context),1);
 const bad=await registered.find(t=>t.name==='add_travel_stop').execute({id:'made-up'});assert.equal(bad.content[0].text,'地点不存在');await registered.find(t=>t.name==='remove_travel_stop').execute({id:list.body.places[0].id});assert.equal(vm.runInContext('trip.length',context),0);
 const image=await call('/assets/ruyi.jpg');assert.equal(image.headers.get('Content-Type'),'image/jpeg');assert((await image.arrayBuffer()).byteLength>1000);
-const catalog=await data(await call('/api/catalog'));assert.equal(catalog.body.cities.length,6);assert.equal(catalog.body.places.length,26);assert.equal(catalog.body.routes.length,3);
+const catalog=await data(await call('/api/catalog'));assert.equal(catalog.body.cities.length,18);assert.equal(catalog.body.places.length,95);assert.equal(catalog.body.routes.length,20);
 for(const city of catalog.body.cities){const r=await data(await call('/api/places?city='+encodeURIComponent(city)));assert.equal(r.status,200);assert(r.body.places.length>=2);assert(r.body.places.every(p=>p.city===city&&p.source==='curated'))}
 const wuxiaSearch=await data(await call('/api/places?city=河南&q='+encodeURIComponent('大宋武侠城')));assert.deepEqual(wuxiaSearch.body.places.map(p=>p.id),['hn-wansui']);
 assert(CATALOG.some(p=>p.id==='hn-laojunshan'&&p.city==='洛阳'&&p.location[1]<34),'Laojun Mountain must be located in Luanchuan rather than downtown Luoyang');
