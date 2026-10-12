@@ -1,5 +1,7 @@
 import assert from 'node:assert/strict';
 import vm from 'node:vm';
+import {readFile} from 'node:fs/promises';
+import {createHash} from 'node:crypto';
 import worker,{HTML,CATALOG,PRESETS,CITY_GUIDES,parseIntentRules,validateIntent,validateDraft,rulePlan,validatePlan,auditDecision} from '../worker/index.js';
 
 const expected=['郑州','洛阳','开封','平顶山','安阳','鹤壁','新乡','焦作','濮阳','许昌','漯河','三门峡','南阳','商丘','信阳','周口','驻马店','济源'];
@@ -46,4 +48,13 @@ for(const p of CATALOG.filter(p=>p.planningEligible===false)){const report=audit
 for(const r of PRESETS){context.id=r.id;run('previewFeaturedRoute(id)');const markup=get('#theme-routes').innerHTML;assert(!markup.includes('src="undefined"'));assert.equal((markup.match(/class="side-route"/g)||[]).length,2);if(!r.image){assert(markup.includes('路线示意 · 未使用实景照片'));assert(markup.includes('route-type-cover'))}}
 assert.equal(run('JSON.stringify(compactDraft())'),before);assert.equal(get('#brieftext').value,'保留我的旅行需求');
 const catalog=await (await worker.fetch(new Request('https://fixture.test/api/catalog'),{})).json();assert.equal(catalog.cityGuides.length,18);assert.equal(catalog.cities.length,18);
-console.log('Passed: 18 destinations, 95 places, 20 valid routes, county aliases and exclusions, unavailable-place guard, region/search discovery, honest covers and preserved draft.');
+const photos=JSON.parse(await readFile(new URL('../docs/photo-catalog.json',import.meta.url),'utf8'));
+for(const record of photos){
+ const p=CATALOG.find(p=>p.id===record.placeId);assert(p&&p.image&&p.photoCaption,record.placeId);
+ assert.equal(p.city,record.city);assert.equal(p.photoAuthor,record.author);assert.equal(p.photoTakenAt,record.takenAt);assert.equal(p.photoReference,record.source);assert.equal(p.licenseUrl,record.licenseUrl);
+ assert(/^https:\/\/commons.wikimedia.org\/wiki\/File:/.test(record.source));assert(/^https:\/\/creativecommons.org\//.test(record.licenseUrl));assert(/^202[4-6]-\d{2}(?:-\d{2})?$/.test(record.takenAt));
+ const source=await readFile(new URL('../'+record.file,import.meta.url));assert.equal(createHash('sha256').update(source).digest('hex'),record.sha256);assert(p.image.endsWith('?v='+record.sha256.slice(0,12)));
+ const asset=await worker.fetch(new Request('https://fixture.test'+p.image),{});assert.equal(asset.status,200);assert.equal(asset.headers.get('content-type'),'image/jpeg');assert.equal(createHash('sha256').update(Buffer.from(await asset.arrayBuffer())).digest('hex'),record.sha256);
+}
+run("atlasQuery='';atlasRegion='全部';chooseAtlasCity('安阳')");assert(get('#atlas-city-detail').innerHTML.includes(CATALOG.find(p=>p.id==='hn-yinxu').image));assert.equal(run('JSON.stringify(compactDraft())'),before);
+console.log('Passed: 18 destinations, 95 places, 20 valid routes, county aliases and exclusions, unavailable-place guard, region/search discovery, honest covers, photo provenance and asset hashes, preserved draft.');

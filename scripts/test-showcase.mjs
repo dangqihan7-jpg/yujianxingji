@@ -34,10 +34,10 @@ context.document.hidden=true;run('scheduleHeroRotation()');assert.equal(carousel
 run("activeView='planner';scheduleHeroRotation()");assert.equal(carouselTimers.size,0);run("activeView='gallery';heroVisible=false;scheduleHeroRotation()");assert.equal(carouselTimers.size,0);run('heroVisible=true;scheduleHeroRotation()');assert.equal(carouselTimers.size,1);
 get('#gallery').onclick({target:{closest:s=>s==='[data-hero-toggle]'?{}:null}});assert.equal(run('heroAutoplay'),false);assert.equal(carouselTimers.size,0);
 context.setTimeout=()=>0;context.clearTimeout=()=>{};context.document.querySelector=get;run('selectHeroPhoto(0)');
-const albumDraft=run('JSON.stringify(compactDraft())');
+const albumDraft=run('JSON.stringify(compactDraft())'),albumTotal=String(CATALOG.filter(p=>p.image).length).padStart(2,'0');
 get('#gallery').onclick({target:{closest:s=>s==='[data-open-album]'?{dataset:{photoPlace:'hn-longmen'}}:null}});
 assert.equal(get('#photoalbum').open,true);assert.equal(get('#album-title').textContent,'龙门石窟');
-assert.equal(get('#album-count').textContent,'02 / 12');assert.equal(get('#album-date').textContent,'拍摄于 2025-05-04');
+assert.equal(get('#album-count').textContent,'02 / '+albumTotal);assert.equal(get('#album-date').textContent,'拍摄于 2025-05-04');
 assert.equal(get('#album-image').src,CATALOG.find(p=>p.id==='hn-longmen').image);
 assert.equal(get('#album-source').href,CATALOG.find(p=>p.id==='hn-longmen').photoReference);
 const albumThumbs=get('#album-thumbnails').innerHTML;
@@ -48,9 +48,9 @@ get('#photoalbum').onkeydown({key:'ArrowLeft',preventDefault(){albumPrevented++}
 assert.equal(get('#album-title').textContent,'龙门石窟');assert.equal(albumPrevented,1);
 get('#photoalbum').onkeydown({key:'ArrowRight',ctrlKey:true,preventDefault(){albumPrevented++}});
 assert.equal(get('#album-title').textContent,'龙门石窟');assert.equal(albumPrevented,1,'Modified arrows keep their browser behavior');
-run('selectAlbumPhoto(0);stepAlbumPhoto(-1)');assert.equal(get('#album-count').textContent,'12 / 12');
-run('stepAlbumPhoto(1)');assert.equal(get('#album-count').textContent,'01 / 12');
-run('selectAlbumPhoto(-1);selectAlbumPhoto(100);selectAlbumPhoto(1.5)');assert.equal(get('#album-count').textContent,'01 / 12');
+run('selectAlbumPhoto(0);stepAlbumPhoto(-1)');assert.equal(get('#album-count').textContent,albumTotal+' / '+albumTotal);
+run('stepAlbumPhoto(1)');assert.equal(get('#album-count').textContent,'01 / '+albumTotal);
+run('selectAlbumPhoto(-1);selectAlbumPhoto(100);selectAlbumPhoto(1.5)');assert.equal(get('#album-count').textContent,'01 / '+albumTotal);
 get('#photoalbum').onclick({target:{closest:s=>s==='[data-album-photo]'?{dataset:{albumPhoto:'2'}}:null}});
 assert.equal(get('#album-title').textContent,'洛邑古城');
 const staleAlbumError=get('#album-image').onerror;

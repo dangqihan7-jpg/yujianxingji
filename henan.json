@@ -502,7 +502,16 @@
       "description": "郑州老城的代表性地标。适合与周边街区步行体验组合，登塔和展陈开放安排请另行确认。",
       "theme": "城市地标",
       "duration": 60,
-      "reference": "https://hct.henan.gov.cn/2021/12-01/2357795.html"
+      "reference": "https://hct.henan.gov.cn/2021/12-01/2357795.html",
+      "image": "/assets/hn-erqi.jpg?v=50036af6a94a",
+      "photoReference": "https://commons.wikimedia.org/wiki/File:20240920_Erqi_Memorial_Tower_01.jpg",
+      "photoTakenAt": "2024-09-20",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "credit": "Windmemories / Wikimedia Commons · CC BY-SA 4.0 · 拍摄于 2024-09-20 · 使用公开缩略版；卡片裁切显示",
+      "photoCaption": "郑州二七纪念塔双塔与广场实景。",
+      "photoAuthor": "Windmemories",
+      "photoLicense": "CC BY-SA 4.0",
+      "photoCheckedAt": "2026-10-12"
     },
     {
       "id": "hn-shaolin",
@@ -729,7 +738,16 @@
       "description": "观看开封铁塔与园林空间，感受古建筑的细节。建议安排轻松步行，登塔与园区开放政策以现场为准。",
       "theme": "古建寻踪",
       "duration": 90,
-      "reference": "https://www.henan.gov.cn/2020/07-24/1745005.html"
+      "reference": "https://www.henan.gov.cn/2020/07-24/1745005.html",
+      "image": "/assets/hn-ironpagoda.jpg?v=6f315f736d9a",
+      "photoReference": "https://commons.wikimedia.org/wiki/File:20250622_Iron_Pagoda_Park_03.jpg",
+      "photoTakenAt": "2025-06-22",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "credit": "Windmemories / Wikimedia Commons · CC BY-SA 4.0 · 拍摄于 2025-06-22 · 使用公开缩略版；卡片裁切显示",
+      "photoCaption": "开封铁塔公园湖畔、亭廊与铁塔同框。",
+      "photoAuthor": "Windmemories",
+      "photoLicense": "CC BY-SA 4.0",
+      "photoCheckedAt": "2026-10-12"
     },
     {
       "id": "hn-yuntai",
@@ -783,7 +801,16 @@
       "reference": "https://hct.henan.gov.cn/2025/06-17/3170379.html",
       "aliases": [
         "殷墟新馆"
-      ]
+      ],
+      "image": "/assets/hn-yinxu.jpg?v=87910acc0e4c",
+      "photoReference": "https://commons.wikimedia.org/wiki/File:Yinxu_Museum_20250831.jpg",
+      "photoTakenAt": "2025-08-31",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "credit": "1969社论 / Wikimedia Commons · CC BY-SA 4.0 · 拍摄于 2025-08-31 · 使用公开缩略版；卡片裁切显示",
+      "photoCaption": "安阳殷墟博物馆新馆正立面与入口水景。",
+      "photoAuthor": "1969社论",
+      "photoLicense": "CC BY-SA 4.0",
+      "photoCheckedAt": "2026-10-12"
     },
     {
       "id": "hn-writing",
@@ -798,7 +825,16 @@
       "description": "沿着文字演变的线索认识中华文化。适合与殷墟博物馆组合，参观预约与开放日期请以官方信息为准。",
       "theme": "文字之旅",
       "duration": 120,
-      "reference": "https://www.henan.gov.cn/2020/07-24/1745005.html"
+      "reference": "https://www.henan.gov.cn/2020/07-24/1745005.html",
+      "image": "/assets/hn-writing.jpg?v=bb4b379cda9e",
+      "photoReference": "https://commons.wikimedia.org/wiki/File:20260403_National_Museum_of_Chinese_Writing_01.jpg",
+      "photoTakenAt": "2026-04-03",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "credit": "Windmemories / Wikimedia Commons · CC BY-SA 4.0 · 拍摄于 2026-04-03 · 使用公开缩略版；卡片裁切显示",
+      "photoCaption": "安阳中国文字博物馆门前字坊与主体建筑。",
+      "photoAuthor": "Windmemories",
+      "photoLicense": "CC BY-SA 4.0",
+      "photoCheckedAt": "2026-10-12"
     },
     {
       "id": "hn-redflag",
@@ -1040,7 +1076,16 @@
       "district": "老城区",
       "address": "洛阳市老城区 · 定鼎南路23号",
       "locationReference": "https://www.amap.com/place/B0FFIRTVVC",
-      "locationNote": "参考高德景区或片区点位，具体交通入口需确认。"
+      "locationNote": "参考高德景区或片区点位，具体交通入口需确认。",
+      "image": "/assets/hn-yingtian.jpg?v=77a908cada14",
+      "photoReference": "https://commons.wikimedia.org/wiki/File:Yingtian_Gate.jpg",
+      "photoTakenAt": "2026-04-12",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "credit": "NAN LIU / Wikimedia Commons · CC BY-SA 4.0 · 拍摄于 2026-04-12 · 使用公开缩略版；卡片裁切显示",
+      "photoCaption": "洛阳应天门遗址博物馆夜间亮灯外景。",
+      "photoAuthor": "NAN LIU",
+      "photoLicense": "CC BY-SA 4.0",
+      "photoCheckedAt": "2026-10-12"
     },
     {
       "id": "hn-mingtang",
@@ -1349,7 +1394,16 @@
       "district": "汤阴县",
       "address": "安阳市汤阴县 · 文化街142号",
       "locationReference": "https://www.amap.com/place/B017401LUK",
-      "locationNote": "参考高德景区或片区点位，具体交通入口需确认。"
+      "locationNote": "参考高德景区或片区点位，具体交通入口需确认。",
+      "image": "/assets/hn-yuefei.jpg?v=431280b1254a",
+      "photoReference": "https://commons.wikimedia.org/wiki/File:20250831_Yue_Fei_Temple_in_Tangyin_01.jpg",
+      "photoTakenAt": "2025-08-31",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "credit": "Windmemories / Wikimedia Commons · CC BY-SA 4.0 · 拍摄于 2025-08-31 · 使用公开缩略版；卡片裁切显示",
+      "photoCaption": "汤阴岳飞庙入口与“宋岳忠武王庙”牌匾。",
+      "photoAuthor": "Windmemories",
+      "photoLicense": "CC BY-SA 4.0",
+      "photoCheckedAt": "2026-10-12"
     },
     {
       "id": "hn-hangu",
@@ -1518,7 +1572,16 @@
       "district": "汝州市",
       "address": "平顶山市汝州市 · 风穴路985号",
       "locationReference": "https://www.amap.com/place/B017700U4D",
-      "locationNote": "参考高德景区或片区点位，具体交通入口需确认。"
+      "locationNote": "参考高德景区或片区点位，具体交通入口需确认。",
+      "image": "/assets/hn-fengxue.jpg?v=799f51157ad5",
+      "photoReference": "https://commons.wikimedia.org/wiki/File:20260412_Fengxue_Temple_01.jpg",
+      "photoTakenAt": "2026-04-12",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "credit": "Windmemories / Wikimedia Commons · CC BY-SA 4.0 · 拍摄于 2026-04-12 · 使用公开缩略版；卡片裁切显示",
+      "photoCaption": "汝州风穴寺殿宇、塔与春日庭院。",
+      "photoAuthor": "Windmemories",
+      "photoLicense": "CC BY-SA 4.0",
+      "photoCheckedAt": "2026-10-12"
     },
     {
       "id": "hn-baigui",
@@ -1572,7 +1635,16 @@
       "district": "浚县",
       "address": "鹤壁市浚县 · 北大街96号",
       "locationReference": "https://www.amap.com/place/B0FFIQX2MS",
-      "locationNote": "村落或古城片区展示，参考附近公共机构点位，具体参观入口需确认。"
+      "locationNote": "村落或古城片区展示，参考附近公共机构点位，具体参观入口需确认。",
+      "image": "/assets/hn-junxian.jpg?v=68279747b0e2",
+      "photoReference": "https://commons.wikimedia.org/wiki/File:20241201_East_Street,_Xun_County.jpg",
+      "photoTakenAt": "2024-12-01",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "credit": "Windmemories / Wikimedia Commons · CC BY-SA 4.0 · 拍摄于 2024-12-01 · 使用公开缩略版；卡片裁切显示",
+      "photoCaption": "浚县古城东街的沿街建筑与日常街景。",
+      "photoAuthor": "Windmemories",
+      "photoLicense": "CC BY-SA 4.0",
+      "photoCheckedAt": "2026-10-12"
     },
     {
       "id": "hn-dapishan",
@@ -1599,7 +1671,16 @@
       "district": "浚县",
       "address": "鹤壁市浚县 · 浚县",
       "locationReference": "https://www.amap.com/place/B0188008TZ",
-      "locationNote": "参考高德景区或片区点位，具体交通入口需确认。"
+      "locationNote": "参考高德景区或片区点位，具体交通入口需确认。",
+      "image": "/assets/hn-dapishan.jpg?v=173e926bf24b",
+      "photoReference": "https://commons.wikimedia.org/wiki/File:20241201_Dapi_Mountain.jpg",
+      "photoTakenAt": "2024-12-01",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "credit": "Windmemories / Wikimedia Commons · CC BY-SA 4.0 · 拍摄于 2024-12-01 · 使用公开缩略版；卡片裁切显示",
+      "photoCaption": "浚县大伾山石壁题名实景。",
+      "photoAuthor": "Windmemories",
+      "photoLicense": "CC BY-SA 4.0",
+      "photoCheckedAt": "2026-10-12"
     },
     {
       "id": "hn-yunmeng",
@@ -1749,7 +1830,17 @@
       "locationNote": "参考高德景区或片区点位，具体交通入口需确认。",
       "planningNotes": [
         "万仙山的往返交通、景区内部交通与天气需另行确认。"
-      ]
+      ],
+      "image": "/assets/hn-wanxianshan.jpg?v=25420666077d",
+      "photoReference": "https://commons.wikimedia.org/wiki/File:%E4%B8%87%E4%BB%99%E5%B1%B1.jpg",
+      "photoTakenAt": "2024-05",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/deed.en",
+      "credit": "Vitsuha / Wikimedia Commons · CC0 · 拍摄于 2024-05 · 使用公开缩略版；卡片裁切显示",
+      "photoCaption": "辉县万仙山太行崖壁与山谷林木实景。",
+      "photoAuthor": "Vitsuha",
+      "photoLicense": "CC0",
+      "photoCheckedAt": "2026-10-12",
+      "photoDateNote": "原页 EXIF 标注 2024-05-19，分类标注 2024-05-18；页面只显示可确认的月份。"
     },
     {
       "id": "hn-bigan",
@@ -1775,7 +1866,16 @@
       "district": "卫辉市",
       "address": "新乡市卫辉市 · 比干庙村",
       "locationReference": "https://www.amap.com/place/B01750128S",
-      "locationNote": "参考高德景区或片区点位，具体交通入口需确认。"
+      "locationNote": "参考高德景区或片区点位，具体交通入口需确认。",
+      "image": "/assets/hn-bigan.jpg?v=b34542976144",
+      "photoReference": "https://commons.wikimedia.org/wiki/File:20240803_Bi_Gan_Temple_21.jpg",
+      "photoTakenAt": "2024-08-03",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "credit": "Windmemories / Wikimedia Commons · CC BY-SA 4.0 · 拍摄于 2024-08-03 · 使用公开缩略版；卡片裁切显示",
+      "photoCaption": "卫辉比干庙院落、殿宇与墓区航拍。",
+      "photoAuthor": "Windmemories",
+      "photoLicense": "CC BY-SA 4.0",
+      "photoCheckedAt": "2026-10-12"
     },
     {
       "id": "hn-qicheng",
@@ -1937,7 +2037,16 @@
       "district": "魏都区",
       "address": "许昌市魏都区 · 文庙前街春秋广场",
       "locationReference": "https://www.amap.com/place/B0FFGBFV0K",
-      "locationNote": "参考高德景区或片区点位，具体交通入口需确认。"
+      "locationNote": "参考高德景区或片区点位，具体交通入口需确认。",
+      "image": "/assets/hn-chunqiu.jpg?v=a6e96e5e549f",
+      "photoReference": "https://commons.wikimedia.org/wiki/File:20260111_Chunqiu_Mansion,_Xuchang.jpg",
+      "photoTakenAt": "2026-01-11",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "credit": "Windmemories / Wikimedia Commons · CC BY-SA 4.0 · 拍摄于 2026-01-11 · 使用公开缩略版；卡片裁切显示",
+      "photoCaption": "许昌春秋楼院内楼阁与香炉实景。",
+      "photoAuthor": "Windmemories",
+      "photoLicense": "CC BY-SA 4.0",
+      "photoCheckedAt": "2026-10-12"
     },
     {
       "id": "hn-shenhou",
@@ -1964,7 +2073,16 @@
       "district": "禹州市",
       "address": "许昌市禹州市 · 神垕镇市场街中段",
       "locationReference": "https://www.amap.com/place/B0FFHOKWJJ",
-      "locationNote": "参考高德景区或片区点位，具体交通入口需确认。"
+      "locationNote": "参考高德景区或片区点位，具体交通入口需确认。",
+      "image": "/assets/hn-shenhou.jpg?v=08bcb38f3e5b",
+      "photoReference": "https://commons.wikimedia.org/wiki/File:20260329_Shenhou.jpg",
+      "photoTakenAt": "2026-03-29",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "credit": "Windmemories / Wikimedia Commons · CC BY-SA 4.0 · 拍摄于 2026-03-29 · 使用公开缩略版；卡片裁切显示",
+      "photoCaption": "禹州神垕古镇老街的砖墙院落与街巷。",
+      "photoAuthor": "Windmemories",
+      "photoLicense": "CC BY-SA 4.0",
+      "photoCheckedAt": "2026-10-12"
     },
     {
       "id": "hn-pangdonglai",
@@ -1991,7 +2109,16 @@
       "district": "魏都区",
       "address": "许昌市魏都区 · 建安大道与八龙路交叉口东北角建安文化广场内",
       "locationReference": "https://www.amap.com/place/B0J6YS04RS",
-      "locationNote": "参考高德景区或片区点位，具体交通入口需确认。"
+      "locationNote": "参考高德景区或片区点位，具体交通入口需确认。",
+      "image": "/assets/hn-pangdonglai.jpg?v=049a82054e49",
+      "photoReference": "https://commons.wikimedia.org/wiki/File:20240703_DL_Angel_City.jpg",
+      "photoTakenAt": "2024-07-03",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "credit": "Windmemories / Wikimedia Commons · CC BY-SA 4.0 · 拍摄于 2024-07-03 · 使用公开缩略版；卡片裁切显示",
+      "photoCaption": "许昌胖东来天使城商场外立面与入口广场。",
+      "photoAuthor": "Windmemories",
+      "photoLicense": "CC BY-SA 4.0",
+      "photoCheckedAt": "2026-10-12"
     },
     {
       "id": "hn-baling",
@@ -2127,7 +2254,16 @@
       "district": "临颍县",
       "address": "漯河市临颍县 · 皇帝庙乡商桥村",
       "locationReference": "https://www.amap.com/place/B018B00137",
-      "locationNote": "参考高德景区或片区点位，具体交通入口需确认。"
+      "locationNote": "参考高德景区或片区点位，具体交通入口需确认。",
+      "image": "/assets/hn-xiaoshang.jpg?v=89b0e4a4692b",
+      "photoReference": "https://commons.wikimedia.org/wiki/File:20240818_Xiaoshang_Bridge_01.jpg",
+      "photoTakenAt": "2024-08-18",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "credit": "Windmemories / Wikimedia Commons · CC BY-SA 4.0 · 拍摄于 2024-08-18 · 使用公开缩略版；卡片裁切显示",
+      "photoCaption": "临颍小商桥桥体、河道与两岸绿树。",
+      "photoAuthor": "Windmemories",
+      "photoLicense": "CC BY-SA 4.0",
+      "photoCheckedAt": "2026-10-12"
     },
     {
       "id": "hn-luowan",
@@ -2181,7 +2317,16 @@
       "district": "卧龙区",
       "address": "南阳市卧龙区 · 卧龙路766号",
       "locationReference": "https://www.amap.com/place/B017900KLA",
-      "locationNote": "参考高德景区或片区点位，具体交通入口需确认。"
+      "locationNote": "参考高德景区或片区点位，具体交通入口需确认。",
+      "image": "/assets/hn-wolong.jpg?v=47efcb83ba2f",
+      "photoReference": "https://commons.wikimedia.org/wiki/File:20260904_Temple_of_Marquis_Wu,_Nanyang_01.jpg",
+      "photoTakenAt": "2026-09-04",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "credit": "Windmemories / Wikimedia Commons · CC BY-SA 4.0 · 拍摄于 2026-09-04 · 使用公开缩略版；卡片裁切显示",
+      "photoCaption": "南阳武侯祠“千古人龙”石牌坊与阶前实景。",
+      "photoAuthor": "Windmemories",
+      "photoLicense": "CC BY-SA 4.0",
+      "photoCheckedAt": "2026-10-12"
     },
     {
       "id": "hn-shedian",
@@ -2208,7 +2353,16 @@
       "district": "社旗县",
       "address": "南阳市社旗县 · 永庆街与永泰街交叉口",
       "locationReference": "https://www.amap.com/place/B0FFLNSB76",
-      "locationNote": "参考高德景区或片区点位，具体交通入口需确认。"
+      "locationNote": "参考高德景区或片区点位，具体交通入口需确认。",
+      "image": "/assets/hn-shedian.jpg?v=882a890c54d8",
+      "photoReference": "https://commons.wikimedia.org/wiki/File:20251004_Guang_Sheng_Escort_Agency_01.jpg",
+      "photoTakenAt": "2025-10-04",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "credit": "Windmemories / Wikimedia Commons · CC BY-SA 4.0 · 拍摄于 2025-10-04 · 使用公开缩略版；卡片裁切显示",
+      "photoCaption": "赊店古镇广盛镖局院落与镖车展示。",
+      "photoAuthor": "Windmemories",
+      "photoLicense": "CC BY-SA 4.0",
+      "photoCheckedAt": "2026-10-12"
     },
     {
       "id": "hn-neixiang",
@@ -2372,7 +2526,16 @@
       "district": "永城市",
       "address": "商丘市永城市 · 芒山镇僖山村",
       "locationReference": "https://www.amap.com/place/B017200VNQ",
-      "locationNote": "参考高德景区或片区点位，具体交通入口需确认。"
+      "locationNote": "参考高德景区或片区点位，具体交通入口需确认。",
+      "image": "/assets/hn-mangdang.jpg?v=606b288f5517",
+      "photoReference": "https://commons.wikimedia.org/wiki/File:20260131_Mausoleum_of_Prince_Gong_of_Liang_01.jpg",
+      "photoTakenAt": "2026-01-31",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "credit": "Windmemories / Wikimedia Commons · CC BY-SA 4.0 · 拍摄于 2026-01-31 · 使用公开缩略版；卡片裁切显示",
+      "photoCaption": "芒砀山汉梁王陵景区梁恭王陵墓道入口。",
+      "photoAuthor": "Windmemories",
+      "photoLicense": "CC BY-SA 4.0",
+      "photoCheckedAt": "2026-10-12"
     },
     {
       "id": "hn-riyuehu",
@@ -2457,7 +2620,16 @@
       "locationNote": "参考高德景区或片区点位，具体交通入口需确认。",
       "planningNotes": [
         "南湾湖的往返交通、景区内部交通与天气需另行确认。"
-      ]
+      ],
+      "image": "/assets/hn-nanwan.jpg?v=264b34dc6272",
+      "photoReference": "https://commons.wikimedia.org/wiki/File:%E5%8D%97%E6%B9%BE%E6%B9%96_3.jpg",
+      "photoTakenAt": "2024-10-05",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "credit": "Whzizhi / Wikimedia Commons · CC BY-SA 4.0 · 拍摄于 2024-10-05 · 使用公开缩略版；卡片裁切显示",
+      "photoCaption": "信阳南湾湖水面与林木覆盖的岛岸。",
+      "photoAuthor": "Whzizhi",
+      "photoLicense": "CC BY-SA 4.0",
+      "photoCheckedAt": "2026-10-12"
     },
     {
       "id": "hn-haotang",
@@ -2569,7 +2741,16 @@
       "district": "淮阳区",
       "address": "周口市淮阳区 · 太昊伏羲陵文化旅游区",
       "locationReference": "https://www.amap.com/place/B0L39SRI93",
-      "locationNote": "参考高德景区或片区点位，具体交通入口需确认。"
+      "locationNote": "参考高德景区或片区点位，具体交通入口需确认。",
+      "image": "/assets/hn-taihao.jpg?v=5b883b186195",
+      "photoReference": "https://commons.wikimedia.org/wiki/File:20260913_Tomb_and_Temple_of_Taihao_01.jpg",
+      "photoTakenAt": "2026-09-13",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "credit": "Windmemories / Wikimedia Commons · CC BY-SA 4.0 · 拍摄于 2026-09-13 · 使用公开缩略版；卡片裁切显示",
+      "photoCaption": "周口淮阳太昊陵庙午朝门与门前广场。",
+      "photoAuthor": "Windmemories",
+      "photoLicense": "CC BY-SA 4.0",
+      "photoCheckedAt": "2026-10-12"
     },
     {
       "id": "hn-laozi",
@@ -2647,7 +2828,16 @@
       "district": "川汇区",
       "address": "周口市川汇区 · 富强街号111号",
       "locationReference": "https://www.amap.com/place/B018A001KA",
-      "locationNote": "参考高德景区或片区点位，具体交通入口需确认。"
+      "locationNote": "参考高德景区或片区点位，具体交通入口需确认。",
+      "image": "/assets/hn-zhoukou-guandi.jpg?v=50a0f657dc02",
+      "photoReference": "https://commons.wikimedia.org/wiki/File:20260913_Zhoukou_Emperor_Guan_Temple_01.jpg",
+      "photoTakenAt": "2026-09-13",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "credit": "Windmemories / Wikimedia Commons · CC BY-SA 4.0 · 拍摄于 2026-09-13 · 使用公开缩略版；卡片裁切显示",
+      "photoCaption": "周口关帝庙山门、牌匾与石狮实景。",
+      "photoAuthor": "Windmemories",
+      "photoLicense": "CC BY-SA 4.0",
+      "photoCheckedAt": "2026-10-12"
     },
     {
       "id": "hn-huaiyang-longhu",
@@ -2815,7 +3005,16 @@
       "locationNote": "参考高德景区或片区点位，具体交通入口需确认。",
       "planningNotes": [
         "王屋山的往返交通、景区内部交通与天气需另行确认。"
-      ]
+      ],
+      "image": "/assets/hn-wangwu.jpg?v=18245ae5b166",
+      "photoReference": "https://commons.wikimedia.org/wiki/File:20260730_Wangwu_Mountain.jpg",
+      "photoTakenAt": "2026-07-30",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "credit": "Windmemories / Wikimedia Commons · CC BY-SA 4.0 · 拍摄于 2026-07-30 · 使用公开缩略版；卡片裁切显示",
+      "photoCaption": "济源王屋山景区“第一洞天”牌坊与山前实景。",
+      "photoAuthor": "Windmemories",
+      "photoLicense": "CC BY-SA 4.0",
+      "photoCheckedAt": "2026-10-12"
     },
     {
       "id": "hn-wulongkou",
@@ -3133,7 +3332,9 @@
       "theme": "殷商文博与林州山水",
       "cities": [
         "安阳"
-      ]
+      ],
+      "image": "/assets/hn-yinxu.jpg?v=87910acc0e4c",
+      "photoLabel": "安阳殷墟博物馆新馆正立面与入口水景。"
     },
     {
       "id": "hebi-weekend",
@@ -3164,7 +3365,9 @@
       "theme": "运河古城与淇县山水",
       "cities": [
         "鹤壁"
-      ]
+      ],
+      "image": "/assets/hn-junxian.jpg?v=68279747b0e2",
+      "photoLabel": "浚县古城东街的沿街建筑与日常街景。"
     },
     {
       "id": "xinxiang-weekend",
@@ -3190,7 +3393,9 @@
       "theme": "南太行峡谷与乡村",
       "cities": [
         "新乡"
-      ]
+      ],
+      "image": "/assets/hn-bigan.jpg?v=b34542976144",
+      "photoLabel": "卫辉比干庙院落、殿宇与墓区航拍。"
     },
     {
       "id": "jiaozuo-weekend",
@@ -3290,7 +3495,9 @@
       "theme": "曹魏夜游、钧瓷与商贸",
       "cities": [
         "许昌"
-      ]
+      ],
+      "image": "/assets/hn-pangdonglai.jpg?v=049a82054e49",
+      "photoLabel": "许昌胖东来天使城商场外立面与入口广场。"
     },
     {
       "id": "luohe-weekend",
@@ -3383,7 +3590,9 @@
       "theme": "卧龙文化与伏牛山水",
       "cities": [
         "南阳"
-      ]
+      ],
+      "image": "/assets/hn-wolong.jpg?v=47efcb83ba2f",
+      "photoLabel": "南阳武侯祠“千古人龙”石牌坊与阶前实景。"
     },
     {
       "id": "shangqiu-weekend",
@@ -3414,7 +3623,9 @@
       "theme": "古城书院与永城汉文化",
       "cities": [
         "商丘"
-      ]
+      ],
+      "image": "/assets/hn-mangdang.jpg?v=606b288f5517",
+      "photoLabel": "芒砀山汉梁王陵景区梁恭王陵墓道入口。"
     },
     {
       "id": "xinyang-weekend",
@@ -3440,7 +3651,9 @@
       "theme": "湖山茶园与乡村微度假",
       "cities": [
         "信阳"
-      ]
+      ],
+      "image": "/assets/hn-nanwan.jpg?v=264b34dc6272",
+      "photoLabel": "信阳南湾湖水面与林木覆盖的岛岸。"
     },
     {
       "id": "zhoukou-weekend",
@@ -3471,7 +3684,9 @@
       "theme": "伏羲文化与亲子周末",
       "cities": [
         "周口"
-      ]
+      ],
+      "image": "/assets/hn-taihao.jpg?v=5b883b186195",
+      "photoLabel": "周口淮阳太昊陵庙午朝门与门前广场。"
     },
     {
       "id": "zhumadian-weekend",
@@ -3528,7 +3743,9 @@
       "theme": "王屋山与黄河峡谷",
       "cities": [
         "济源"
-      ]
+      ],
+      "image": "/assets/hn-wangwu.jpg?v=18245ae5b166",
+      "photoLabel": "济源王屋山景区“第一洞天”牌坊与山前实景。"
     }
   ]
 }
