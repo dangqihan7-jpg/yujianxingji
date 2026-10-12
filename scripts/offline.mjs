@@ -1,5 +1,5 @@
 import {readFile,writeFile} from 'node:fs/promises';
-import worker,{HTML,CATALOG,CITY_GUIDES,validateDraft,rulePlan,validRouting} from '../worker/index.js';
+import worker,{HTML,CATALOG,CITY_GUIDES,validateDraft,rulePlan,validRouting,validatePlan,agentContext,agentPlanDraft,agentRuleResult} from '../worker/index.js';
 const base=new URL('../',import.meta.url);
 let html=HTML;
 const demo=CATALOG;
@@ -12,9 +12,15 @@ function fail(message){throw Error(message)}
 ${decisionCore}
 const coordinates=${'v=>Array.isArray(v)&&v.length===2&&v.every(Number.isFinite)&&Math.abs(v[0])<=180&&Math.abs(v[1])<=90'};
 ${validRouting.toString()}
+${validatePlan.toString()}
 ${validateDraft.toString()}
 ${rulePlan.toString()}
-window.fetch=async function(path,options){try{const u=new URL(path,'https://offline.test');let data;if(u.pathname==='/api/config')data={mapConfigured:false,placesConfigured:false,aiConfigured:false,mapKey:null};else if(u.pathname==='/api/places'){const city=u.searchParams.get('city'),q=u.searchParams.get('q')||'',cat=u.searchParams.get('category');data={city,source:'curated',places:offlinePlaces.filter(p=>(city==='河南'||city===p.city)&&(cat==='all'||cat===p.category)&&(!q||(p.name+p.address+' '+(p.aliases||[]).join(' ')).includes(q)))}}else if(u.pathname==='/api/place'){data=offlinePlaces.find(p=>p.id===u.searchParams.get('id'));if(!data)throw Error('地点不存在')}else if(u.pathname==='/api/intent')data={source:'rules',...parseIntentRules(JSON.parse(options.body).text,offlinePlaces),note:'文字规则识别，未连接模型'};else if(u.pathname==='/api/validate')data=validateDraft(JSON.parse(options.body));else if(u.pathname==='/api/plan'){const raw=JSON.parse(options.body),draft={...validateDraft(raw),maxHours:[6,8,10].includes(raw.maxHours)?raw.maxHours:8,restMinutes:[0,30,60].includes(raw.restMinutes)?raw.restMinutes:30};if(!draft.stops.length)throw Error('请先加入地点');data={source:'rules',stops:rulePlan(draft),note:'按城市、相对位置和每日停留负荷分日，住宿放在每天末尾。交通和营业时间尚未纳入，应用后需重新核算交通。',tips:['交通、排队和休息时间需要另行预留。','营业时间和价格请在出行前确认。']}}else throw Error('离线版未连接此服务');return new Response(JSON.stringify(data),{status:200,headers:{'Content-Type':'application/json'}})}catch(e){return new Response(JSON.stringify({error:e.message}),{status:400,headers:{'Content-Type':'application/json'}})}};
+const AGENT_LIMITS={modelCalls:4,toolCalls:8,mapCalls:8,timeoutMs:50000};
+const agentError=message=>{throw Error(message)};
+${agentContext.toString()}
+${agentPlanDraft.toString()}
+${agentRuleResult.toString()}
+window.fetch=async function(path,options){try{const u=new URL(path,'https://offline.test');let data;if(u.pathname==='/api/config')data={mapConfigured:false,placesConfigured:false,aiConfigured:false,mapKey:null};else if(u.pathname==='/api/places'){const city=u.searchParams.get('city'),q=u.searchParams.get('q')||'',cat=u.searchParams.get('category');data={city,source:'curated',places:offlinePlaces.filter(p=>(city==='河南'||city===p.city)&&(cat==='all'||cat===p.category)&&(!q||(p.name+p.address+' '+(p.aliases||[]).join(' ')).includes(q)))}}else if(u.pathname==='/api/place'){data=offlinePlaces.find(p=>p.id===u.searchParams.get('id'));if(!data)throw Error('地点不存在')}else if(u.pathname==='/api/intent')data={source:'rules',...parseIntentRules(JSON.parse(options.body).text,offlinePlaces),note:'文字规则识别，未连接模型'};else if(u.pathname==='/api/validate')data=validateDraft(JSON.parse(options.body));else if(u.pathname==='/api/agent')data=agentRuleResult(agentContext(JSON.parse(options.body)),'离线版未连接模型，本次使用规则候选');else if(u.pathname==='/api/plan'){const raw=JSON.parse(options.body),draft={...validateDraft(raw),maxHours:[6,8,10].includes(raw.maxHours)?raw.maxHours:8,restMinutes:[0,30,60].includes(raw.restMinutes)?raw.restMinutes:30};if(!draft.stops.length)throw Error('请先加入地点');data={source:'rules',stops:rulePlan(draft),note:'按城市、相对位置和每日停留负荷分日，住宿放在每天末尾。交通和营业时间尚未纳入，应用后需重新核算交通。',tips:['交通、排队和休息时间需要另行预留。','营业时间和价格请在出行前确认。']}}else throw Error('离线版未连接此服务');return new Response(JSON.stringify(data),{status:200,headers:{'Content-Type':'application/json'}})}catch(e){return new Response(JSON.stringify({error:e.message}),{status:400,headers:{'Content-Type':'application/json'}})}};
 })();
 </script>`;
 html=html.replace('<script>',shim+'<script>');
