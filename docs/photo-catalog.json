@@ -498,5 +498,68 @@
     ],
     "locationReference": "https://www.baoquanlvyou.com/jingqugaikuang.html",
     "changes": "采用 Commons 1280px 缩略版；未修改照片内容，网页卡片可能裁切显示。"
+  },
+  {
+    "placeId": "hn-xiangguo",
+    "placeName": "大相国寺",
+    "city": "开封",
+    "file": "hn-xiangguo.jpg",
+    "sha256": "8ed074b0c444cc94592da3818d9f8348998e28f899267831392c674666d4e36c",
+    "source": "https://commons.wikimedia.org/wiki/File:20250622_Xiangguo_Temple_01.jpg",
+    "originalImage": "https://upload.wikimedia.org/wikipedia/commons/d/db/20250622_Xiangguo_Temple_01.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+    "downloadImage": "https://thumb.wikimedia.org/wikipedia/commons/thumb/d/db/20250622_Xiangguo_Temple_01.jpg/1280px-20250622_Xiangguo_Temple_01.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "author": "Windmemories",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "takenAt": "2025-06-22",
+    "checkedAt": "2026-10-13",
+    "caption": "开封大相国寺山门、匾额与门前石狮实景。",
+    "sourceDate": "2025-06-22 15:19:00",
+    "locationEvidence": [
+      "=={{int:filedesc}}==\n{{Information\n|description={{zh|1=开封大相国寺山门}}\n{{en|1=Xiangguo Temple, Kaifeng}}\n|date=2025-06-22 15:19:00\n|source={{own}}\n|author=[[User:Windmemories|Windmemories]]\n|permission=\n|other versions=\n}}\n\n=={{int:license-header}}==\n{{self|cc-by-sa-4.0}}\n\n[[Category:Daxiangguo Temple]]\n[[Category:June 2025 in Kaifeng]]\n[[Category:China photographs taken on 2025-06-22]]\n[[Category:Calligraphy by Zhao Puchu]]"
+    ],
+    "changes": "采用 Commons 1280px 缩略版；未修改照片内容，网页卡片可能裁切显示。"
+  },
+  {
+    "placeId": "hn-jidu",
+    "placeName": "济渎庙",
+    "city": "济源",
+    "file": "hn-jidu.jpg",
+    "sha256": "5d9263e5b83a41eef60eb3f5ad278932932bd91c4d60e823bfccd3616666a16d",
+    "source": "https://commons.wikimedia.org/wiki/File:20250716_Jidu_Temple_10.jpg",
+    "originalImage": "https://upload.wikimedia.org/wikipedia/commons/9/97/20250716_Jidu_Temple_10.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+    "downloadImage": "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/97/20250716_Jidu_Temple_10.jpg/1280px-20250716_Jidu_Temple_10.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "author": "Windmemories",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "takenAt": "2025-07-16",
+    "checkedAt": "2026-10-13",
+    "caption": "济源济渎庙龙亭、庭院与周围林木实景。",
+    "sourceDate": "2025-07-16 20:02:19",
+    "locationEvidence": [
+      "=={{int:filedesc}}==\n{{Information\n|description={{zh|1=济源济渎庙 龙亭（明）}}\n{{en|1=Dragon Pavilion, Jidu Temple}}\n|date=2025-07-16 20:02:19\n|source={{own}}\n|author=[[User:Windmemories|Windmemories]]\n|permission=\n|other versions=\n}}\n\n=={{int:license-header}}==\n{{self|cc-by-sa-4.0}}\n\n[[Category:Jidu Temple]]\n[[Category:July 2025 in Henan]]\n[[Category:China photographs taken on 2025-07-16]]\n[[Category:Contributions of 2025 China Cultural Heritage edit-a-thon of the Chinese Wikipedia]]"
+    ],
+    "changes": "采用 Commons 1280px 缩略版；未修改照片内容，网页卡片可能裁切显示。"
+  },
+  {
+    "placeId": "hn-baling",
+    "placeName": "灞陵桥景区",
+    "city": "许昌",
+    "file": "hn-baling.jpg",
+    "sha256": "b89284a2097f3fc8fb1c8181b3d518db39b7c15311cb52ddc088243c90549f80",
+    "source": "https://commons.wikimedia.org/wiki/File:Baling_Bridge_Park_20240812_01.jpg",
+    "originalImage": "https://upload.wikimedia.org/wikipedia/commons/2/27/Baling_Bridge_Park_20240812_01.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+    "downloadImage": "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/27/Baling_Bridge_Park_20240812_01.jpg/1280px-Baling_Bridge_Park_20240812_01.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "author": "沈澄心",
+    "license": "CC0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/deed.en",
+    "takenAt": "2024-08-12",
+    "checkedAt": "2026-10-13",
+    "caption": "许昌灞陵桥景区红墙拱门与园内绿树步道实景。",
+    "sourceDate": "2024-08-12 09:54:40",
+    "locationEvidence": [
+      "=={{int:filedesc}}==\n{{Information\n|description={{en|1=Baling Bridge Park, Xuchang}}\n{{zh-hans|1=许昌灞陵桥景区}}\n|date=2024-08-12 09:54:40\n|source={{own}}\n|author=[[User:沈澄心|沈澄心]]\n|permission=\n|other versions=\n}}\n{{Location|34.021688|113.779849}}\n\n=={{int:license-header}}==\n{{self|cc-zero}}\n\n[[Category:Baling Bridge Park]]"
+    ],
+    "changes": "采用 Commons 1280px 缩略版；未修改照片内容，网页卡片可能裁切显示。"
   }
 ]

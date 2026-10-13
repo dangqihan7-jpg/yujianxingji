@@ -1,5 +1,19 @@
 # 全省实景照片补充
 
+## 2026-10-13 第二轮：大相国寺、济渎庙与灞陵桥
+
+新增 3 张 2024—2025 年真实照片，实景库从 35 增至 38 张。逐张查看实际画面，并核对 Commons 原始文件说明中的地点、作者、拍摄日期与许可。地点详情、实景相册及城市内对应地点卡片复用照片与完整署名。
+
+| 地点 | 拍摄日期 | 作者 / 许可 | 实际画面与来源 |
+| --- | --- | --- | --- |
+| 开封 · 大相国寺 | 2025-06-22 | Windmemories / [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0) | [开封大相国寺山门、匾额与门前石狮实景。](https://commons.wikimedia.org/wiki/File:20250622_Xiangguo_Temple_01.jpg) |
+| 济源 · 济渎庙 | 2025-07-16 | Windmemories / [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0) | [济源济渎庙龙亭、庭院与周围林木实景。](https://commons.wikimedia.org/wiki/File:20250716_Jidu_Temple_10.jpg) |
+| 许昌 · 灞陵桥景区 | 2024-08-12 | 沈澄心 / [CC0](https://creativecommons.org/publicdomain/zero/1.0/deed.en) | [许昌灞陵桥景区红墙拱门与园内绿树步道实景。](https://commons.wikimedia.org/wiki/File:Baling_Bridge_Park_20240812_01.jpg) |
+
+采用 Commons 1280px 缩略版，未修改照片内容；卡片可能裁切，详情及相册保留完整画面。CC BY-SA 4.0 照片与显示版本继续按该许可提供，灞陵桥照片为 CC0。日期来自作者说明，不代表今日开放状态。保留原有 35 张，包括洛邑古城。
+
+排除山西壶关的同名太行大峡谷、北京及郑州博物馆中的庙底沟出土文物照片，以及清明上河园内的“孙二娘包子”照片，不将其用于河南林州太行大峡谷、三门峡庙底沟博物馆或开封万岁山。
+
 ## 2026-10-13：河南宝泉旅游区
 
 补充 1 张 2026 年照片，实景库增至 35 张。画面为河南新乡辉县宝泉水库水面与太行红岩峡谷；原始文件页中文说明为“辉县 宝泉水库”，记录拍摄位置 35.46969、113.46336。结合 [景区官方概况](https://www.baoquanlvyou.com/jingqugaikuang.html) 核对所在区域，不将水库远景称为某个瀑布或演出现场。

@@ -1196,7 +1196,16 @@
       "district": "鼓楼区",
       "address": "开封市鼓楼区 · 自由路西段36号",
       "locationReference": "https://www.amap.com/place/B017A00AH4",
-      "locationNote": "参考高德景区或片区点位，具体交通入口需确认。"
+      "locationNote": "参考高德景区或片区点位，具体交通入口需确认。",
+      "image": "/assets/hn-xiangguo.jpg?v=8ed074b0c444",
+      "photoReference": "https://commons.wikimedia.org/wiki/File:20250622_Xiangguo_Temple_01.jpg",
+      "photoTakenAt": "2025-06-22",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "credit": "Windmemories / Wikimedia Commons · CC BY-SA 4.0 · 拍摄于 2025-06-22 · 使用公开 1280px 缩略版；卡片裁切显示",
+      "photoCaption": "开封大相国寺山门、匾额与门前石狮实景。",
+      "photoAuthor": "Windmemories",
+      "photoLicense": "CC BY-SA 4.0",
+      "photoCheckedAt": "2026-10-13"
     },
     {
       "id": "hn-kaifeng-museum",
@@ -2154,7 +2163,16 @@
       "district": "魏都区",
       "address": "许昌市魏都区 · 许继大道西段2781号",
       "locationReference": "https://www.amap.com/place/B01760MSTO",
-      "locationNote": "参考高德景区或片区点位，具体交通入口需确认。"
+      "locationNote": "参考高德景区或片区点位，具体交通入口需确认。",
+      "image": "/assets/hn-baling.jpg?v=b89284a2097f",
+      "photoReference": "https://commons.wikimedia.org/wiki/File:Baling_Bridge_Park_20240812_01.jpg",
+      "photoTakenAt": "2024-08-12",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/deed.en",
+      "credit": "沈澄心 / Wikimedia Commons · CC0 · 拍摄于 2024-08-12 · 使用公开 1280px 缩略版；卡片裁切显示",
+      "photoCaption": "许昌灞陵桥景区红墙拱门与园内绿树步道实景。",
+      "photoAuthor": "沈澄心",
+      "photoLicense": "CC0",
+      "photoCheckedAt": "2026-10-13"
     },
     {
       "id": "hn-shali",
@@ -3109,7 +3127,16 @@
       "district": "济源市",
       "address": "济源市济源市 · 济渎大街1396号",
       "locationReference": "https://www.amap.com/place/B056F001J9",
-      "locationNote": "参考高德景区或片区点位，具体交通入口需确认。"
+      "locationNote": "参考高德景区或片区点位，具体交通入口需确认。",
+      "image": "/assets/hn-jidu.jpg?v=5d9263e5b83a",
+      "photoReference": "https://commons.wikimedia.org/wiki/File:20250716_Jidu_Temple_10.jpg",
+      "photoTakenAt": "2025-07-16",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "credit": "Windmemories / Wikimedia Commons · CC BY-SA 4.0 · 拍摄于 2025-07-16 · 使用公开 1280px 缩略版；卡片裁切显示",
+      "photoCaption": "济源济渎庙龙亭、庭院与周围林木实景。",
+      "photoAuthor": "Windmemories",
+      "photoLicense": "CC BY-SA 4.0",
+      "photoCheckedAt": "2026-10-13"
     }
   ],
   "routes": [
