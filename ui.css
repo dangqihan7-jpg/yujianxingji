@@ -1,7 +1,7 @@
 /* Shared visual system: warm paper, ink and cinnabar. Loaded after feature styles. */
 :root {
   --paper:#f7f5ef; --ink:#292d27; --navy:#292d27; --night:#292d27;
-  --blue:#a33e2d; --copper:#a33e2d; --muted:#77796e; --line:#e4e3d9;
+  --blue:#a33e2d; --copper:#a33e2d; --gold:#c49a45; --muted:#77796e; --line:#e4e3d9;
   --soft:#eeede5; --serif:"Songti SC","STSong","Noto Serif CJK SC",serif;
   font-family:"PingFang SC","Microsoft YaHei",sans-serif;
   color:var(--ink); background:var(--paper);
@@ -47,6 +47,12 @@ button.quiet {color:#646b60}
 .hero-actions .hero-secondary {background:#fffdf514;border:1px solid #fff9;color:#fffdf5;backdrop-filter:blur(5px)}
 .hero-actions .hero-secondary:hover {background:#fffdf52b;transform:translateY(-2px)}
 .hero-actions button span {font-size:19px;font-weight:400}
+.hero-seal{display:inline-block;background:#a33e2d;color:#fffdf5;font-family:var(--serif);font-size:13px;letter-spacing:3px;text-indent:3px;padding:9px 11px;border-radius:3px;transform:rotate(-4deg);margin-left:16px;vertical-align:2px;box-shadow:0 3px 12px #0007}
+.hero-stats{display:flex;gap:38px;margin-top:40px;flex-wrap:wrap}
+.hero-stats>div{display:flex;flex-direction:column;gap:7px}
+.hero-stats b{font-family:var(--serif);font-size:32px;font-weight:500;color:var(--gold);letter-spacing:1px;line-height:1}
+.hero-stats span{font-size:11px;letter-spacing:2px;color:#dde2d0}
+@media(max-width:760px){.hero-stats{gap:22px;margin-top:30px}.hero-stats b{font-size:25px}.hero-seal{font-size:11px;padding:7px 9px;margin-left:10px}}
 .hero-bottom {position:absolute;left:7%;right:5%;bottom:27px;display:flex;align-items:center;justify-content:space-between;gap:20px;font-size:11px;letter-spacing:2px;color:#e7eadb}
 .hero-bottom button {font-size:11px;letter-spacing:1px;padding:8px 0;background:transparent;color:#e7eadb;text-align:right}
 .gallery-inner {padding:0 7%;max-width:1600px;margin:auto}
@@ -145,7 +151,8 @@ button.quiet {color:#646b60}
 .place-card.is-added {background:#f8faf2}
 .place-info .place-name {font-size:15px;color:#35412e}
 .place-info .place-description,.place-info .place-city,.card-bottom {color:#858d78}
-.place-photo {border-radius:4px;width:72px}
+.place-photo {border-radius:4px;width:96px}
+.place-rating{position:absolute;left:6px;bottom:6px;z-index:1;background:#16241dcc;color:#f5e9c8;font-size:10px;letter-spacing:.5px;padding:3px 7px;border-radius:3px}
 .card-bottom button {font-size:12px;border-radius:4px;color:#a33e2d;background:#f7eee8}
 .card-bottom .added {background:#edf1e4;color:#62784c}
 .map-heading,.map-legend,.map-tools .map-pill {border-radius:5px}
