@@ -472,5 +472,31 @@
       "Category:July 2026 in Henan",
       "Category:Wangwu Mountain"
     ]
+  },
+  {
+    "placeId": "hn-baoquan",
+    "placeName": "河南宝泉旅游区",
+    "city": "新乡",
+    "file": "hn-baoquan.jpg",
+    "sha256": "50218b04bfad981611d522b3b96b0717387fa36225d4933739da63ee26568124",
+    "source": "https://commons.wikimedia.org/wiki/File:Baoquan_Reservoir_20260508.jpg",
+    "originalImage": "https://upload.wikimedia.org/wikipedia/commons/7/7c/Baoquan_Reservoir_20260508.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+    "downloadImage": "https://thumb.wikimedia.org/wikipedia/commons/thumb/7/7c/Baoquan_Reservoir_20260508.jpg/1280px-Baoquan_Reservoir_20260508.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "author": "Steven Sun",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "takenAt": "2026-05-08",
+    "checkedAt": "2026-10-13",
+    "caption": "辉县宝泉水库水面与太行红岩峡谷实景。",
+    "sourceDate": "2026-05-08",
+    "locationEvidence": [
+      "原始文件页：辉县 宝泉水库",
+      "Category:Huixian",
+      "Category:Geography of Xinxiang",
+      "Category:Reservoirs in Henan",
+      "原始文件页拍摄位置：35.46969, 113.46336"
+    ],
+    "locationReference": "https://www.baoquanlvyou.com/jingqugaikuang.html",
+    "changes": "采用 Commons 1280px 缩略版；未修改照片内容，网页卡片可能裁切显示。"
   }
 ]

@@ -1771,7 +1771,16 @@
       "locationNote": "参考高德景区或片区点位，具体交通入口需确认。",
       "planningNotes": [
         "河南宝泉旅游区的往返交通、景区内部交通与天气需另行确认。"
-      ]
+      ],
+      "image": "/assets/hn-baoquan.jpg?v=50218b04bfad",
+      "photoReference": "https://commons.wikimedia.org/wiki/File:Baoquan_Reservoir_20260508.jpg",
+      "photoTakenAt": "2026-05-08",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "credit": "Steven Sun / Wikimedia Commons · CC BY-SA 4.0 · 拍摄于 2026-05-08 · 使用公开 1280px 缩略版；卡片裁切显示",
+      "photoCaption": "辉县宝泉水库水面与太行红岩峡谷实景。",
+      "photoAuthor": "Steven Sun",
+      "photoLicense": "CC BY-SA 4.0",
+      "photoCheckedAt": "2026-10-13"
     },
     {
       "id": "hn-baligou",
