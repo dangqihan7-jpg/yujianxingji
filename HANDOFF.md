@@ -32,7 +32,7 @@ node scripts/offline.mjs
 1. 阅读 `docs/province-coverage.md`；城市元数据统一维护在 `henan.json` 的 `cities`，新增地点保持固定 ID、县域归属、资料来源和参考定位说明。
 2. 按 `docs/photo-maintenance.md` 补齐近期、有合法许可的实拍。缺图使用文字，不借用其他地点图片。
 3. 更新预约和开放状态；目录里暂停开放的地点暂不自动推荐。路线不包含未经核算的交通、票价或排队保证。
-4. 修改后运行 `npm run build`、`npm run validate` 和 `npm test`（13 组），检查电脑/手机布局与保存行为，再备份代码和 SQLite 后部署。
+4. 修改后运行 `npm run build`、`npm run validate` 和 `npm test`（14 组），检查电脑/手机布局与保存行为，再备份代码和 SQLite 后部署。
 
 真实高德与讯飞密钥只配置在服务端，仓库不包含；不要提交 `.env`、数据库、`.local`、`dist`、离线生成页或临时报告。保留线上 `.local` 数据目录链接与原账号数据。已有授权允许同步该仓库和现有服务器；正常内容维护不需要重新创建基础设施。
 

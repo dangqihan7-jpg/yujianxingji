@@ -7,9 +7,10 @@
     "build": "bash scripts/build.sh",
     "validate": "node scripts/validate-artifact.mjs",
     "db:generate": "drizzle-kit generate",
-    "test": "node scripts/test.mjs && node scripts/test-decision.mjs && node scripts/test-journey.mjs && node scripts/test-js-api.mjs && node scripts/test-map-loader.mjs && node scripts/test-offline.mjs && node scripts/test-showcase.mjs && node scripts/test-province.mjs && node scripts/test-regressions.mjs && node scripts/test-model-limits.mjs && node scripts/test-edge-cases.mjs && node scripts/test-auth.mjs && node scripts/test-agent.mjs",
+    "test": "node scripts/test.mjs && node scripts/test-decision.mjs && node scripts/test-journey.mjs && node scripts/test-js-api.mjs && node scripts/test-map-loader.mjs && node scripts/test-offline.mjs && node scripts/test-showcase.mjs && node scripts/test-province.mjs && node scripts/test-regressions.mjs && node scripts/test-model-limits.mjs && node scripts/test-edge-cases.mjs && node scripts/test-auth.mjs && node scripts/test-agent.mjs && node scripts/test-agent-replay.mjs",
     "pretest": "node scripts/offline.mjs",
-    "test:agent": "node scripts/test-agent.mjs"
+    "test:agent": "node scripts/test-agent.mjs",
+    "test:agent-replay": "node scripts/test-agent-replay.mjs"
   },
   "devDependencies": {
     "drizzle-kit": "0.31.10",
