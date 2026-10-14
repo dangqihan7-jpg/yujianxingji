@@ -114,6 +114,7 @@ function renderGallery(){
   const hero=heroPlaces[heroPhotoIndex];
   $('#gallery').innerHTML=`
     <section id="hero-slideshow" class="journey-hero" aria-labelledby="hero-title" aria-roledescription="${heroPhotos.length?'照片轮播':'地点展示'}">
+      <div class="hero-grid" aria-hidden="true"></div>
       <button class="hero-album-entry" data-open-album ${albumPlaces.length?'':'hidden disabled'}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="m3 16 5-5 4 4 3-3 6 6"/><circle cx="16" cy="8" r="2"/></svg>实景相册<span>${albumPlaces.length} 张 · 看完整照片 ↗</span></button>
       ${heroPlaces.map((p,i)=>'<div class="hero-image '+(i===heroPhotoIndex?'is-active':'')+'" data-hero-slide aria-hidden="'+String(i!==heroPhotoIndex)+'">'+photoMediaHTML(p,{fetchpriority:i===heroPhotoIndex?'high':'low',loading:'eager'})+'</div>').join('')}
       <div class="hero-content">
