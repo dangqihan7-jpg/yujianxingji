@@ -74,7 +74,8 @@ RestartSec=5
 WantedBy=multi-user.target
 EOF
 systemctl daemon-reload
-systemctl enable --now yujianxingji
+systemctl enable yujianxingji
+systemctl restart yujianxingji
 sleep 3
 systemctl is-active yujianxingji
 
