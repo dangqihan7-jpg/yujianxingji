@@ -1,35 +1,37 @@
 let activeView='gallery',featuredRouteId='luoyang',comparisonRecord=null,planningBusy=false;
-const heroPlaces=['hn-qingming','hn-longmen','hn-luoyi','hn-henan-museum','hn-laojunshan'].map(id=>CATALOG.find(p=>p.id===id)).filter(p=>p?.image);
+const preferredHeroPhotos=['hn-qingming','hn-longmen','hn-luoyi','hn-henan-museum','hn-laojunshan'].map(id=>CATALOG.find(p=>p.id===id)).filter(p=>p?.image);
+const heroPhotos=preferredHeroPhotos.length?preferredHeroPhotos:CATALOG.filter(p=>p.image).slice(0,5);
+const heroPlaces=heroPhotos.length?heroPhotos:[CATALOG[0]||{id:'henan-photo-placeholder',city:'河南',name:'河南周末游',category:'scenic',theme:'实景待补'}];
 const weekendPicks=['hn-wansui','hn-laojunshan','hn-yinji','hn-movie-town'].map(id=>CATALOG.find(p=>p.id===id)).filter(Boolean);
 const pickBrief=p=>p.city+'周末两天，想去'+p.name+'，'+(p.id==='hn-laojunshan'?'想看山水，给老君山单独留一天，往返交通另行核算':p.id==='hn-yinji'?'安排亲子游，预留休息时间':'想体验'+p.theme);
-function weekendPicksHTML(){return '<section id="weekend-picks" class="weekend-picks" aria-labelledby="picks-title"><div class="editorial-heading"><div><p class="section-kicker">A DIFFERENT WEEKEND</p><h2 id="picks-title">这个周末，换个玩法。</h2></div><p>去江湖看一场戏，去山顶吹吹风。<br>也给电影夜游和亲子时光留一个位置。</p></div><div class="picks-grid">'+weekendPicks.map((p,i)=>'<article class="weekend-pick pick-'+p.id+'"><button class="pick-media" data-pick-detail="'+p.id+'" aria-label="查看'+esc(p.name)+'详情">'+(p.image?'<img src="'+esc(p.image)+'" alt="'+esc(p.photoCaption)+'" width="1280" height="720" loading="lazy">':'<span class="pick-typography" aria-hidden="true"><span>'+['江湖','山野','童趣','入戏'][i]+'</span><small>'+esc(p.theme)+'</small></span>')+'<span class="pick-city">'+esc(p.city)+(p.id==='hn-laojunshan'?' · 栾川':p.id==='hn-yinji'?' · 新密':p.id==='hn-movie-town'?' · 中牟':'')+'</span></button><div class="pick-copy"><p class="section-kicker">'+esc(p.theme)+' · 建议 '+durationLabel(p.duration)+'</p><h3>'+esc(p.name)+'</h3><p>'+esc(p.description)+'</p><div class="pick-actions"><button data-pick-plan="'+p.id+'">规划这里 ↗</button><button data-pick-detail="'+p.id+'">了解玩法</button></div>'+(p.image?'<button class="pick-photo-note" data-open-album data-photo-place="'+p.id+'">实景照片 · '+esc(p.photoTakenAt)+' ↗</button>':'<p class="pick-photo-note">实景照片待补充</p>')+'</div></article>').join('')+'</div><p class="picks-note">展示的是精选出游方向；演出、门票、预约和交通请在出发前确认。</p></section>'}
-const heroPhotoLabel=place=>place.city+' · '+place.name+(place.photoTakenAt?' · 拍摄于 '+place.photoTakenAt:'')+' · 照片说明 ↗';
-const albumPlaces=[...heroPlaces,...CATALOG.filter(p=>p.image&&!heroPlaces.some(h=>h.id===p.id))];
+function weekendPicksHTML(){return '<section id="weekend-picks" class="weekend-picks" aria-labelledby="picks-title"><div class="editorial-heading"><div><p class="section-kicker">A DIFFERENT WEEKEND</p><h2 id="picks-title">这个周末，换个玩法。</h2></div><p>去江湖看一场戏，去山顶吹吹风。<br>也给电影夜游和亲子时光留一个位置。</p></div><div class="picks-grid">'+weekendPicks.map((p,i)=>'<article class="weekend-pick pick-'+p.id+'"><button class="pick-media" data-pick-detail="'+p.id+'" aria-label="查看'+esc(p.name)+'详情">'+photoMediaHTML(p)+'<span class="pick-city">'+esc(p.city)+(p.id==='hn-laojunshan'?' · 栾川':p.id==='hn-yinji'?' · 新密':p.id==='hn-movie-town'?' · 中牟':'')+'</span></button><div class="pick-copy"><p class="section-kicker">'+esc(p.theme)+' · 建议 '+durationLabel(p.duration)+'</p><h3>'+esc(p.name)+'</h3><p>'+esc(p.description)+'</p><div class="pick-actions"><button data-pick-plan="'+p.id+'">规划这里 ↗</button><button data-pick-detail="'+p.id+'">了解玩法</button></div>'+(p.image?'<button class="pick-photo-note" data-open-album data-photo-place="'+p.id+'">实景照片 · '+esc(photoDateLabel(p))+' ↗</button>':'<p class="pick-photo-note">实景照片待补充</p>')+'</div></article>').join('')+'</div><p class="picks-note">展示的是精选出游方向；演出、门票、预约和交通请在出发前确认。</p></section>'}
+const heroPhotoLabel=place=>place.city+' · '+place.name+(place.image?' · '+photoDateLabel(place)+' · 照片说明 ↗':' · 照片占位');
+const albumPlaces=[...heroPhotos,...CATALOG.filter(p=>p.image&&!heroPhotos.some(h=>h.id===p.id))];
 let albumIndex=0,albumImageAttempt=0;
 function updatePhotoAlbum(){
   const place=albumPlaces[albumIndex];if(!place)return;
   $('#album-title').textContent=place.name;$('#album-context').textContent=place.city+' · '+(place.theme||'河南实景');
-  $('#album-caption').textContent=place.photoCaption||place.city+' · '+place.name+'实景照片';$('#album-date').textContent=place.photoTakenAt?'拍摄于 '+place.photoTakenAt:'拍摄日期未注明';
+  $('#album-caption').textContent=place.photoCaption||place.city+' · '+place.name+'实景照片';$('#album-date').textContent=photoDateLabel(place);
   $('#album-count').textContent=String(albumIndex+1).padStart(2,'0')+' / '+String(albumPlaces.length).padStart(2,'0');
-  $('#album-credit').textContent=place.credit||'Wikimedia Commons';$('#album-source').href=place.photoReference||place.reference;$('#album-license').hidden=!place.licenseUrl;$('#album-license').href=place.licenseUrl||'';
-  const image=$('#album-image'),attempt=++albumImageAttempt;image.hidden=false;$('#album-error').hidden=true;
+  $('#album-credit').textContent=place.credit||place.photoSource||'照片出处待补充';$('#album-source').hidden=!place.photoReference;$('#album-source').href=place.photoReference||'';$('#album-license').hidden=!place.licenseUrl;$('#album-license').href=place.licenseUrl||'';
+  const image=$('#album-image'),attempt=++albumImageAttempt;image.hidden=true;$('#album-error').innerHTML=photoPlaceholderHTML(place,{loading:true});$('#album-error').hidden=false;
   image.onload=()=>{if(attempt===albumImageAttempt){image.hidden=false;$('#album-error').hidden=true}};
-  image.onerror=()=>{if(attempt===albumImageAttempt){image.hidden=true;$('#album-error').hidden=false}};
-  image.alt=place.photoCaption||place.name+'实景照片';image.src=place.image;
+  image.onerror=()=>{if(attempt===albumImageAttempt){image.hidden=true;$('#album-error').innerHTML=photoPlaceholderHTML(place,{failed:true});$('#album-error').hidden=false}};
+  image.alt=place.photoCaption||place.name+'实景照片';image.src=photoImageURL(place.image);if(image.complete&&image.naturalWidth)image.onload();
   $('#album-thumbnails').querySelectorAll?.('[data-album-photo]').forEach((button,i)=>{button.classList.toggle('is-active',i===albumIndex);button.setAttribute('aria-pressed',String(i===albumIndex))});
 }
 function selectAlbumPhoto(index){if(!Number.isInteger(index)||index<0||index>=albumPlaces.length)return;albumIndex=index;updatePhotoAlbum()}
 function stepAlbumPhoto(step){selectAlbumPhoto((albumIndex+step+albumPlaces.length)%albumPlaces.length)}
 function openPhotoAlbum(id=heroPlaces[heroPhotoIndex]?.id){
   const index=albumPlaces.findIndex(p=>p.id===id);if(index<0)return;
-  $('#album-thumbnails').innerHTML=albumPlaces.map((p,i)=>'<button data-album-photo="'+i+'" aria-label="查看'+esc(p.city+' · '+p.name)+'完整照片" aria-pressed="false"><img src="'+esc(p.image)+'" alt="" loading="lazy" width="96" height="64"><span>'+esc(p.name)+'</span></button>').join('');
-  selectAlbumPhoto(index);if(!$('#photoalbum').open)$('#photoalbum').showModal();
+  $('#album-thumbnails').innerHTML=albumPlaces.map((p,i)=>'<button data-album-photo="'+i+'" aria-label="查看'+esc(p.city+' · '+p.name)+'完整照片" aria-pressed="false">'+photoMediaHTML(p,{compact:true,alt:''})+'<span>'+esc(p.name)+'</span></button>').join('');
+  bindPhotoMedia($('#album-thumbnails'));selectAlbumPhoto(index);if(!$('#photoalbum').open)$('#photoalbum').showModal();
 }
 $('#photoalbum').onclick=e=>{const photo=e.target.closest('[data-album-photo]'),step=e.target.closest('[data-album-step]');if(photo){selectAlbumPhoto(Number(photo.dataset.albumPhoto));return}if(step){stepAlbumPhoto(Number(step.dataset.albumStep));return}if(e.target.closest('[data-album-place]')){$('#photoalbum').close();openDetail(albumPlaces[albumIndex])}};
 $('#photoalbum').onkeydown=e=>{if(!$('#photoalbum').open||e.altKey||e.ctrlKey||e.metaKey||e.shiftKey)return;if(e.key==='ArrowLeft'||e.key==='ArrowRight'){e.preventDefault();stepAlbumPhoto(e.key==='ArrowRight'?1:-1)}};
 $('#photoalbum').addEventListener?.('close',()=>scheduleHeroRotation());
 const heroReducedMotion=()=>Boolean(globalThis.matchMedia?.('(prefers-reduced-motion: reduce)').matches);
-let heroPhotoIndex=0,heroAutoplay=!heroReducedMotion(),heroTimer=0,heroHover=false,heroFocus=false,heroVisible=true,heroObserver;
+let heroPhotoIndex=0,heroAutoplay=heroPhotos.length>1&&!heroReducedMotion(),heroTimer=0,heroHover=false,heroFocus=false,heroVisible=true,heroObserver;
 function scheduleHeroRotation(){
   clearTimeout(heroTimer);heroTimer=0;
   if(!heroAutoplay||activeView!=='gallery'||document.hidden||heroHover||heroFocus||!heroVisible||heroPlaces.length<2)return;
@@ -39,9 +41,9 @@ function updateHeroPhoto(){
   const place=heroPlaces[heroPhotoIndex];if(!place)return;
   $('#hero-slideshow').querySelectorAll?.('[data-hero-slide]').forEach((img,i)=>{img.classList.toggle('is-active',i===heroPhotoIndex);img.setAttribute('aria-hidden',String(i!==heroPhotoIndex))});
   $('#hero-slideshow').querySelectorAll?.('[data-hero-photo]').forEach((button,i)=>{button.classList.toggle('is-active',i===heroPhotoIndex);button.setAttribute('aria-pressed',String(i===heroPhotoIndex))});
-  $('#hero-photo-source').textContent=place.city+' · '+place.name+' ↗';$('#hero-photo-source').dataset.photoPlace=place.id;$('#hero-photo-source').setAttribute?.('aria-label',heroPhotoLabel(place));
-  $('#hero-photo-date').textContent=place.photoTakenAt?'拍摄于 '+place.photoTakenAt:'拍摄日期未注明';
-  $('#hero-photo-count').textContent=String(heroPhotoIndex+1).padStart(2,'0')+' / '+String(heroPlaces.length).padStart(2,'0');
+  $('#hero-photo-source').textContent=place.city+' · '+place.name+(place.image?' ↗':' · 照片占位');if(place.image)$('#hero-photo-source').dataset.photoPlace=place.id;else delete $('#hero-photo-source').dataset.photoPlace;$('#hero-photo-source').setAttribute?.('aria-label',heroPhotoLabel(place));
+  $('#hero-photo-date').textContent=place.image?photoDateLabel(place):'图形占位 · 尚无实景照片';
+  $('#hero-photo-count').textContent=place.image?String(heroPhotoIndex+1).padStart(2,'0')+' / '+String(heroPhotos.length).padStart(2,'0'):'实景待补';
   $('#hero-toggle').textContent=heroAutoplay?'Ⅱ':'▶';$('#hero-toggle').setAttribute?.('aria-label',heroAutoplay?'暂停照片轮播':'播放照片轮播');$('#hero-toggle').setAttribute?.('aria-pressed',String(heroAutoplay));
 }
 function selectHeroPhoto(index){if(!Number.isInteger(index)||index<0||index>=heroPlaces.length)return;heroPhotoIndex=index;updateHeroPhoto();scheduleHeroRotation()}
@@ -60,7 +62,7 @@ const atlasRegions=['全部',...new Set(CITY_GUIDES.map(c=>c.region))];
 function atlasMatches(c){const q=atlasQuery.trim();return (atlasRegion==='全部'||c.region===atlasRegion)&&(!q||(c.name+c.tagline+c.intro+' '+c.aliases.join(' ')+' '+CATALOG.filter(p=>p.city===c.name).map(p=>p.name+' '+(p.aliases||[]).join(' ')).join(' ')).includes(q))}
 function cityDetailHTML(c){
  const places=c.highlights.map(id=>CATALOG.find(p=>p.id===id)).filter(Boolean),route=PRESETS.find(r=>r.id===c.routeId);
- return '<div class="atlas-city-heading"><div><p class="section-kicker">'+esc(c.region)+' / '+esc(c.id.toUpperCase())+'</p><h3>'+esc(c.name)+'<span>'+esc(c.tagline)+'</span></h3></div><span class="atlas-city-count">'+CATALOG.filter(p=>p.city===c.name).length+' 个精选地点</span></div><p class="atlas-city-intro">'+esc(c.intro)+'</p><div class="atlas-highlights">'+places.map(p=>'<button data-pick-detail="'+esc(p.id)+'">'+(p.image?'<span class="atlas-highlight-photo"><img src="'+esc(p.image)+'" alt="'+esc(p.photoCaption||p.city+' · '+p.name+'实景照片')+'" loading="lazy" width="1280" height="853"><span>实景 · '+esc(p.photoTakenAt||'日期未注明')+'</span></span>':'')+'<span>'+esc(p.district||p.city)+'</span><b>'+esc(p.name)+'</b><small>'+esc(p.theme)+' · 建议 '+durationLabel(p.duration)+'<span aria-hidden="true">↗</span></small></button>').join('')+'</div><div class="atlas-city-actions"><button class="primary" data-city-brief="'+esc(c.name)+'">规划'+esc(c.name)+'周末 ↗</button><button data-atlas-map="'+esc(c.name)+'">打开城市地图</button>'+(route?'<button data-city-route="'+esc(route.id)+'">预览两日路线</button>':'')+'<a href="'+esc(c.reference)+'" target="_blank" rel="noreferrer">城市资料 ↗</a></div><p class="atlas-city-note">地图可继续查找当地餐饮和住宿；门票、预约、县域交通与营业请在出发前确认。</p>';
+ return '<div class="atlas-city-heading"><div><p class="section-kicker">'+esc(c.region)+' / '+esc(c.id.toUpperCase())+'</p><h3>'+esc(c.name)+'<span>'+esc(c.tagline)+'</span></h3></div><span class="atlas-city-count">'+CATALOG.filter(p=>p.city===c.name).length+' 个精选地点</span></div><p class="atlas-city-intro">'+esc(c.intro)+'</p><div class="atlas-highlights">'+places.map(p=>'<button data-pick-detail="'+esc(p.id)+'">'+'<span class="atlas-highlight-photo">'+photoMediaHTML(p)+(p.image?'<span class="atlas-photo-date">实景 · '+esc(photoDateLabel(p))+'</span>':'')+'</span>'+'<span>'+esc(p.district||p.city)+'</span><b>'+esc(p.name)+'</b><small>'+esc(p.theme)+' · 建议 '+durationLabel(p.duration)+'<span aria-hidden="true">↗</span></small></button>').join('')+'</div><div class="atlas-city-actions"><button class="primary" data-city-brief="'+esc(c.name)+'">规划'+esc(c.name)+'周末 ↗</button><button data-atlas-map="'+esc(c.name)+'">打开城市地图</button>'+(route?'<button data-city-route="'+esc(route.id)+'">预览两日路线</button>':'')+'<a href="'+esc(c.reference)+'" target="_blank" rel="noreferrer">城市资料 ↗</a></div><p class="atlas-city-note">地图可继续查找当地餐饮和住宿；门票、预约、县域交通与营业请在出发前确认。</p>';
 }
 function cityExplorerHTML(){return '<section id="henan-cities" class="province-atlas" aria-labelledby="cities-title"><div class="editorial-heading"><div><p class="section-kicker">18 DESTINATIONS / EXPLORE HENAN</p><h2 id="cities-title">十八座城，各有一段周末。</h2></div><p>古都、太行、黄河、伏牛与茶乡。<br>先选目的地，再展开具体玩法。</p></div><div class="atlas-discovery"><nav class="atlas-region-tabs" aria-label="按旅行片区选择城市">'+atlasRegions.map(r=>'<button data-atlas-region="'+esc(r)+'" aria-pressed="'+String(atlasRegion===r)+'">'+esc(r)+'</button>').join('')+'</nav><label class="atlas-search"><span class="sr-only">搜索河南城市、县域或景点</span><input id="atlasquery" type="search" maxlength="80" placeholder="搜城市、县域或景点，如宝泉、禹州" value="'+esc(atlasQuery)+'"><span aria-hidden="true">⌕</span></label></div><p id="atlasresults" class="atlas-results" role="status"></p><div id="city-atlas-list" class="city-atlas"></div><article id="atlas-city-detail" class="atlas-city-detail" aria-label="当前城市的周末玩法"></article></section>'}
 function renderCityAtlas(){
@@ -68,11 +70,11 @@ function renderCityAtlas(){
  $('#city-atlas-list').innerHTML=visible.map(c=>'<button data-atlas-city="'+esc(c.name)+'" aria-pressed="'+String(c.name===atlasCityName)+'"><span class="city-index">'+String(CITY_GUIDES.indexOf(c)+1).padStart(2,'0')+' / '+esc(c.region)+'</span><b>'+esc(c.name)+'</b><small>'+CATALOG.filter(p=>p.city===c.name).length+' 个精选去处</small><span class="city-arrow" aria-hidden="true">↗</span></button>').join('');
  $('#atlasresults').textContent=visible.length?'当前展示 '+visible.length+' / '+CITY_GUIDES.length+' 个目的地 · 点击城市查看玩法':'暂无匹配城市，试试其他城市、县域或景点名称。';
  $('#atlas-city-detail').innerHTML=visible.length?cityDetailHTML(CITY_GUIDES.find(c=>c.name===atlasCityName)):'<p class="atlas-city-intro">可以换个关键词，或选择“全部”片区继续浏览。</p>';
- $('#atlas-city-detail').querySelectorAll?.('img').forEach(img=>img.onerror=()=>{img.parentElement.innerHTML='<span>照片暂时无法加载</span>'});
+ bindPhotoMedia($('#atlas-city-detail'));
  $('#gallery').querySelectorAll?.('[data-atlas-region]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.atlasRegion===atlasRegion)));
 }
 function chooseAtlasCity(name){if(!CITY_GUIDES.some(c=>c.name===name))return;atlasCityName=name;renderCityAtlas();if(globalThis.matchMedia?.('(max-width: 760px)').matches)$('#atlas-city-detail').scrollIntoView?.({behavior:heroReducedMotion()?'instant':'smooth',block:'start'})}
-function routeMediaHTML(r,small=false){return r.image?'<img src="'+esc(r.image)+'" alt="'+esc(r.photoLabel||r.title)+'" loading="lazy" width="1200" height="800">':'<div class="route-type-cover '+(small?'is-small':'')+'"><span>WEEKEND IN HENAN</span><strong>'+esc(r.city)+'</strong><small>可编辑的两日组合 · 路线示意</small></div>'}
+function routeMediaHTML(r,small=false){const cover=r.image?CATALOG.find(p=>p.image===r.image):null;return photoMediaHTML(cover||{...r,image:null,name:r.title,theme:'路线示意 · 未使用实景照片'},{className:'route-type-cover'+(small?' is-small':''),compact:small,alt:r.photoLabel||r.title})}
 
 function renderHeaderCount(){$('#headertripcount').textContent=String(trip.length)}
 function initializeMap(attempt=mapAttempt){
@@ -83,7 +85,7 @@ function initializeMap(attempt=mapAttempt){
     mapTimer=setTimeout(()=>{if(attempt!==mapAttempt||map!==instance||mapConnection==='ready')return;mapConnection='slow';showMapStatus()},12000);renderMap();fit();
   }catch{map?.destroy?.();map=null;markers=[];line=null;renderMap();mapConnection='failed';showMapStatus()}
 }
-function routeDays(preset){return Array.from({length:preset.days},(_,i)=>{const stops=preset.stops.filter(s=>s[1]===i+1).map(s=>CATALOG.find(p=>p.id===s[0]));return {day:i+1,city:[...new Set(stops.map(p=>p.city))].join(' / '),names:stops.map(p=>p.name).join('、')}})}
+function routeDays(preset){return Array.from({length:preset.days},(_,i)=>{const stops=preset.stops.filter(s=>s[1]===i+1).map(s=>CATALOG.find(p=>p.id===s[0])).filter(Boolean);return {day:i+1,city:[...new Set(stops.map(p=>p.city))].join(' / '),names:stops.map(p=>p.name).join('、')}})}
 function routePreviewHTML(r){
   const editorial=routeEditorial[r.id]||{title:r.title,theme:r.theme||r.kicker,cities:r.cities||[r.city]},days=routeDays(r),cover=r.image?CATALOG.find(p=>p.image===r.image):null;
   return `        <div class="route-picker"><label for="route-preview-select">选择周末路线<select id="route-preview-select" data-route-select>${PRESETS.map(p=>'<option value="'+esc(p.id)+'" '+(p.id===r.id?'selected':'')+'>'+esc(p.title)+'</option>').join('')}</select></label><span>${PRESETS.length} 条可编辑组合 · 覆盖 ${CITY_GUIDES.length} 个目的地</span></div>
@@ -102,7 +104,7 @@ function routePreviewHTML(r){
 function previewFeaturedRoute(id){
   const r=PRESETS.find(p=>p.id===id);if(!r)return;
   const position=globalThis.scrollY||0;featuredRouteId=r.id;
-  $('#theme-routes').innerHTML=routePreviewHTML(r);
+  $('#theme-routes').innerHTML=routePreviewHTML(r);bindPhotoMedia($('#theme-routes'));
   $('#theme-routes').querySelector?.('[data-route-tab][aria-pressed="true"]')?.focus?.({preventScroll:true});
   globalThis.scrollTo?.({top:position,behavior:'instant'});
 }
@@ -111,9 +113,9 @@ function renderGallery(){
   const r=PRESETS.find(p=>p.id===featuredRouteId)||PRESETS[0];
   const hero=heroPlaces[heroPhotoIndex];
   $('#gallery').innerHTML=`
-    <section id="hero-slideshow" class="journey-hero" aria-labelledby="hero-title" aria-roledescription="照片轮播">
-      <button class="hero-album-entry" data-open-album><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="m3 16 5-5 4 4 3-3 6 6"/><circle cx="16" cy="8" r="2"/></svg>实景相册<span>${albumPlaces.length} 张 · 看完整照片 ↗</span></button>
-      ${heroPlaces.map((p,i)=>'<img class="hero-image '+(i===heroPhotoIndex?'is-active':'')+'" data-hero-slide aria-hidden="'+String(i!==heroPhotoIndex)+'" src="'+esc(p.image)+'" alt="'+esc(p.photoCaption||p.city+' · '+p.name+'实景')+'" fetchpriority="'+(i===heroPhotoIndex?'high':'low')+'" width="1400" height="933">').join('')}
+    <section id="hero-slideshow" class="journey-hero" aria-labelledby="hero-title" aria-roledescription="${heroPhotos.length?'照片轮播':'地点展示'}">
+      <button class="hero-album-entry" data-open-album ${albumPlaces.length?'':'hidden disabled'}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="m3 16 5-5 4 4 3-3 6 6"/><circle cx="16" cy="8" r="2"/></svg>实景相册<span>${albumPlaces.length} 张 · 看完整照片 ↗</span></button>
+      ${heroPlaces.map((p,i)=>'<div class="hero-image '+(i===heroPhotoIndex?'is-active':'')+'" data-hero-slide aria-hidden="'+String(i!==heroPhotoIndex)+'">'+photoMediaHTML(p,{fetchpriority:i===heroPhotoIndex?'high':'low',loading:'eager'})+'</div>').join('')}
       <div class="hero-content">
         <p class="hero-eyebrow">HENAN · A WEEKEND AWAY <span class="hero-seal">AI 智游</span></p>
         <h2 id="hero-title">豫见行迹<span>把周末，交给河南。</span></h2>
@@ -121,7 +123,7 @@ function renderGallery(){
         <div class="hero-actions"><button class="primary" data-gallery-scroll="weekend-plan">开始规划 <span aria-hidden="true">↗</span></button><button class="hero-secondary" data-gallery-scroll="theme-routes">探索主题路线 <span aria-hidden="true">↓</span></button><button class="hero-city-entry" data-gallery-scroll="henan-cities">探索河南 ${CITY_GUIDES.length} 城 ↓</button></div>
         <div class="hero-stats" aria-label="站点数据"><div><b>${CITY_GUIDES.length}</b><span>城目的地</span></div><div><b>${CATALOG.length}</b><span>精选去处</span></div><div><b>${albumPlaces.length}</b><span>张实景照片</span></div><div><b>${PRESETS.length}</b><span>条主题路线</span></div></div>
       </div>
-      <div class="hero-bottom"><div class="hero-photo-meta"><span id="hero-photo-count">${String(heroPhotoIndex+1).padStart(2,'0')} / ${String(heroPlaces.length).padStart(2,'0')}</span><div class="hero-photo-info"><button id="hero-photo-source" data-open-album data-photo-place="${esc(hero.id)}" aria-label="${esc(heroPhotoLabel(hero))}">${esc(hero.city+' · '+hero.name)} ↗</button><span id="hero-photo-date">${hero.photoTakenAt?'拍摄于 '+esc(hero.photoTakenAt):'拍摄日期未注明'}</span></div><button id="hero-toggle" data-hero-toggle aria-label="${heroAutoplay?'暂停照片轮播':'播放照片轮播'}" aria-pressed="${String(heroAutoplay)}">${heroAutoplay?'Ⅱ':'▶'}</button></div><div class="hero-gallery-controls"><button class="hero-arrow" data-hero-step="-1" aria-label="上一张照片">←</button><nav class="hero-thumbnails" aria-label="选择河南实景照片">${heroPlaces.map((p,i)=>'<button data-hero-photo="'+i+'" class="hero-thumbnail '+(i===heroPhotoIndex?'is-active':'')+'" aria-label="查看'+esc(p.city+' · '+p.name)+'照片" aria-pressed="'+String(i===heroPhotoIndex)+'"><img src="'+esc(p.image)+'" alt="" width="96" height="64"><span>'+esc(p.name)+'</span></button>').join('')}</nav><button class="hero-arrow" data-hero-step="1" aria-label="下一张照片">→</button></div></div>
+      <div class="hero-bottom"><div class="hero-photo-meta"><span id="hero-photo-count">${hero.image?String(heroPhotoIndex+1).padStart(2,'0')+' / '+String(heroPhotos.length).padStart(2,'0'):'实景待补'}</span><div class="hero-photo-info">${hero.image?'<button id="hero-photo-source" data-open-album data-photo-place="'+esc(hero.id)+'" aria-label="'+esc(heroPhotoLabel(hero))+'">'+esc(hero.city+' · '+hero.name)+' ↗</button>':'<span id="hero-photo-source">'+esc(hero.city+' · '+hero.name)+' · 照片占位</span>'}<span id="hero-photo-date">${hero.image?esc(photoDateLabel(hero)):'图形占位 · 尚无实景照片'}</span></div><button id="hero-toggle" data-hero-toggle ${heroPhotos.length>1?'':'hidden disabled'} aria-label="${heroAutoplay?'暂停照片轮播':'播放照片轮播'}" aria-pressed="${String(heroAutoplay)}">${heroAutoplay?'Ⅱ':'▶'}</button></div><div class="hero-gallery-controls" ${heroPhotos.length>1?'':'hidden'}><button class="hero-arrow" data-hero-step="-1" aria-label="上一张照片">←</button><nav class="hero-thumbnails" aria-label="选择河南实景照片">${heroPlaces.map((p,i)=>'<button data-hero-photo="'+i+'" class="hero-thumbnail '+(i===heroPhotoIndex?'is-active':'')+'" aria-label="查看'+esc(p.city+' · '+p.name)+'照片" aria-pressed="'+String(i===heroPhotoIndex)+'">'+photoMediaHTML(p,{compact:true,alt:''})+'<span>'+esc(p.name)+'</span></button>').join('')}</nav><button class="hero-arrow" data-hero-step="1" aria-label="下一张照片">→</button></div></div>
     </section>
     <div class="gallery-inner">
       ${weekendPicksHTML()}
@@ -143,7 +145,7 @@ function renderGallery(){
     </div>`;
   if(pendingText)$('#brieftext').value=pendingText;
   renderCityAtlas();
-  initializeHeroSlideshow();
+  bindPhotoMedia($('#gallery'));initializeHeroSlideshow();
 }
 
 function revealPlannerMap(){
@@ -189,10 +191,10 @@ function renderOverview(){
   $('#overview').innerHTML='<div class="folio-heading"><div><div class="eyebrow">YOUR JOURNEY / HENAN</div><h2>'+esc(preset?.title||'我的河南旅程')+'</h2><p>地点、停留和交通分别呈现。确认自己的节奏，再出发。</p></div><div class="folio-actions"><button data-overview-action="edit">继续编辑</button><button data-overview-action="export" '+(!trip.length?'disabled':'')+'>导出行程</button><button data-overview-action="print">打印行程</button><button data-overview-action="check">检查条件</button><button class="primary" data-overview-action="plan" '+(!trip.length?'disabled':'')+'>生成规划对照</button></div></div><div class="folio-metrics"><div class="folio-metric"><small>旅行安排</small><b>'+days+'</b><span>天 / '+trip.length+' 站</span></div><div class="folio-metric"><small>到访城市</small><b>'+cities.length+'</b><span>'+esc(cities.join('、')||'尚未选择')+'</span></div><div class="folio-metric"><small>游览停留合计</small><b>'+Math.round(total/6)/10+'</b><span>小时，不含交通</span></div><div class="folio-metric"><small>已确认交通定位</small><b>'+confirmed+' / '+trip.length+'</b><span>地点</span></div></div>'+(comparisonRecord&&comparisonRecord.afterSnapshot===JSON.stringify(compactDraft())?comparisonHTML(comparisonRecord.before,trip,days):'')+'<div class="folio-days">'+Array.from({length:days},(_,i)=>{
     const items=trip.filter(s=>s.day===i+1),localCities=[...new Set(items.map(s=>s.place.city).filter(Boolean))],cover=items.find(s=>s.place.image)?.place;
     const duration=items.reduce((n,s)=>n+s.duration,0),cached=cachedTraffic(items);
-    return '<article class="folio-day"><div class="folio-day-cover">'+(cover?'<img src="'+esc(cover.image)+'" alt="'+esc(cover.photoCaption||cover.name)+'" loading="lazy">':'')+'<small>DAY 0'+(i+1)+'</small><h3>'+esc(localCities.join(' / ')||'自由安排')+'</h3><span>'+items.length+' 个地点 · 游览 '+esc(durationLabel(duration))+'</span>'+(cover?'<p class="folio-photo-label">照片：'+esc(cover.city||'河南')+' · '+esc(cover.name)+'</p>':'')+'</div><div class="folio-day-content">'+(items.length?items.map((s,j)=>{
+    return '<article class="folio-day"><div class="folio-day-cover">'+photoMediaHTML(cover||{city:localCities[0],name:localCities.join(' / ')||'自由安排',theme:'分日行程'},{className:'folio-cover-photo',compact:true})+'<small>DAY 0'+(i+1)+'</small><h3>'+esc(localCities.join(' / ')||'自由安排')+'</h3><span>'+items.length+' 个地点 · 游览 '+esc(durationLabel(duration))+'</span>'+(cover?'<p class="folio-photo-label">照片：'+esc(cover.city||'河南')+' · '+esc(cover.name)+'</p>':'')+'</div><div class="folio-day-content">'+(items.length?items.map((s,j)=>{
       const leg=cached?.legs[j-1];return (j?'<div class="folio-leg">'+(leg?esc(modeNames[cached.mode])+' · 约 '+Math.ceil(leg.duration/60)+' 分钟':'站间交通待核算')+'</div>':'')+'<div class="folio-stop"><span class="folio-stop-number">'+(j+1)+'</span><div><button data-folio-place="'+esc(s.place.id)+'">'+esc(s.place.name)+'</button><p>'+esc(s.place.theme||labels[s.place.category])+' · 停留 '+esc(durationLabel(s.duration))+'</p>'+(s.place.visitTip?'<p class="folio-tip">'+esc(s.place.visitTip)+'</p>':'')+'</div></div>';
     }).join(''):'<div class="folio-empty">留给下一段旅程。</div>')+'<div class="folio-day-footer">'+(localCities.length>1?'当天跨城，城际交通需另行确认。':cached?'站间耗时来自查询时的高德方案。':'停留时长已列出，交通尚未计入。')+'<button data-edit-day="'+(i+1)+'">在地图上编辑第 '+(i+1)+' 天</button></div></div></article>';
-  }).join('')+'</div><div class="folio-proof"><div><b>规划依据</b><br>AI 智能体根据你的条件与工具结果规划；服务不可用时显示规则候选。</div><div><b>交通与资料</b><br>高德实时查询；实景照片、作者和许可可在地点详情与资料说明中查看。</div><div><b>出发前确认</b><br>营业时间、预约和景区内部交通尚未校验，请以官方当日信息为准。</div></div>';
+  }).join('')+'</div><div class="folio-proof"><div><b>规划依据</b><br>AI 智能体根据你的条件与工具结果规划；服务不可用时显示规则候选。</div><div><b>交通与资料</b><br>高德实时查询；实景照片、作者和许可可在地点详情与资料说明中查看。</div><div><b>出发前确认</b><br>营业时间、预约和景区内部交通尚未校验，请以官方当日信息为准。</div></div>';bindPhotoMedia($('#overview'));
 }
 async function generate(scopeDay=null){
   if(planningBusy){toast('正在计算建议，请稍后');return}

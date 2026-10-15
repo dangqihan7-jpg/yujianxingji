@@ -1,7 +1,7 @@
 import {readFile,writeFile} from 'node:fs/promises';
 import worker,{HTML,CATALOG,CITY_GUIDES,validateDraft,rulePlan,validRouting,validatePlan,agentContext,agentPlanDraft,agentRuleResult} from '../worker/index.js';
 const base=new URL('../',import.meta.url);
-let html=HTML;
+let html=HTML.replace('/*PHOTO_MEDIA_CODE*/',await readFile(new URL('photo-media.js',base),'utf8'));
 const demo=CATALOG;
 const decisionCore=(await readFile(new URL('decision-core.mjs',base),'utf8')).replaceAll('export ','');
 const shim=`<script>

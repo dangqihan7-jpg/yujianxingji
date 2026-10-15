@@ -53,9 +53,12 @@ run('stepAlbumPhoto(1)');assert.equal(get('#album-count').textContent,'01 / '+al
 run('selectAlbumPhoto(-1);selectAlbumPhoto(100);selectAlbumPhoto(1.5)');assert.equal(get('#album-count').textContent,'01 / '+albumTotal);
 get('#photoalbum').onclick({target:{closest:s=>s==='[data-album-photo]'?{dataset:{albumPhoto:'2'}}:null}});
 assert.equal(get('#album-title').textContent,'洛邑古城');
-const staleAlbumError=get('#album-image').onerror;
-run('selectAlbumPhoto(1)');staleAlbumError();assert.equal(get('#album-error').hidden,true,'An old image request cannot hide the newly selected photo');
+const staleAlbumError=get('#album-image').onerror,staleAlbumLoad=get('#album-image').onload;
+run('selectAlbumPhoto(1)');assert.equal(get('#album-image').hidden,true,'Do not show a previous photograph under a newly selected place name');assert.equal(get('#album-error').hidden,false);assert(get('#album-error').innerHTML.includes('照片加载中'));assert(get('#album-error').innerHTML.includes('龙门石窟'));
+staleAlbumError();staleAlbumLoad();assert.equal(get('#album-image').hidden,true);assert.equal(get('#album-error').hidden,false,'Old request callbacks cannot reveal an unconfirmed new photograph');
+get('#album-image').onload();assert.equal(get('#album-image').hidden,false);assert.equal(get('#album-error').hidden,true);
 get('#album-image').onerror();assert.equal(get('#album-image').hidden,true);assert.equal(get('#album-error').hidden,false);
+assert(get('#album-error').innerHTML.includes('照片占位'));assert(!get('#album-error').innerHTML.includes('照片暂时无法加载'));
 get('#album-image').onload();assert.equal(get('#album-image').hidden,false);assert.equal(get('#album-error').hidden,true);
 assert.equal(run('JSON.stringify(compactDraft())'),albumDraft);assert.equal(get('#brieftext').value,'两天时间，想看山水');
 get('#photoalbum').close();get('#photoalbum').onkeydown({key:'ArrowRight',preventDefault(){albumPrevented++}});
@@ -90,4 +93,34 @@ run('trip.forEach(s=>s.day=1);renderTrip()');await run('generate()');assert(get(
 get('#apply').onclick();assert.equal(body.dataset.view,'overview');assert(get('#overview').innerHTML.includes('单日最长已知安排'));assert.equal(run('trip.length'),5);
 run('trip[0].duration+=15;renderTrip()');assert(!get('#overview').innerHTML.includes('单日最长已知安排'),'Changed draft must clear obsolete comparison');
 const untouched=run('JSON.stringify(compactDraft())');await run('showPlanningExample()');assert.equal(run('JSON.stringify(compactDraft())'),untouched,'Trying an example must not mutate or save the current itinerary');assert(get('#advicebody').innerHTML.includes('互动示例'));get('#applyexample').onclick();assert.equal(run('currentPresetId'),'luoyang');assert.equal(get('#maxhours').value,'6');assert(get('#overview').innerHTML.includes('单日最长已知安排'));
-console.log('Passed: full-frame album, photo navigation and failure recovery, preserved draft, load-aware/city-aware planning across 75 cases, gallery routes, overview and truthful comparison.');
+
+// Run the complete compiled browser script against independently supplied photo
+// catalogues. This catches startup failures that a standalone media helper test
+// cannot detect, without invoking init(), models, maps or outbound requests.
+function photoCatalogueFixture(catalog){
+ const nodes=new Map(),body={dataset:{view:'gallery'}},get=selector=>{if(!nodes.has(selector))nodes.set(selector,{value:selector==='#days'?'3':selector==='#start'?'09:00':selector==='#city'?'河南':selector==='#maxhours'?'6':selector==='#restmins'?'30':selector==='#travelmode'?'driving':'',style:{},dataset:{},hidden:false,open:false,classList:{add(){},toggle(){}},querySelectorAll:()=>[],addEventListener(){},setAttribute(){},showModal(){this.open=true},close(){this.open=false}});return nodes.get(selector)};
+ const context={document:{body,querySelector:get,querySelectorAll:()=>[],createElement:()=>({click(){}}),head:{append(){}}},navigator:{},URL,Blob,Map,Set,console,setTimeout:()=>0,clearTimeout(){},fetch(){throw Error('Photo catalogue fixture must not make network requests')}};context.window=context;vm.createContext(context);
+ let script=HTML.split('<script>')[1].split('</script>')[0].replace(/\ninit\(\);\s*$/,'');const start=script.indexOf('const CATALOG='),end=script.indexOf(';const PRESETS=',start);assert(start>=0&&end>start,'Replace only the compiled catalogue declaration');script=script.slice(0,start)+'const CATALOG='+JSON.stringify(catalog)+script.slice(end);
+ assert.doesNotThrow(()=>vm.runInContext(script,context),'Photo availability must not prevent the browser script from initializing');
+ return {get,run:expression=>vm.runInContext(expression,context),hero:()=>get('#gallery').innerHTML.split('<div class="gallery-inner">')[0]};
+}
+const configuredHeroIds=['hn-qingming','hn-longmen','hn-luoyi','hn-henan-museum','hn-laojunshan'];
+assert.deepEqual(Array.from(run('heroPlaces.map(place=>place.id)')),configuredHeroIds,'Existing verified hero photos keep their editorial order');
+{
+ const catalog=CATALOG.map(place=>configuredHeroIds.includes(place.id)?{...place,image:null}:place),fixture=photoCatalogueFixture(catalog),remaining=catalog.filter(place=>place.image);
+ assert.deepEqual(Array.from(fixture.run('heroPlaces.map(place=>place.id)')),remaining.slice(0,5).map(place=>place.id),'If all configured covers are removed, use other actual catalogue photographs');
+ assert.equal(fixture.run('albumPlaces.length'),remaining.length);assert.equal(new Set(Array.from(fixture.run('albumPlaces.map(place=>place.id)'))).size,remaining.length,'Fallback photos are not counted twice in the album');
+ for(const place of remaining.slice(0,5))assert(fixture.hero().includes(place.image),'A fallback cover uses its actual image URL');
+ const draft=fixture.run('JSON.stringify(compactDraft())');fixture.run('selectHeroPhoto(1);openPhotoAlbum()');assert.equal(fixture.get('#photoalbum').open,true);assert.equal(fixture.get('#album-title').textContent,remaining[1].name);assert.equal(fixture.run('JSON.stringify(compactDraft())'),draft);
+}
+for(const catalog of [CATALOG.map(place=>({...place,image:null})),[]]){
+ const fixture=photoCatalogueFixture(catalog),markup=fixture.hero();assert.equal(fixture.run('albumPlaces.length'),0,'A placeholder is never counted as a real album photo');assert.equal(fixture.run('heroPlaces.length'),1);assert.equal(fixture.run('Boolean(heroPlaces[0].image)'),false);
+ if(catalog.length)assert(catalog.some(place=>place.id===fixture.run('heroPlaces[0].id')),'A missing-photo hero still names an actual catalogue place');
+ assert(markup.includes('photo-placeholder'));assert.match(markup,/实景待补|照片占位/);assert(!/<img\b/.test(markup),'An empty photo catalogue must not create a fictitious real-image slide');
+ const albumEntry=markup.match(/<button\b[^>]*class="hero-album-entry"[^>]*>/)?.[0];assert(!albumEntry||/\shidden(?:\s|>)/.test(albumEntry),'Hide the unavailable real-photo album entry');
+ const sourceTag=markup.match(/<(?:button|span)\b[^>]*id="hero-photo-source"[^>]*>/)?.[0];assert(sourceTag,'Keep an honest visible photo-state label');assert(!sourceTag.includes('data-open-album'),'A placeholder cannot link to nonexistent photo provenance');assert(!sourceTag.startsWith('<button')||/\sdisabled(?:\s|>)/.test(sourceTag),'Photo-state labels cannot masquerade as enabled source controls');
+ const controls=markup.match(/<div\b[^>]*class="hero-gallery-controls"[^>]*>/)?.[0],toggle=markup.match(/<button\b[^>]*id="hero-toggle"[^>]*>/)?.[0];assert(!controls||/\shidden(?:\s|>)/.test(controls),'Hide unavailable carousel navigation');assert(!toggle||/\shidden(?:\s|>)/.test(toggle),'Hide the unavailable autoplay control');assert(!markup.includes('拍摄于'),'Residual photo metadata cannot imply that a graphic placeholder is a dated photograph');assert(markup.includes('<b>0</b><span>张实景照片</span>'));
+ assert.equal(fixture.run('heroAutoplay'),false);assert.equal(fixture.run('heroTimer'),0);assert.equal(fixture.run('heroPhotoIndex'),0);
+ fixture.run('selectHeroPhoto(0);scheduleHeroRotation();openPhotoAlbum();stepAlbumPhoto(1)');assert.equal(fixture.get('#photoalbum').open,false,'An absent album cannot be opened programmatically');assert.equal(fixture.run('heroTimer'),0);
+}
+console.log('Passed: full-frame album, photo navigation and failure recovery, alternate real hero covers and honest all-missing/empty catalogue startup, preserved draft, load-aware/city-aware planning across 75 cases, gallery routes, overview and truthful comparison.');

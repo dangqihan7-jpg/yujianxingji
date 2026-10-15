@@ -289,3 +289,60 @@ dialog {border:1px solid var(--line);border-radius:8px;background:#fffefb;color:
 
 .atlas-highlights .atlas-highlight-photo{position:relative;display:block;height:158px;margin:-16px -16px 15px;overflow:hidden;background:#e8eadf;border-radius:4px 4px 0 0}.atlas-highlight-photo img{display:block;width:100%;height:100%;object-fit:cover}.atlas-highlight-photo>span{position:absolute;bottom:9px;left:10px;font-size:10px;line-height:1.5;padding:4px 7px;color:#fff;background:rgba(25,34,27,.78);border-radius:3px}.atlas-highlights button:hover .atlas-highlight-photo img{filter:brightness(1.04)}
 @media(max-width:760px){.atlas-highlights .atlas-highlight-photo{height:168px;margin:-13px -14px 14px}.atlas-highlight-photo>span{font-size:11px}}
+
+/* Deliberately graphic photo placeholders: city colour, place name and honest status. */
+.photo-media{position:relative;display:block;width:100%;height:100%;overflow:hidden;isolation:isolate;background:#253b36}
+.photo-media>img{position:absolute;inset:0;display:block;width:100%;height:100%;object-fit:cover;margin:0;border:0}
+.photo-media>img[hidden],.photo-placeholder[hidden],#album-error[hidden],#album-image[hidden]{display:none!important}
+[data-photo-theme]{--photo-ink:#233e36;--photo-fade:#506052;--photo-accent:#e3c58b}
+[data-photo-theme="zhengzhou"]{--photo-ink:#2d3637;--photo-fade:#6b6554}
+[data-photo-theme="luoyang"]{--photo-ink:#493343;--photo-fade:#786157}
+[data-photo-theme="kaifeng"]{--photo-ink:#573b31;--photo-fade:#8c6d4d}
+[data-photo-theme="jiaozuo"]{--photo-ink:#263c3b;--photo-fade:#536b5e}
+[data-photo-theme="anyang"]{--photo-ink:#3f3b35;--photo-fade:#73715c}
+[data-photo-theme="hebi"]{--photo-ink:#3a4249;--photo-fade:#637373}
+[data-photo-theme="xinxiang"]{--photo-ink:#29413c;--photo-fade:#677456}
+[data-photo-theme="puyang"]{--photo-ink:#3c4141;--photo-fade:#6d7a6e}
+[data-photo-theme="xuchang"]{--photo-ink:#383b4c;--photo-fade:#696a76}
+[data-photo-theme="luohe"]{--photo-ink:#2c4745;--photo-fade:#5e7870}
+[data-photo-theme="sanmenxia"]{--photo-ink:#4b4031;--photo-fade:#8a7857}
+[data-photo-theme="pingdingshan"]{--photo-ink:#303d42;--photo-fade:#637269}
+[data-photo-theme="nanyang"]{--photo-ink:#3d4334;--photo-fade:#70795b}
+[data-photo-theme="shangqiu"]{--photo-ink:#534236;--photo-fade:#8a785d}
+[data-photo-theme="xinyang"]{--photo-ink:#254538;--photo-fade:#607b55}
+[data-photo-theme="zhoukou"]{--photo-ink:#4c3c36;--photo-fade:#86745f}
+[data-photo-theme="zhumadian"]{--photo-ink:#3e473c;--photo-fade:#788065}
+[data-photo-theme="jiyuan"]{--photo-ink:#30474a;--photo-fade:#6a7c75}
+.photo-placeholder{position:relative;display:flex;flex-direction:column;align-items:flex-start;justify-content:center;width:100%;height:100%;min-height:inherit;box-sizing:border-box;padding:24px;text-align:left;gap:10px;overflow:hidden;color:#fff6df;background:linear-gradient(135deg,var(--photo-ink),var(--photo-fade));font-family:inherit}
+.photo-placeholder::before{content:"";position:absolute;inset:0;pointer-events:none;background-image:linear-gradient(#fff1 1px,transparent 1px),linear-gradient(90deg,#fff1 1px,transparent 1px);background-size:30px 30px;opacity:.4}
+.photo-placeholder::after{content:"";position:absolute;inset:11px;border:1px solid #ead6a533;pointer-events:none}
+.photo-placeholder .photo-placeholder-label{position:relative;display:inline-block;width:auto;max-width:100%;margin:0;padding:4px 7px;border:1px solid #e5cfa87a;border-radius:2px;background:#17231f4d;color:#fff2cc;font-size:10px;line-height:1.6;font-weight:500;letter-spacing:.5px}
+.photo-placeholder .photo-placeholder-city{display:block;position:relative;margin:0;color:#ead6af;font-size:10px;line-height:1.4;letter-spacing:2px}
+.photo-placeholder .photo-placeholder-name{position:relative;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;margin:0;padding:0;color:#fff8e9;font-family:var(--serif);font-size:32px;font-weight:500;line-height:1.3;letter-spacing:2px}
+.photo-placeholder .photo-placeholder-tag{position:relative;display:inline-block;width:auto;max-width:100%;overflow:hidden;margin:0;padding:3px 7px;border:1px solid #fff3;border-radius:3px;color:#f7ead0;font-size:11px;line-height:1.5;white-space:nowrap;text-overflow:ellipsis;letter-spacing:.5px}
+.photo-media.is-compact .photo-placeholder,.photo-placeholder.is-compact{padding:8px;gap:6px}
+.photo-media.is-compact .photo-placeholder::after,.photo-placeholder.is-compact::after{inset:4px}
+.photo-media.is-compact .photo-placeholder-label,.photo-placeholder.is-compact .photo-placeholder-label{padding:2px 3px;font-size:8px;letter-spacing:0;line-height:1.4}
+.photo-media.is-compact .photo-placeholder-city,.photo-placeholder.is-compact .photo-placeholder-city{display:none}
+.photo-media.is-compact .photo-placeholder-name,.photo-placeholder.is-compact .photo-placeholder-name{font-size:14px;letter-spacing:0;line-height:1.35}
+.photo-media.is-compact .photo-placeholder-tag,.photo-placeholder.is-compact .photo-placeholder-tag{padding:1px 4px;font-size:9px;letter-spacing:0;line-height:1.4}
+.place-photo>.photo-media{min-height:100%}.place-photo .photo-placeholder{min-height:100px}.place-photo .photo-placeholder-name{-webkit-line-clamp:3}
+.stop-photo .photo-placeholder{padding:4px;gap:3px}.stop-photo .photo-placeholder-label{font-size:7px;padding:0;border:0;background:none}.stop-photo .photo-placeholder-name{font-size:10px;-webkit-line-clamp:1}.stop-photo .photo-placeholder-tag{display:none}
+.detail-photo-media{height:310px;min-height:240px}.detail-photo-media>img{object-fit:contain}.detail-gallery>.detail-photo-media .photo-placeholder{min-height:310px}
+.detail-photo-media .photo-placeholder{align-items:center;text-align:center}.detail-photo-media .photo-placeholder-name{font-size:40px}
+.pick-media .photo-placeholder{padding:21px 18px 42px;gap:8px}.pick-media .photo-placeholder-name{font-size:29px}.pick-media .photo-placeholder-city{display:none}.pick-media .photo-placeholder-tag{font-size:10px}
+.atlas-highlights .atlas-highlight-photo>.photo-media{position:relative;inset:auto;width:100%;height:100%;margin:0;padding:0;border:0;border-radius:0;font-size:inherit;line-height:inherit;background:transparent}
+.atlas-highlight-photo .photo-placeholder{padding:18px;gap:8px}.atlas-highlight-photo .photo-placeholder-name{font-size:28px}.atlas-highlight-photo .photo-placeholder-city{display:none}.atlas-highlight-photo .photo-placeholder-label{font-size:10px}
+.atlas-highlights .atlas-photo-date{z-index:1}.atlas-highlight-photo:has(.photo-failed)>.atlas-photo-date{display:none}
+.route-type-cover.photo-media{padding:0;min-height:0}.route-type-cover.photo-media .photo-placeholder{min-height:100%;padding:26px}.route-type-cover.photo-media .photo-placeholder-name{font-size:38px}.route-type-cover.photo-media.is-small .photo-placeholder-name{font-size:23px}.route-type-cover.photo-media.is-small .photo-placeholder-tag{font-size:10px}
+.preset>.preset-photo{position:absolute;inset:0;z-index:-2}.preset-photo .photo-placeholder-name,.preset-photo .photo-placeholder-tag{visibility:hidden}.preset-photo .photo-placeholder-label{position:absolute;right:8px;bottom:6px;max-width:110px;opacity:.85}
+.folio-day-cover>.folio-cover-photo{position:absolute;inset:0;z-index:-2}.folio-cover-photo .photo-placeholder{justify-content:flex-start;gap:4px}.folio-cover-photo .photo-placeholder-name,.folio-cover-photo .photo-placeholder-tag{visibility:hidden}
+.hero-image>.photo-media{height:100%;width:100%}.hero-image>.photo-media>img{object-position:50% 60%}.hero-image .photo-placeholder{align-items:flex-end;text-align:right;padding:100px 7% 230px 45%;gap:22px}.hero-image .photo-placeholder-name{font-size:clamp(40px,5vw,90px);letter-spacing:5px}.hero-image .photo-placeholder-label{font-size:14px;background:#15231fe6;z-index:1}.hero-image .photo-placeholder-tag{font-size:13px}
+.hero-thumbnail>.photo-media{display:block;min-height:0;height:42px;width:100%;margin:0;border-radius:2px}.hero-thumbnail .photo-placeholder,.album-thumbnails .photo-placeholder{min-height:0;padding:3px;gap:2px;align-items:center;justify-content:center}.hero-thumbnail .photo-placeholder>span,.album-thumbnails .photo-placeholder>span{min-height:0;margin:0;display:block}.hero-thumbnail .photo-placeholder-label,.album-thumbnails .photo-placeholder-label{font-size:7px;line-height:1.2;border:0;padding:0;letter-spacing:0}.hero-thumbnail .photo-placeholder-name,.album-thumbnails .photo-placeholder-name{font-size:10px;-webkit-line-clamp:1}.hero-thumbnail .photo-placeholder .photo-placeholder-city,.hero-thumbnail .photo-placeholder .photo-placeholder-tag,.album-thumbnails .photo-placeholder .photo-placeholder-city,.album-thumbnails .photo-placeholder .photo-placeholder-tag{display:none}.hero-thumbnail .photo-placeholder::after,.album-thumbnails .photo-placeholder::after{inset:2px}
+.album-thumbnails button>.photo-media{display:block;min-height:0;width:76px;height:45px;margin:0;border-radius:2px}.album-thumbnails .photo-media span{margin:0}.album-thumbnails .photo-placeholder-name{color:#fff8e9}
+#album-error{height:100%;width:100%;padding:0}#album-error .photo-placeholder{align-items:center;text-align:center;min-height:100%}#album-error .photo-placeholder-name{font-size:clamp(28px,4vw,48px)}
+@media(max-width:760px){.detail-photo-media{height:240px}.detail-gallery>.detail-photo-media .photo-placeholder{min-height:240px}.detail-photo-media .photo-placeholder-name{font-size:33px}.hero-image .photo-placeholder{padding:90px 25px 240px;justify-content:flex-start;gap:12px}.hero-image .photo-placeholder-name{font-size:32px}.hero-image .photo-placeholder-city,.hero-image .photo-placeholder-tag{display:none}.hero-image .photo-placeholder-label{font-size:11px}.hero-thumbnail>.photo-media{height:35px}.hero-thumbnail .photo-placeholder-name{display:none}.route-type-cover.photo-media .photo-placeholder-name{font-size:30px}.route-type-cover.photo-media.is-small .photo-placeholder-name{font-size:19px}.side-media .photo-placeholder-tag{display:none}.side-media .photo-placeholder-label{font-size:9px}.pick-media .photo-placeholder-name{font-size:27px}}
+
+.hero-album-entry[hidden],.hero-gallery-controls[hidden],#hero-toggle[hidden]{display:none!important}
+/* A phone list grows with its cards instead of painting over the itinerary. */
+@media(max-width:760px){.workspace .explore{max-height:none}.hero-image .photo-placeholder-name{display:none}}

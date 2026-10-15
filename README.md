@@ -94,6 +94,12 @@ X2.5 请求不发送 response_format、tools 或 thinking_budget。仅对 MaaS �
 
 ## 实景照片
 
+照片审计以当前 `henan.json` 为准：95 个地点中 40 处有图、55 处待补。此前的 38 / 57 数量已在本日补两张后变化；[无图清单](docs/photo-audit.md) 列出当前所有 id、名称与城市。缺图与图片加载失败均显示城市主题渐变、地点名和类别标签，明确标注为占位，不将生成图或其他景区照片充作实景。
+
+地点可选字段 `photoSource` 记录出处（如 `实拍`、`wikimedia`、`高德`），`photoYear` 记录已知拍摄年份，未知留空或省略。原有 `photoReference`、`photoTakenAt`、作者和许可保留；40 处已知来源与年份已补齐。`npm run photos:check` 输出无图、无出处和疑似老照片三类清单，并单列未知/异常年份。可用 `node scripts/check-photos.mjs --year 2026 --max-age 2 --json` 固定口径；超过两年才提示旧图，当前为如意湖（2019）与云台山（2018），不自动下架。
+
+新增只接受未经编辑改色的真实实拍或明确授权原作。人工上传 JPG 到仓库根目录，在对应 JSON 地点增加 `/assets/文件名.jpg` 的 `image` 引用，重新构建即可显示；公开授权图同时保留作者、许可和原始来源页。完整流程、未知日期处理及全量测试要求见 [人工补图](docs/photo-maintenance.md#人工补图与旧照片更新)。本次不新增或改动图片文件，保留历史处理说明，不将旧图一概描述为无后期。
+
 2026-10-15 补充商丘应天书院山门与开封市博物馆新馆入口 2 张实拍，实景库从 38 增至 40 张。原有照片保持不变，仍有 55 个地点待补实景。采用 Commons 1280px 版本，未修改照片内容；卡片可能裁切，详情与相册保留完整画面。开封市博物馆的暂停推荐标记保留，历史照片不代表当前开放状态。
 
 - 应天书院：Yumeto / Wikimedia Commons · CC BY-SA 4.0 · 拍摄于 2025-06-01。[照片来源](https://commons.wikimedia.org/wiki/File:20250601_Yingtian_Shuyuan.jpg) · [许可](https://creativecommons.org/licenses/by-sa/4.0)

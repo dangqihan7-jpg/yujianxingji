@@ -462,7 +462,9 @@
       "visitTip": "适合安排在城市游览结束后，放慢节奏沿湖散步。",
       "photoTakenAt": "2019-09-14",
       "photoReference": "https://commons.wikimedia.org/wiki/File:Ruyi_Lake_25514-Zhengzhou_(49067715743).jpg",
-      "licenseUrl": "https://creativecommons.org/licenses/by/2.0/"
+      "licenseUrl": "https://creativecommons.org/licenses/by/2.0/",
+      "photoSource": "wikimedia",
+      "photoYear": 2019
     },
     {
       "id": "hn-henan-museum",
@@ -487,7 +489,9 @@
       "photoCaption": "郑州河南博物院主建筑与院名外墙实景。",
       "aliases": [
         "河南博物馆"
-      ]
+      ],
+      "photoSource": "wikimedia",
+      "photoYear": 2024
     },
     {
       "id": "hn-erqi",
@@ -511,7 +515,9 @@
       "photoCaption": "郑州二七纪念塔双塔与广场实景。",
       "photoAuthor": "Windmemories",
       "photoLicense": "CC BY-SA 4.0",
-      "photoCheckedAt": "2026-10-12"
+      "photoCheckedAt": "2026-10-12",
+      "photoSource": "wikimedia",
+      "photoYear": 2024
     },
     {
       "id": "hn-shaolin",
@@ -535,7 +541,9 @@
       "aliases": [
         "少林寺",
         "登封少林寺"
-      ]
+      ],
+      "photoSource": "wikimedia",
+      "photoYear": 2024
     },
     {
       "id": "hn-only-henan",
@@ -576,7 +584,9 @@
       "visitTip": "建议以石窟造像和河岸步行为主，额外留出景区内部步行时间。",
       "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
       "photoTakenAt": "2025-05-04",
-      "photoCaption": "龙门石窟奉先寺卢舍那大佛与崖壁雕刻实景。"
+      "photoCaption": "龙门石窟奉先寺卢舍那大佛与崖壁雕刻实景。",
+      "photoSource": "wikimedia",
+      "photoYear": 2025
     },
     {
       "id": "hn-whitehorse",
@@ -601,7 +611,9 @@
       "photoCaption": "洛阳白马寺大佛殿前院落与香炉实景。",
       "aliases": [
         "洛阳白马寺"
-      ]
+      ],
+      "photoSource": "wikimedia",
+      "photoYear": 2025
     },
     {
       "id": "hn-luoyi",
@@ -623,7 +635,9 @@
       "photoCaption": "洛邑古城航拍视角，文峰塔、新潭与传统建筑群同框。",
       "credit": "Windmemories / Wikimedia Commons · CC BY-SA 4.0 · 拍摄于 2024-12-15 · 已缩放、压缩；缩略图裁切显示",
       "visitTip": "可以留作老城散步的一站，夜游时需把返程时间算进行程。",
-      "photoTakenAt": "2024-12-15"
+      "photoTakenAt": "2024-12-15",
+      "photoSource": "wikimedia",
+      "photoYear": 2024
     },
     {
       "id": "hn-luoyang-museum",
@@ -648,7 +662,9 @@
       "photoTakenAt": "2024-09-29",
       "aliases": [
         "洛博"
-      ]
+      ],
+      "photoSource": "wikimedia",
+      "photoYear": 2024
     },
     {
       "id": "hn-xigong",
@@ -686,7 +702,9 @@
       "visitTip": "适合以古建筑与园林细节为主，和同区域景点组合。",
       "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
       "photoTakenAt": "2025-05-31",
-      "photoCaption": "开封龙亭大殿与台阶正面实景。"
+      "photoCaption": "开封龙亭大殿与台阶正面实景。",
+      "photoSource": "wikimedia",
+      "photoYear": 2025
     },
     {
       "id": "hn-qingming",
@@ -708,7 +726,9 @@
       "photoCaption": "清明上河园上善门夜景，龙形灯饰与亮灯城门同框。",
       "credit": "Yumeto / Wikimedia Commons · CC BY-SA 4.0 · 拍摄于 2025-05-31 · 使用 1280px 版本；缩略图裁切显示",
       "visitTip": "先查看当日演出安排，再围绕想看的场次选择园内游览顺序。",
-      "photoTakenAt": "2025-05-31"
+      "photoTakenAt": "2025-05-31",
+      "photoSource": "wikimedia",
+      "photoYear": 2025
     },
     {
       "id": "hn-kaifeng-fu",
@@ -747,7 +767,9 @@
       "photoCaption": "开封铁塔公园湖畔、亭廊与铁塔同框。",
       "photoAuthor": "Windmemories",
       "photoLicense": "CC BY-SA 4.0",
-      "photoCheckedAt": "2026-10-12"
+      "photoCheckedAt": "2026-10-12",
+      "photoSource": "wikimedia",
+      "photoYear": 2025
     },
     {
       "id": "hn-yuntai",
@@ -768,7 +790,9 @@
       "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
       "credit": "Gary Todd / Wikimedia Commons · CC0 1.0 · 拍摄于 2018-05-20 · 已缩放与压缩",
       "visitTip": "当天以山水游览为主，景区内部车程和步道时间另外预留。",
-      "photoTakenAt": "2018-05-20"
+      "photoTakenAt": "2018-05-20",
+      "photoSource": "wikimedia",
+      "photoYear": 2018
     },
     {
       "id": "hn-chenjiagou",
@@ -810,7 +834,9 @@
       "photoCaption": "安阳殷墟博物馆新馆正立面与入口水景。",
       "photoAuthor": "1969社论",
       "photoLicense": "CC BY-SA 4.0",
-      "photoCheckedAt": "2026-10-12"
+      "photoCheckedAt": "2026-10-12",
+      "photoSource": "wikimedia",
+      "photoYear": 2025
     },
     {
       "id": "hn-writing",
@@ -834,7 +860,9 @@
       "photoCaption": "安阳中国文字博物馆门前字坊与主体建筑。",
       "photoAuthor": "Windmemories",
       "photoLicense": "CC BY-SA 4.0",
-      "photoCheckedAt": "2026-10-12"
+      "photoCheckedAt": "2026-10-12",
+      "photoSource": "wikimedia",
+      "photoYear": 2026
     },
     {
       "id": "hn-redflag",
@@ -859,7 +887,9 @@
       "photoTakenAt": "2026-08-15",
       "aliases": [
         "林州红旗渠"
-      ]
+      ],
+      "photoSource": "wikimedia",
+      "photoYear": 2026
     },
     {
       "id": "hn-dikeng",
@@ -973,7 +1003,9 @@
       "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
       "credit": "Huangdan2060 / Wikimedia Commons · CC BY 4.0 · 拍摄于 2025-03-18 · 使用1280px版本；缩略图裁切显示",
       "photoTakenAt": "2025-03-18",
-      "photoCaption": "河南洛阳栾川老君山金顶道观群雪后实景，金殿与山峰栈道同框。"
+      "photoCaption": "河南洛阳栾川老君山金顶道观群雪后实景，金殿与山峰栈道同框。",
+      "photoSource": "wikimedia",
+      "photoYear": 2025
     },
     {
       "id": "hn-yinji",
@@ -1085,7 +1117,9 @@
       "photoCaption": "洛阳应天门遗址博物馆夜间亮灯外景。",
       "photoAuthor": "NAN LIU",
       "photoLicense": "CC BY-SA 4.0",
-      "photoCheckedAt": "2026-10-12"
+      "photoCheckedAt": "2026-10-12",
+      "photoSource": "wikimedia",
+      "photoYear": 2026
     },
     {
       "id": "hn-mingtang",
@@ -1205,7 +1239,9 @@
       "photoCaption": "开封大相国寺山门、匾额与门前石狮实景。",
       "photoAuthor": "Windmemories",
       "photoLicense": "CC BY-SA 4.0",
-      "photoCheckedAt": "2026-10-13"
+      "photoCheckedAt": "2026-10-13",
+      "photoSource": "wikimedia",
+      "photoYear": 2025
     },
     {
       "id": "hn-kaifeng-museum",
@@ -1246,7 +1282,9 @@
       "photoCaption": "开封市博物馆新馆外立面、馆名与入口广场实景。",
       "photoAuthor": "Windmemories",
       "photoLicense": "CC BY-SA 4.0",
-      "photoCheckedAt": "2026-10-15"
+      "photoCheckedAt": "2026-10-15",
+      "photoSource": "wikimedia",
+      "photoYear": 2024
     },
     {
       "id": "hn-gulou",
@@ -1421,7 +1459,9 @@
       "photoCaption": "汤阴岳飞庙入口与“宋岳忠武王庙”牌匾。",
       "photoAuthor": "Windmemories",
       "photoLicense": "CC BY-SA 4.0",
-      "photoCheckedAt": "2026-10-12"
+      "photoCheckedAt": "2026-10-12",
+      "photoSource": "wikimedia",
+      "photoYear": 2025
     },
     {
       "id": "hn-hangu",
@@ -1599,7 +1639,9 @@
       "photoCaption": "汝州风穴寺殿宇、塔与春日庭院。",
       "photoAuthor": "Windmemories",
       "photoLicense": "CC BY-SA 4.0",
-      "photoCheckedAt": "2026-10-12"
+      "photoCheckedAt": "2026-10-12",
+      "photoSource": "wikimedia",
+      "photoYear": 2026
     },
     {
       "id": "hn-baigui",
@@ -1662,7 +1704,9 @@
       "photoCaption": "浚县古城东街的沿街建筑与日常街景。",
       "photoAuthor": "Windmemories",
       "photoLicense": "CC BY-SA 4.0",
-      "photoCheckedAt": "2026-10-12"
+      "photoCheckedAt": "2026-10-12",
+      "photoSource": "wikimedia",
+      "photoYear": 2024
     },
     {
       "id": "hn-dapishan",
@@ -1698,7 +1742,9 @@
       "photoCaption": "浚县大伾山石壁题名实景。",
       "photoAuthor": "Windmemories",
       "photoLicense": "CC BY-SA 4.0",
-      "photoCheckedAt": "2026-10-12"
+      "photoCheckedAt": "2026-10-12",
+      "photoSource": "wikimedia",
+      "photoYear": 2024
     },
     {
       "id": "hn-yunmeng",
@@ -1798,7 +1844,9 @@
       "photoCaption": "辉县宝泉水库水面与太行红岩峡谷实景。",
       "photoAuthor": "Steven Sun",
       "photoLicense": "CC BY-SA 4.0",
-      "photoCheckedAt": "2026-10-13"
+      "photoCheckedAt": "2026-10-13",
+      "photoSource": "wikimedia",
+      "photoYear": 2026
     },
     {
       "id": "hn-baligou",
@@ -1867,7 +1915,9 @@
       "photoAuthor": "Vitsuha",
       "photoLicense": "CC0",
       "photoCheckedAt": "2026-10-12",
-      "photoDateNote": "原页 EXIF 标注 2024-05-19，分类标注 2024-05-18；页面只显示可确认的月份。"
+      "photoDateNote": "原页 EXIF 标注 2024-05-19，分类标注 2024-05-18；页面只显示可确认的月份。",
+      "photoSource": "wikimedia",
+      "photoYear": 2024
     },
     {
       "id": "hn-bigan",
@@ -1902,7 +1952,9 @@
       "photoCaption": "卫辉比干庙院落、殿宇与墓区航拍。",
       "photoAuthor": "Windmemories",
       "photoLicense": "CC BY-SA 4.0",
-      "photoCheckedAt": "2026-10-12"
+      "photoCheckedAt": "2026-10-12",
+      "photoSource": "wikimedia",
+      "photoYear": 2024
     },
     {
       "id": "hn-qicheng",
@@ -2073,7 +2125,9 @@
       "photoCaption": "许昌春秋楼院内楼阁与香炉实景。",
       "photoAuthor": "Windmemories",
       "photoLicense": "CC BY-SA 4.0",
-      "photoCheckedAt": "2026-10-12"
+      "photoCheckedAt": "2026-10-12",
+      "photoSource": "wikimedia",
+      "photoYear": 2026
     },
     {
       "id": "hn-shenhou",
@@ -2109,7 +2163,9 @@
       "photoCaption": "禹州神垕古镇老街的砖墙院落与街巷。",
       "photoAuthor": "Windmemories",
       "photoLicense": "CC BY-SA 4.0",
-      "photoCheckedAt": "2026-10-12"
+      "photoCheckedAt": "2026-10-12",
+      "photoSource": "wikimedia",
+      "photoYear": 2026
     },
     {
       "id": "hn-pangdonglai",
@@ -2145,7 +2201,9 @@
       "photoCaption": "许昌胖东来天使城商场外立面与入口广场。",
       "photoAuthor": "Windmemories",
       "photoLicense": "CC BY-SA 4.0",
-      "photoCheckedAt": "2026-10-12"
+      "photoCheckedAt": "2026-10-12",
+      "photoSource": "wikimedia",
+      "photoYear": 2024
     },
     {
       "id": "hn-baling",
@@ -2181,7 +2239,9 @@
       "photoCaption": "许昌灞陵桥景区红墙拱门与园内绿树步道实景。",
       "photoAuthor": "沈澄心",
       "photoLicense": "CC0",
-      "photoCheckedAt": "2026-10-13"
+      "photoCheckedAt": "2026-10-13",
+      "photoSource": "wikimedia",
+      "photoYear": 2024
     },
     {
       "id": "hn-shali",
@@ -2299,7 +2359,9 @@
       "photoCaption": "临颍小商桥桥体、河道与两岸绿树。",
       "photoAuthor": "Windmemories",
       "photoLicense": "CC BY-SA 4.0",
-      "photoCheckedAt": "2026-10-12"
+      "photoCheckedAt": "2026-10-12",
+      "photoSource": "wikimedia",
+      "photoYear": 2024
     },
     {
       "id": "hn-luowan",
@@ -2362,7 +2424,9 @@
       "photoCaption": "南阳武侯祠“千古人龙”石牌坊与阶前实景。",
       "photoAuthor": "Windmemories",
       "photoLicense": "CC BY-SA 4.0",
-      "photoCheckedAt": "2026-10-12"
+      "photoCheckedAt": "2026-10-12",
+      "photoSource": "wikimedia",
+      "photoYear": 2026
     },
     {
       "id": "hn-shedian",
@@ -2398,7 +2462,9 @@
       "photoCaption": "赊店古镇广盛镖局院落与镖车展示。",
       "photoAuthor": "Windmemories",
       "photoLicense": "CC BY-SA 4.0",
-      "photoCheckedAt": "2026-10-12"
+      "photoCheckedAt": "2026-10-12",
+      "photoSource": "wikimedia",
+      "photoYear": 2025
     },
     {
       "id": "hn-neixiang",
@@ -2544,7 +2610,9 @@
       "photoCaption": "商丘应天书院山门、匾额与入口台阶实景。",
       "photoAuthor": "Yumeto",
       "photoLicense": "CC BY-SA 4.0",
-      "photoCheckedAt": "2026-10-15"
+      "photoCheckedAt": "2026-10-15",
+      "photoSource": "wikimedia",
+      "photoYear": 2025
     },
     {
       "id": "hn-mangdang",
@@ -2580,7 +2648,9 @@
       "photoCaption": "芒砀山汉梁王陵景区梁恭王陵墓道入口。",
       "photoAuthor": "Windmemories",
       "photoLicense": "CC BY-SA 4.0",
-      "photoCheckedAt": "2026-10-12"
+      "photoCheckedAt": "2026-10-12",
+      "photoSource": "wikimedia",
+      "photoYear": 2026
     },
     {
       "id": "hn-riyuehu",
@@ -2674,7 +2744,9 @@
       "photoCaption": "信阳南湾湖水面与林木覆盖的岛岸。",
       "photoAuthor": "Whzizhi",
       "photoLicense": "CC BY-SA 4.0",
-      "photoCheckedAt": "2026-10-12"
+      "photoCheckedAt": "2026-10-12",
+      "photoSource": "wikimedia",
+      "photoYear": 2024
     },
     {
       "id": "hn-haotang",
@@ -2795,7 +2867,9 @@
       "photoCaption": "周口淮阳太昊陵庙午朝门与门前广场。",
       "photoAuthor": "Windmemories",
       "photoLicense": "CC BY-SA 4.0",
-      "photoCheckedAt": "2026-10-12"
+      "photoCheckedAt": "2026-10-12",
+      "photoSource": "wikimedia",
+      "photoYear": 2026
     },
     {
       "id": "hn-laozi",
@@ -2882,7 +2956,9 @@
       "photoCaption": "周口关帝庙山门、牌匾与石狮实景。",
       "photoAuthor": "Windmemories",
       "photoLicense": "CC BY-SA 4.0",
-      "photoCheckedAt": "2026-10-12"
+      "photoCheckedAt": "2026-10-12",
+      "photoSource": "wikimedia",
+      "photoYear": 2026
     },
     {
       "id": "hn-huaiyang-longhu",
@@ -3059,7 +3135,9 @@
       "photoCaption": "济源王屋山景区“第一洞天”牌坊与山前实景。",
       "photoAuthor": "Windmemories",
       "photoLicense": "CC BY-SA 4.0",
-      "photoCheckedAt": "2026-10-12"
+      "photoCheckedAt": "2026-10-12",
+      "photoSource": "wikimedia",
+      "photoYear": 2026
     },
     {
       "id": "hn-wulongkou",
@@ -3154,7 +3232,9 @@
       "photoCaption": "济源济渎庙龙亭、庭院与周围林木实景。",
       "photoAuthor": "Windmemories",
       "photoLicense": "CC BY-SA 4.0",
-      "photoCheckedAt": "2026-10-13"
+      "photoCheckedAt": "2026-10-13",
+      "photoSource": "wikimedia",
+      "photoYear": 2025
     }
   ],
   "routes": [
