@@ -94,3 +94,60 @@ export function auditDecision(draft,traffic=[]){
  const conflicts=missingRequired.length+excludedPresent.length+(modeConflict?1:0)+daily.reduce((n,d)=>n+d.conflicts.length,0)+(budget.status==='conflict'?1:0),pending=daily.reduce((n,d)=>n+d.pending.length,0)+(budget.status==='pending'?1:0);
  return {daily,budget,conflicts,pending,missingRequired,excludedPresent,modeConflict,locked:draft.stops.filter(s=>s.lockedDay).length,status:conflicts?'conflict':pending?'pending':'checked'};
 }
+// ---------- 智能体直接规划：感知→决策→校验→交付 ----------
+// 与“条件提取→人工确认→候选→人工确认”不同：智能体替用户做出全部行程决策
+// （城市、天数、每天时长、休息、出行方式、选点、分日、取舍），用户只做最终拍板。
+// 每个默认和选择都记录依据 rationale；无法确定的写入 unresolved，不编造。
+const AGENT_MODE_LABELS={driving:'驾车/打车',walking:'步行',transit:'公共交通'};
+const AGENT_INTEREST_LABELS={culture:'文化',nature:'自然山水',food:'美食'};
+function agentInterestHit(interest,place){
+ const hay=(place.theme||'')+' '+place.name;
+ if(interest==='culture')return /文化|历史|博物|石窟|古城|寺|古都/.test(hay);
+ if(interest==='nature')return /山|峡|自然|水|湖/.test(hay);
+ if(interest==='food')return place.category==='food';
+ return false;
+}
+// 决策：把未指定的条件补上默认值，每一条都记为智能体的决定。
+export function applyAgentDefaults(rawIntent,catalog){
+ const fields=validateIntent(rawIntent||{}),defaulted=[];
+ const places=Array.isArray(catalog)?catalog:(typeof CATALOG!=='undefined'?CATALOG:[]);
+ if(fields.days==null){fields.days=2;defaulted.push('天数未指定，智能体决定：2 天（按周末默认）')}
+ if(fields.maxHours==null){fields.maxHours=8;defaulted.push('每天时长未指定，智能体决定：8 小时')}
+ if(fields.restMinutes==null){fields.restMinutes=30;defaulted.push('休息预留未指定，智能体决定：每天 30 分钟')}
+ if(fields.mode==null){fields.mode='driving';defaulted.push('出行方式未指定，智能体决定：驾车/打车（时间最灵活）')}
+ if(!fields.city){
+  const cities=[...new Set(fields.requiredIds.map(id=>places.find(p=>p.id===id)?.city).filter(Boolean))];
+  if(cities.length===1){fields.city=cities[0];defaulted.push('城市未指定，智能体决定：'+cities[0]+'（根据必去地点推断）')}
+  else{fields.city='河南';defaulted.push('城市未指定，智能体决定：河南多城（请确认是否接受跨城）')}
+ }
+ return {fields,defaulted};
+}
+// 决策：智能体自主选点。必去优先，其余按兴趣打分补足；取舍同样是决策并记录依据。
+export function agentSelectRules(rawIntent,catalog){
+ const places=Array.isArray(catalog)?catalog:(typeof CATALOG!=='undefined'?CATALOG:[]);
+ const {fields,defaulted}=applyAgentDefaults(rawIntent,places);
+ const city=fields.city,pool=places.filter(p=>!fields.excludedIds.includes(p.id)&&(city==='河南'||p.city===city));
+ const required=fields.requiredIds.map(id=>places.find(p=>p.id===id)).filter(p=>p&&!fields.excludedIds.includes(p.id));
+ const scoreOf=p=>fields.interests.reduce((n,t)=>n+(agentInterestHit(t,p)?3:0),0);
+ const ranked=pool.filter(p=>!required.some(r=>r.id===p.id)).sort((a,b)=>scoreOf(b)-scoreOf(a));
+ const target=Math.min(15,Math.max(required.length,fields.days*2,2)),picks=[...required];
+ for(const p of ranked){if(picks.length>=target)break;picks.push(p)}
+ if(!picks.length)throw Error('该条件下暂无可选地点，请放宽城市或排除条件');
+ const rationale=defaulted.map(reason=>({decision:'补默认条件',reason}));
+ for(const p of required)rationale.push({decision:'必去：'+p.name,reason:'你在需求中明确要求，智能体优先安排'});
+ for(const p of picks.slice(required.length)){
+  const hits=fields.interests.filter(t=>agentInterestHit(t,p));
+  rationale.push({decision:'选择：'+p.name,reason:hits.length?'匹配你的兴趣（'+hits.map(t=>AGENT_INTEREST_LABELS[t]).join('、')+'）':'同城顺路，用于补足 '+fields.days+' 天行程'});
+ }
+ if(pool.length>picks.length)rationale.push({decision:'取舍：其余 '+(pool.length-picks.length)+' 个地点未入选',reason:'控制每天游览负荷在 '+fields.maxHours+' 小时内，优先保留兴趣匹配度高的地点'});
+ const durationOf=p=>Number.isInteger(p.duration)&&p.duration>=15&&p.duration<=720?p.duration:90;
+ return {fields,defaulted,selections:picks.map(p=>({id:p.id,duration:durationOf(p)})),rationale};
+}
+// 规则智能体：完整的一次 感知→决策（分日复用 rulePlan 由调用方完成）→交付。
+export function agentPlanRules(text,catalog){
+ const input=String(text==null?'':text).normalize('NFKC').trim();
+ if(!input||input.length>600)throw Error('请用 1–600 字描述旅行需求');
+ const places=Array.isArray(catalog)?catalog:(typeof CATALOG!=='undefined'?CATALOG:[]);
+ const perceived=parseIntentRules(input,places),decided=agentSelectRules(perceived.fields,places);
+ return {source:'agent-rules',intent:decided.fields,defaulted:decided.defaulted,selections:decided.selections,rationale:decided.rationale,unresolved:perceived.unresolved,note:'智能体已根据你的需求做出全部行程决策（城市、天数、选点），分日由程序按城市与游览负荷排列；确认后才会应用，交通与费用仍需核算'};
+}
