@@ -26,6 +26,13 @@ else
   git clone "$REPO" "$APP_DIR"
 fi
 cd "$APP_DIR"
+# 自我同步：/root 下运行的这份脚本如果比仓库旧，就地换成最新版后重跑，
+# 避免 /root/deploy-aliyun.sh 与仓库脚本长期不一致
+if [ "$0" = "/root/deploy-aliyun.sh" ] && ! cmp -s "$0" "$APP_DIR/scripts/deploy-aliyun.sh"; then
+  cp "$APP_DIR/scripts/deploy-aliyun.sh" /root/deploy-aliyun.sh
+  echo "部署脚本已更新到最新版，重新执行"
+  exec bash /root/deploy-aliyun.sh "$@"
+fi
 npm ci --no-audit --no-fund
 npm run build
 npm run validate
@@ -77,7 +84,14 @@ if [ -d /var/www/html ]; then
   cp -a /var/www/html "$BACKUP"
   echo "旧个人主页已备份到 $BACKUP"
 fi
-cat > /etc/nginx/sites-available/yujianxingji << 'EOF'
+NGINX_SITE=/etc/nginx/sites-available/yujianxingji
+if [ -f "$NGINX_SITE" ] && grep -q "ssl_certificate" "$NGINX_SITE"; then
+  echo "检测到现有 HTTPS 配置，保留不覆盖"
+elif [ -f /etc/letsencrypt/live/yujianxingji-ip/fullchain.pem ] && [ -f "$APP_DIR/deploy/aliyun/nginx.conf" ]; then
+  cp "$APP_DIR/deploy/aliyun/nginx.conf" "$NGINX_SITE"
+  echo "检测到 TLS 证书，已安装仓库 HTTPS 配置"
+else
+  cat > "$NGINX_SITE" << 'EOF'
 server {
     listen 80 default_server;
     server_name _;
@@ -92,6 +106,8 @@ server {
     }
 }
 EOF
+  echo "未检测到 TLS 证书，使用 HTTP 配置（后续按 docs/deployment.md 配置 HTTPS）"
+fi
 ln -sf /etc/nginx/sites-available/yujianxingji /etc/nginx/sites-enabled/yujianxingji
 rm -f /etc/nginx/sites-enabled/default
 nginx -t && systemctl reload nginx
