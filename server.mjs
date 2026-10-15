@@ -169,6 +169,21 @@ async function reserveModelCall(request,env){
  try{for(const [scope,limit]of limits){const result=await env.DB.prepare('INSERT INTO model_usage (usage_key, calls, updated_at) VALUES (?, 1, ?) ON CONFLICT(usage_key) DO UPDATE SET calls = calls + 1, updated_at = excluded.updated_at WHERE calls < ?').bind(date+':'+scope,Date.now(),limit).run();if(result.meta?.changes!==1)fail(scope==='global'?'今日模型演示总额度已用完':'当前访问者今日模型演示额度已用完')}await env.DB.prepare('DELETE FROM model_usage WHERE updated_at < ?').bind(Date.now()-7*86400000).run()}catch(e){if(e.status)throw e;fail('模型额度控制暂不可用')}
 }
 function fallbackResponse(result,reason){return json({...result,fallback:{reason:String(reason).slice(0,250)},note:result.note+' 模型未产出可用结果，已给出规则候选；确认后才会应用。'})}
+const FLOW_EVENTS=['ai_brief_opened','ai_plan_generated','ai_plan_applied','preset_previewed','preset_started','preset_ai_optimized'];
+async function flowStatsEndpoint(request,env){
+ if(!env.DB)return json({ok:true,stored:false});
+ await env.DB.prepare('CREATE TABLE IF NOT EXISTS flow_stats (stat_key TEXT PRIMARY KEY NOT NULL, calls INTEGER NOT NULL, updated_at INTEGER NOT NULL)').run();
+ if(request.method==='GET'){
+  const rows=await env.DB.prepare('SELECT stat_key, calls FROM flow_stats').all(),stats={};
+  for(const r of rows.results||[])stats[r.stat_key]=r.calls;
+  return json({stats});
+ }
+ if(request.method!=='POST')fail('方法不支持',405);
+ const event=text((await readBody(request)).event||'',40);
+ if(!FLOW_EVENTS.includes(event))fail('事件不正确');
+ await env.DB.prepare('INSERT INTO flow_stats (stat_key, calls, updated_at) VALUES (?, 1, ?) ON CONFLICT(stat_key) DO UPDATE SET calls = calls + 1, updated_at = excluded.updated_at').bind(event,Date.now()).run();
+ return json({ok:true});
+}
 async function intentEndpoint(request,env){
  const raw=await readBody(request),input=text(raw.text,600);if(!input)fail('请描述旅行需求');
  const rules={source:'rules',...parseIntentRules(input,CATALOG),note:'文字规则识别；请确认条件后再生成行程。未识别的需求不会被当作已满足。'};
@@ -221,6 +236,7 @@ if(url.pathname==='/api/intent'&&request.method==='POST')return await intentEndp
 if(url.pathname==='/api/agent'&&request.method==='POST')return await agentEndpoint(request,env);
 if(url.pathname==='/api/plan'&&request.method==='POST')return await plan(request,env);
 if(url.pathname==='/api/validate'&&request.method==='POST')return json(validateDraft(await readBody(request)));
+if(url.pathname==='/api/flow-stats')return await flowStatsEndpoint(request,env);
 if(url.pathname==='/api/route'&&request.method==='POST'){const body=await readBody(request);if(!Array.isArray(body.locations)||body.locations.length<2||body.locations.length>9||!body.locations.every(coordinates))fail('步行路线需要 2–9 个有效坐标');const legs=[];for(let i=1;i<body.locations.length;i++){const d=await upstream('/v3/direction/walking',{origin:body.locations[i-1].join(','),destination:body.locations[i].join(',')},env);const p=d.route?.paths?.[0];if(!p)fail('部分地点之间没有可用的步行路线',502);const path=(p.steps||[]).flatMap(s=>String(s.polyline||'').split(';').map(x=>x.split(',').map(Number))).filter(coordinates);legs.push({distance:Number(p.distance),duration:Number(p.duration),path})}return json({source:'amap',mode:'walking',legs})}
 if(url.pathname.startsWith('/api/'))fail('接口不存在或方法不支持',404);
 if(request.method!=='GET'&&request.method!=='HEAD')fail('方法不支持',405);

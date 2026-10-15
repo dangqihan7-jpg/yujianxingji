@@ -19,3 +19,19 @@ const route=await vm.runInContext('jsRoutes([[113.7,34.76],[113.71,34.77],[113.7
 await assert.rejects(vm.runInContext('jsRoutes([[0,0],[1,1]])',context));await assert.rejects(vm.runInContext("jsPlaces('郑州','error','scenic')",context));const empty=await vm.runInContext("jsPlaces('郑州','empty','scenic')",context);assert.equal(empty.places.length,0);
 const response=await worker.fetch(new Request('https://travel.test/api/config'),{AMAP_JS_KEY:'test-js-key',AMAP_SECURITY_JS_CODE:'test-code'});const config=await response.json();assert.equal(config.mapConfigured,true);assert.equal(config.placesConfigured,true);assert.equal(config.webServiceConfigured,false);assert(!JSON.stringify(config).includes('test-code'));
 console.log('Passed: JS API search, details, photos, routes, no-data/error handling and configuration with only two credentials; no Web-service endpoint used.');
+// flow-stats: anonymous AI-vs-preset funnel counting, allowlisted events only, graceful without DB
+const flowStore=new Map();
+const mockDb={prepare(sql){const self={_sql:sql,_args:[],
+ bind(...a){self._args=a;return self},
+ run:async()=>{if(self._sql.includes('INSERT INTO flow_stats')){const[k]=self._args;flowStore.set(k,(flowStore.get(k)||0)+1)}return{}},
+ all:async()=>({results:[...flowStore.entries()].map(([stat_key,calls])=>({stat_key,calls}))})};return self}};
+const postFlow=await worker.fetch(new Request('https://travel.test/api/flow-stats',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({event:'ai_brief_opened'})}),{DB:mockDb});
+assert.equal((await postFlow.json()).ok,true);
+await worker.fetch(new Request('https://travel.test/api/flow-stats',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({event:'preset_started'})}),{DB:mockDb});
+const postBad=await worker.fetch(new Request('https://travel.test/api/flow-stats',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({event:'hack_the_planet'})}),{DB:mockDb});
+assert.equal(postBad.status,400);
+const getFlow=await worker.fetch(new Request('https://travel.test/api/flow-stats'),{DB:mockDb});
+assert.deepEqual((await getFlow.json()).stats,{ai_brief_opened:1,preset_started:1});
+const noDb=await worker.fetch(new Request('https://travel.test/api/flow-stats',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({event:'ai_brief_opened'})}),{});
+assert.equal((await noDb.json()).stored,false);
+console.log('Passed: flow-stats anonymous event counting, allowlist rejection and no-DB graceful degradation.');
