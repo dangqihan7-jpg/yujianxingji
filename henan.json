@@ -1237,7 +1237,16 @@
       "availabilityNote": "核对时高德点位标注暂停开放，请先向运营方确认。",
       "planningNotes": [
         "开封市博物馆的开放状态尚未确认，已排除出自动选点；确认开放后再安排。"
-      ]
+      ],
+      "image": "/assets/hn-kaifeng-museum.jpg?v=991ffb26a5dc",
+      "photoReference": "https://commons.wikimedia.org/wiki/File:20241025_Kaifeng_Museum_01.jpg",
+      "photoTakenAt": "2024-10-25",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "credit": "Windmemories / Wikimedia Commons · CC BY-SA 4.0 · 使用 1280px 版本，卡片可能裁切显示",
+      "photoCaption": "开封市博物馆新馆外立面、馆名与入口广场实景。",
+      "photoAuthor": "Windmemories",
+      "photoLicense": "CC BY-SA 4.0",
+      "photoCheckedAt": "2026-10-15"
     },
     {
       "id": "hn-gulou",
@@ -2526,7 +2535,16 @@
       "district": "睢阳区",
       "address": "商丘市睢阳区 · 环城南路",
       "locationReference": "https://www.amap.com/place/B017202NFN",
-      "locationNote": "参考高德景区或片区点位，具体交通入口需确认。"
+      "locationNote": "参考高德景区或片区点位，具体交通入口需确认。",
+      "image": "/assets/hn-yingtian-academy.jpg?v=41522d4c5e71",
+      "photoReference": "https://commons.wikimedia.org/wiki/File:20250601_Yingtian_Shuyuan.jpg",
+      "photoTakenAt": "2025-06-01",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "credit": "Yumeto / Wikimedia Commons · CC BY-SA 4.0 · 使用 1280px 版本，卡片可能裁切显示",
+      "photoCaption": "商丘应天书院山门、匾额与入口台阶实景。",
+      "photoAuthor": "Yumeto",
+      "photoLicense": "CC BY-SA 4.0",
+      "photoCheckedAt": "2026-10-15"
     },
     {
       "id": "hn-mangdang",

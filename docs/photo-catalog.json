@@ -561,5 +561,49 @@
       "=={{int:filedesc}}==\n{{Information\n|description={{en|1=Baling Bridge Park, Xuchang}}\n{{zh-hans|1=许昌灞陵桥景区}}\n|date=2024-08-12 09:54:40\n|source={{own}}\n|author=[[User:沈澄心|沈澄心]]\n|permission=\n|other versions=\n}}\n{{Location|34.021688|113.779849}}\n\n=={{int:license-header}}==\n{{self|cc-zero}}\n\n[[Category:Baling Bridge Park]]"
     ],
     "changes": "采用 Commons 1280px 缩略版；未修改照片内容，网页卡片可能裁切显示。"
+  },
+  {
+    "placeId": "hn-yingtian-academy",
+    "placeName": "应天书院",
+    "city": "商丘",
+    "file": "hn-yingtian-academy.jpg",
+    "sha256": "41522d4c5e714a9f2a4cb2a875e7ef386d95e5bf75701197f6b518057ca5d41b",
+    "source": "https://commons.wikimedia.org/wiki/File:20250601_Yingtian_Shuyuan.jpg",
+    "originalImage": "https://upload.wikimedia.org/wikipedia/commons/e/eb/20250601_Yingtian_Shuyuan.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+    "downloadImage": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/eb/20250601_Yingtian_Shuyuan.jpg/1280px-20250601_Yingtian_Shuyuan.jpg",
+    "author": "Yumeto",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "takenAt": "2025-06-01",
+    "checkedAt": "2026-10-15",
+    "caption": "商丘应天书院山门、匾额与入口台阶实景。",
+    "sourceDate": "2025-06-01 10:20:27",
+    "locationEvidence": [
+      "=={{int:filedesc}}==\n{{Information\n|description={{en|1=Yingtian Academy}}\n|date=2025-06-01 10:20:27\n|source={{own}}\n|author=[[User:Yumeto|Yumeto]]\n|permission=\n|other versions=\n}}\n{{Location|34.37112|115.615028}}\n\n=={{int:license-header}}==\n{{self|cc-by-sa-4.0}}\n\n[[Category:Yingtian Academy]]\n[[Category:Henan photographs taken on 2025-06-01]]\n[[Category:User:Yumeto]]\n[[Category:Taken with Huawei Nova 11]]",
+      "山门照片可见“应天书院”匾额；来源位置 34.371120, 115.615028 位于河南商丘。"
+    ],
+    "changes": "采用 Commons 1280px 缩略版；未修改照片内容，网页卡片可能裁切显示。"
+  },
+  {
+    "placeId": "hn-kaifeng-museum",
+    "placeName": "开封市博物馆",
+    "city": "开封",
+    "file": "hn-kaifeng-museum.jpg",
+    "sha256": "991ffb26a5dc78962653470b7e11f5a24d651f77e17676ff14cd8bbc7d47a44d",
+    "source": "https://commons.wikimedia.org/wiki/File:20241025_Kaifeng_Museum_01.jpg",
+    "originalImage": "https://upload.wikimedia.org/wikipedia/commons/5/58/20241025_Kaifeng_Museum_01.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+    "downloadImage": "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/58/20241025_Kaifeng_Museum_01.jpg/1280px-20241025_Kaifeng_Museum_01.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "author": "Windmemories",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "takenAt": "2024-10-25",
+    "checkedAt": "2026-10-15",
+    "caption": "开封市博物馆新馆外立面、馆名与入口广场实景。",
+    "sourceDate": "2024-10-25 13:53:13",
+    "locationEvidence": [
+      "=={{int:filedesc}}==\n{{Information\n|description={{zh|1=开封博物馆新馆}}\n{{en|1=Kaifeng Museum (new site)}}\n|date=2024-10-25 13:53:13\n|source={{own}}\n|author=[[User:Windmemories|Windmemories]]\n|permission=\n|other versions=\n}}\n\n=={{int:license-header}}==\n{{self|cc-by-sa-4.0}}\n\n[[Category:Kaifeng Museum]]\n[[Category:October 2024 in Kaifeng]]\n[[Category:China photographs taken on 2024-10-25]]",
+      "画面可见新馆外立面与“开封博物馆 / KAIFENG MUSEUM”馆名。"
+    ],
+    "changes": "采用 Commons 1280px 缩略版；未修改照片内容，网页卡片可能裁切显示。"
   }
 ]
