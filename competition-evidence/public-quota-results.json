@@ -1,8 +1,8 @@
 {
-  "generatedAt": "2026-10-16T02:13:49.079Z",
+  "generatedAt": "2026-10-16T03:12:27.010Z",
   "target": "/home/hatch/workspace/yujianxingji",
   "scope": "SQLite executes all project migrations in memory. Model calls are mocked; no real provider or real secret was used. Concurrency verifies SQL guard behavior under overlapping async local requests, not a production distributed load test.",
-  "workerSha256": "4d453f454fb238150f1f035ee95a0eb97d0e187839f194f17ef9678c3aa97bfa",
+  "workerSha256": "457a0cd28598e0558cb9238d08245aa058f5f90c915d714e3bd533933f43d6cb",
   "migrations": [
     "0000_smiling_sphinx.sql",
     "0001_brainy_ben_urich.sql",

@@ -99,53 +99,117 @@ $('#poster').onclick=async()=>{
  try{drawPoster(cover)}catch(e){toast('海报生成失败，请稍后重试')}
 };
 function drawPoster(cover){
- const W=1080,pad=64,gap=40;
+ const W=1080,pad=64,tlX=104;
  const days=Number($('#days').value)||1,dayNames=['一','二','三','四','五','六','七'];
  const dayData=[];for(let d=1;d<=days;d++)dayData.push(trip.filter(s=>s.day===d));
- const coverH=cover?620:220,titleH=200,dayTitleH=90,placeH=72,footH=170;
- let H=pad+coverH+gap+titleH+gap;
- for(const stops of dayData)H+=dayTitleH+Math.max(stops.length,1)*placeH+gap;
+ const modeNames={driving:'驾车',transit:'公交',walking:'步行'},mode=modeNames[$('#travelmode').value]||'驾车';
+ const fmtMin=m=>m>=60?(Math.floor(m/60)+'小时'+(m%60?m%60+'分钟':'')):m+'分钟';
+ // 高度估算
+ const headH=170,bannerH=cover?400:0,statsH=96,dayHeadH=120,stopH=104,legH=52,footH=170,gapS=36,gapL=56;
+ let H=pad+headH+gapS+(bannerH?bannerH+gapS:0)+statsH+gapL;
+ const dayLegs=dayData.map(stops=>{const t=cachedTraffic(stops);return t?t.legs:[]});
+ dayData.forEach((stops,di)=>{
+  H+=dayHeadH;
+  stops.forEach(()=>{H+=stopH});
+  H+=Math.max(0,stops.length-1)*legH+gapL;
+ });
  H+=footH+pad;
  const cv=document.createElement('canvas');cv.width=W;cv.height=H;
  const c=cv.getContext('2d');
- const bg=c.createLinearGradient(0,0,0,H);bg.addColorStop(0,'#0a1428');bg.addColorStop(1,'#060b18');
+ // 背景
+ const bg=c.createLinearGradient(0,0,W,H);bg.addColorStop(0,'#0b1526');bg.addColorStop(.55,'#081020');bg.addColorStop(1,'#050a16');
  c.fillStyle=bg;c.fillRect(0,0,W,H);
- c.strokeStyle='rgba(64,160,255,0.07)';c.lineWidth=1;
- for(let x=0;x<W;x+=90){c.beginPath();c.moveTo(x,0);c.lineTo(x,H);c.stroke()}
- for(let y=0;y<H;y+=90){c.beginPath();c.moveTo(0,y);c.lineTo(W,y);c.stroke()}
+ // 网格
+ c.strokeStyle='rgba(56,189,248,0.055)';c.lineWidth=1;
+ for(let x=0;x<=W;x+=86){c.beginPath();c.moveTo(x,0);c.lineTo(x,H);c.stroke()}
+ for(let y=0;y<=H;y+=86){c.beginPath();c.moveTo(0,y);c.lineTo(W,y);c.stroke()}
+ // 顶部光晕
+ const glow=c.createRadialGradient(W/2,-120,40,W/2,-120,620);glow.addColorStop(0,'rgba(56,189,248,0.20)');glow.addColorStop(1,'rgba(56,189,248,0)');
+ c.fillStyle=glow;c.fillRect(0,0,W,560);
  let y=pad;
+ // 页眉
+ c.fillStyle='#38bdf8';c.font='700 34px system-ui';c.textAlign='left';
+ c.fillText('豫 见 行 迹',pad,y+34);
+ c.fillStyle='rgba(148,163,184,0.85)';c.font='400 30px system-ui';c.textAlign='right';
+ c.fillText(new Date().toLocaleDateString('zh-CN'),W-pad,y+34);c.textAlign='left';
+ c.fillStyle='#f8fafc';c.font='800 88px system-ui';
+ c.fillText('河南 '+days+' 日游',pad,y+140);
+ y+=headH+gapS;
+ // AI 横幅（有才画，没有直接跳过）
  if(cover){
-  const ch=620,cw=W-pad*2,scale=Math.max(cw/cover.width,ch/cover.height),dw=cover.width*scale,dh=cover.height*scale;
-  c.save();roundRectPath(c,pad,y,cw,ch,24);c.clip();
-  c.drawImage(cover,pad+(cw-dw)/2,y+(ch-dh)/2,dw,dh);
-  const fade=c.createLinearGradient(0,y+ch-170,0,y+ch);fade.addColorStop(0,'rgba(6,11,24,0)');fade.addColorStop(1,'rgba(6,11,24,1)');
-  c.fillStyle=fade;c.fillRect(pad,y,cw,ch);c.restore();
- }else{
-  const g=c.createLinearGradient(0,y,0,y+220);g.addColorStop(0,'#123a6b');g.addColorStop(1,'#0a1c38');
-  c.save();roundRectPath(c,pad,y,W-pad*2,220,24);c.clip();c.fillStyle=g;c.fillRect(pad,y,W-pad*2,220);c.restore();
-  c.fillStyle='rgba(140,200,255,0.95)';c.font='600 44px system-ui';c.textAlign='center';
-  c.fillText('豫见行迹 · 河南周末游',W/2,y+132);c.textAlign='left';
+  const bh=400,bw=W-pad*2,sc=Math.max(bw/cover.width,bh/cover.height),dw=cover.width*sc,dh=cover.height*sc;
+  c.save();roundRectPath(c,pad,y,bw,bh,28);c.clip();
+  c.drawImage(cover,pad+(bw-dw)/2,y+(bh-dh)/2,dw,dh);
+  const fd=c.createLinearGradient(0,y+bh-130,0,y+bh);fd.addColorStop(0,'rgba(5,10,22,0)');fd.addColorStop(1,'rgba(5,10,22,0.85)');
+  c.fillStyle=fd;c.fillRect(pad,y,bw,bh);c.restore();
+  c.strokeStyle='rgba(56,189,248,0.25)';c.lineWidth=2;roundRectPath(c,pad,y,bw,bh,28);c.stroke();
+  y+=bh+gapS;
  }
- y+=coverH+gap;
- c.fillStyle='#7dd3fc';c.font='600 36px system-ui';c.fillText('豫见行迹',pad,y+40);
- c.fillStyle='#ffffff';c.font='800 84px system-ui';c.fillText('河南 '+days+' 日游',pad,y+140);
- y+=titleH+gap;
- dayData.forEach((stops,idx)=>{
-  c.fillStyle='#38bdf8';c.font='700 40px system-ui';
-  c.fillText('DAY '+(idx+1)+' · 第'+(dayNames[idx]||idx+1)+'天',pad,y+52);y+=dayTitleH;
-  const list=stops.length?stops:[null];
-  list.forEach((s,i)=>{
-   c.fillStyle='rgba(125,211,252,0.13)';roundRectPath(c,pad,y,W-pad*2,60,12);c.fill();
-   c.fillStyle='#e2e8f0';c.font='500 36px system-ui';
-   const label=s?((i+1)+'. '+String(s.place.name).slice(0,22)+(s.place.city?' · '+s.place.city:'')):'（自由安排）';
-   c.fillText(label,pad+24,y+42);y+=placeH;
+ // 统计条
+ const totalStops=trip.length,totalMin=trip.reduce((n,s)=>n+(Number(s.duration)||0),0);
+ const stats=[totalStops+' 个地点',days+' 天行程',fmtMin(totalMin)+' 游览'];
+ c.font='500 32px system-ui';
+ let sx=pad;
+ for(const s of stats){
+  const w=c.measureText(s).width+56;
+  c.fillStyle='rgba(56,189,248,0.10)';roundRectPath(c,sx,y,w,64,32);c.fill();
+  c.strokeStyle='rgba(56,189,248,0.30)';c.lineWidth=1.5;roundRectPath(c,sx,y,w,64,32);c.stroke();
+  c.fillStyle='#bae6fd';c.fillText(s,sx+28,y+42);sx+=w+20;
+ }
+ y+=statsH+gapL;
+ // 每天时间线
+ dayData.forEach((stops,di)=>{
+  const legs=dayLegs[di],cities=[...new Set(stops.map(s=>s.place.city).filter(Boolean))];
+  const dayMin=stops.reduce((n,s)=>n+(Number(s.duration)||0),0);
+  // 天标题
+  c.fillStyle='#38bdf8';c.font='800 44px system-ui';
+  c.fillText('DAY '+(di+1),pad,y+52);
+  c.fillStyle='#e2e8f0';c.font='600 40px system-ui';
+  c.fillText('第'+(dayNames[di]||di+1)+'天'+(cities.length?' · '+cities.slice(0,2).join('、'):''),pad+190,y+52);
+  c.fillStyle='rgba(148,163,184,0.9)';c.font='400 30px system-ui';c.textAlign='right';
+  c.fillText(stops.length+' 站 · 游览'+fmtMin(dayMin),W-pad,y+52);c.textAlign='left';
+  y+=dayHeadH;
+  const lineTop=y+8;
+  stops.forEach((s,si)=>{
+   // 连接线
+   if(si>0){
+    c.strokeStyle='rgba(56,189,248,0.35)';c.lineWidth=3;
+    c.beginPath();c.moveTo(tlX,lineTop+(si-1)*stopH+26);c.lineTo(tlX,y+8);c.stroke();
+    // 站间交通
+    const leg=legs[si-1],tmin=leg?Math.max(1,Math.round(leg.duration/60)):null;
+    if(tmin){c.fillStyle='rgba(148,163,184,0.85)';c.font='400 26px system-ui';c.textAlign='center';
+     c.fillText(mode+'约'+fmtMin(tmin),tlX+150,(lineTop+(si-1)*stopH+34+y+8)/2+9);c.textAlign='left'}
+   }
+   // 节点
+   const cy=y+34;
+   const dg=c.createRadialGradient(tlX,cy,2,tlX,cy,20);dg.addColorStop(0,'rgba(56,189,248,0.9)');dg.addColorStop(1,'rgba(56,189,248,0)');
+   c.fillStyle=dg;c.beginPath();c.arc(tlX,cy,20,0,7);c.fill();
+   c.fillStyle='#38bdf8';c.beginPath();c.arc(tlX,cy,9,0,7);c.fill();
+   c.fillStyle='#0b1526';c.beginPath();c.arc(tlX,cy,4,0,7);c.fill();
+   // 卡片
+   const cx=tlX+44,cw=W-pad-cx,chh=88;
+   c.fillStyle='rgba(148,197,255,0.07)';roundRectPath(c,cx,y,cw,chh,18);c.fill();
+   c.strokeStyle='rgba(148,197,255,0.16)';c.lineWidth=1.5;roundRectPath(c,cx,y,cw,chh,18);c.stroke();
+   c.fillStyle='#f1f5f9';c.font='600 38px system-ui';
+   c.fillText(String(s.place.name).slice(0,20),cx+28,y+40);
+   c.fillStyle='rgba(125,211,252,0.75)';c.font='400 28px system-ui';
+   const meta=[s.place.city,Number(s.duration)?'建议'+fmtMin(Number(s.duration)):null].filter(Boolean).join(' · ');
+   c.fillText(meta,cx+28,y+72);
+   // 序号
+   c.fillStyle='rgba(56,189,248,0.55)';c.font='800 30px system-ui';c.textAlign='right';
+   c.fillText(String(si+1).padStart(2,'0'),cx+cw-24,y+40);c.textAlign='left';
+   y+=stopH;
   });
-  y+=gap;
+  // 天内最后一段线收尾
+  y+= (stops.length? 0 : stopH);
+  if(!stops.length){c.fillStyle='rgba(148,163,184,0.7)';c.font='400 30px system-ui';c.fillText('（自由安排）',tlX+44,y+34);y+=stopH}
+  y+=gapL;
  });
- c.fillStyle='rgba(148,163,184,0.92)';c.font='400 30px system-ui';
- c.fillText('封面由讯飞星火 AI 生成 · 仅作纪念示意',pad,y+52);
- c.fillText(new Date().toLocaleDateString('zh-CN')+' · 豫见行迹',pad,y+102);
- cv.toBlob(blob=>{if(!blob){toast('海报生成失败，请稍后重试');return}const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='豫见行迹-河南'+days+'日游海报.png';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);toast('海报已生成')},'image/png');
+ // 页脚
+ c.fillStyle='rgba(100,116,139,0.9)';c.font='400 28px system-ui';
+ c.fillText('路线由豫见行迹 AI 规划 · 交通耗时为高德估计，仅供参考',pad,y+46);
+ c.fillText(cover?'封面由讯飞星火 AI 生成 · 仅作纪念示意':'豫见行迹 · 河南周末游决策助手',pad,y+92);
+ cv.toBlob(blob=>{if(!blob){toast('海报生成失败，请稍后重试');return}const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='豫见行迹-河南'+days+'日游行程.png';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);toast('行程图已生成')},'image/png');
 }
 $('#file').onchange=async e=>{const file=e.target.files[0];if(!file)return;try{if(file.size>100000)throw Error('行程文件过大');const operation=++draftOperation,raw=JSON.parse(await file.text()),validated=await api('/api/validate',raw);if(operation!==draftOperation)throw Error('行程已修改，请重新导入');validateDecisionState(raw.decision||{},validated.stops);checkpoint();const applied=await applyDraft(raw,validated);if(!applied)throw Error('行程已修改，本次导入未应用');toast('已导入行程')}catch(e){toast(e.message||'无法导入此文件')}finally{$('#file').value=''}};
 document.addEventListener?.('visibilitychange',()=>{if(document.visibilityState==='hidden')flushSave();else{renderTrip();renderMap();scheduleTrafficExpiry()}});
