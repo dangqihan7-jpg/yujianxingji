@@ -1,6 +1,10 @@
 import assert from 'node:assert/strict';
 import vm from 'node:vm';
 import worker,{HTML,CATALOG,PRESETS,rulePlan,validatePlan} from '../worker/index.js';
+import {heroDayIndex,selectDailyHeroPhotos} from '../hero-photos.mjs';
+
+const fixtureInstant=Date.parse('2026-10-16T04:00:00Z');
+function clockDate(clock){return class extends Date{constructor(...args){super(...(args.length?args:[clock.now]))}static now(){return clock.now}}}
 
 const preset=PRESETS.find(r=>r.id==='luoyang');
 const crowded={days:2,start:'09:00',maxHours:6,restMinutes:30,stops:preset.stops.map(([id,,duration])=>({place:CATALOG.find(p=>p.id===id),day:1,duration}))};
@@ -15,24 +19,27 @@ const split=rulePlan(draft);validatePlan(split,draft);for(const day of [1,2,3])a
 for(let n=1;n<=15;n++)for(const days of [1,2,3,5,7]){const sample={days,maxHours:6,restMinutes:30,stops:CATALOG.slice(0,n).map((place,i)=>({place,day:1,duration:30+i*15}))};validatePlan(rulePlan(sample),sample)}
 
 const nodes=new Map(),body={dataset:{view:'gallery'}},get=s=>{if(!nodes.has(s))nodes.set(s,{value:s==='#days'?'3':s==='#start'?'09:00':s==='#city'?'河南':s==='#maxhours'?'6':s==='#restmins'?'30':s==='#travelmode'?'driving':'',style:{},dataset:{},classList:{add(){},toggle(){}},querySelectorAll:()=>[],addEventListener(){},showModal(){this.open=true},close(){this.open=false}});return nodes.get(s)};
-const context={document:{body,querySelector:get,querySelectorAll:()=>[],createElement:()=>({click(){}}),head:{append(){}}},navigator:{},URL,Blob,Map,Set,console,setTimeout:()=>0,clearTimeout(){},fetch:(path,options)=>worker.fetch(new Request('https://fixture.test'+path,options),{})};context.window=context;vm.createContext(context);
+const context={document:{body,querySelector:get,querySelectorAll:()=>[],createElement:()=>({click(){}}),head:{append(){}}},navigator:{},Date:clockDate({now:fixtureInstant}),URL,Blob,Map,Set,console,setTimeout:()=>0,clearTimeout(){},fetch:(path,options)=>worker.fetch(new Request('https://fixture.test'+path,options),{})};context.window=context;vm.createContext(context);
 vm.runInContext(HTML.split('<script>')[1].split('</script>')[0].replace(/\ninit\(\);\s*$/,''),context);const run=s=>vm.runInContext(s,context);
 assert(get('#gallery').innerHTML.includes('data-start-route="luoyang"'));assert(get('#gallery').innerHTML.includes('data-feature-route="classic"'));
 assert(get('#gallery').innerHTML.includes('data-open-sources'),'Mobile gallery must retain sources access');
 assert(get('#gallery').innerHTML.includes('data-pick-plan="hn-wansui"'));assert(get('#gallery').innerHTML.includes('data-pick-detail="hn-laojunshan"'));
 assert(get('#gallery').innerHTML.includes('实景照片待补充'),'Unverified destination photos must not be disguised as real images');
 const carouselDraft=run('JSON.stringify(compactDraft())');get('#brieftext').value='两天时间，想看山水';
+const expectedHero=selectDailyHeroPhotos(CATALOG,fixtureInstant);
+assert.equal(expectedHero.length,10,'The homepage has ten actual daily photographs when the library supports it');
 get('#gallery').onclick({target:{closest:s=>s==='[data-hero-photo]'?{dataset:{heroPhoto:'1'}}:null}});
-assert.equal(run('heroPhotoIndex'),1);assert(get('#hero-photo-source').textContent.includes('洛阳 · 龙门石窟'));assert.equal(get('#hero-photo-source').dataset.photoPlace,'hn-longmen');
-run('selectHeroPhoto(0)');get('#gallery').onclick({target:{closest:s=>s==='[data-hero-step]'?{dataset:{heroStep:'-1'}}:null}});assert.equal(run('heroPhotoIndex'),4);assert(get('#hero-photo-source').textContent.includes('洛阳 · 老君山'));
-run('selectHeroPhoto(-1)');assert.equal(run('heroPhotoIndex'),4);assert.equal(run('JSON.stringify(compactDraft())'),carouselDraft);assert.equal(get('#brieftext').value,'两天时间，想看山水','Photo selection must preserve the travel input');
-const carouselTimers=new Map();let timerId=0;context.setTimeout=callback=>{carouselTimers.set(++timerId,callback);return timerId};context.clearTimeout=id=>carouselTimers.delete(id);context.document.querySelector=s=>s==='dialog[open]'?null:get(s);
-run('selectHeroPhoto(0)');assert.equal(carouselTimers.size,1);const nextPhoto=carouselTimers.get(run('heroTimer'));carouselTimers.delete(run('heroTimer'));nextPhoto();assert.equal(run('heroPhotoIndex'),1);assert.equal(carouselTimers.size,1,'Autoplay schedules one next photo');
-get('#hero-slideshow').onpointerenter();assert.equal(carouselTimers.size,0);get('#hero-slideshow').onpointerleave();assert.equal(carouselTimers.size,1);
-get('#hero-slideshow').onfocusin();assert.equal(carouselTimers.size,0);get('#hero-slideshow').onfocusout({relatedTarget:null});assert.equal(carouselTimers.size,1);
-context.document.hidden=true;run('scheduleHeroRotation()');assert.equal(carouselTimers.size,0);context.document.hidden=false;
-run("activeView='planner';scheduleHeroRotation()");assert.equal(carouselTimers.size,0);run("activeView='gallery';heroVisible=false;scheduleHeroRotation()");assert.equal(carouselTimers.size,0);run('heroVisible=true;scheduleHeroRotation()');assert.equal(carouselTimers.size,1);
-get('#gallery').onclick({target:{closest:s=>s==='[data-hero-toggle]'?{}:null}});assert.equal(run('heroAutoplay'),false);assert.equal(carouselTimers.size,0);
+assert.equal(run('heroPhotoIndex'),1);assert(get('#hero-photo-source').textContent.includes(expectedHero[1].city+' · '+expectedHero[1].name));assert.equal(get('#hero-photo-source').dataset.photoPlace,expectedHero[1].id);
+run('selectHeroPhoto(0)');get('#gallery').onclick({target:{closest:s=>s==='[data-hero-step]'?{dataset:{heroStep:'-1'}}:null}});assert.equal(run('heroPhotoIndex'),expectedHero.length-1);assert(get('#hero-photo-source').textContent.includes(expectedHero.at(-1).city+' · '+expectedHero.at(-1).name));
+run('selectHeroPhoto(-1)');assert.equal(run('heroPhotoIndex'),expectedHero.length-1);assert.equal(run('JSON.stringify(compactDraft())'),carouselDraft);assert.equal(get('#brieftext').value,'两天时间，想看山水','Photo selection must preserve the travel input');
+const carouselTimers=new Map();let timerId=0;context.setTimeout=(callback,delay)=>{carouselTimers.set(++timerId,{callback,delay});return timerId};context.clearTimeout=id=>carouselTimers.delete(id);context.document.querySelector=s=>s==='dialog[open]'?null:get(s);
+const rotationTimers=()=>[...carouselTimers.values()].filter(timer=>timer.delay===6000);
+run('selectHeroPhoto(0)');assert.equal(rotationTimers().length,1);const nextPhoto=carouselTimers.get(run('heroTimer'));carouselTimers.delete(run('heroTimer'));nextPhoto.callback();assert.equal(run('heroPhotoIndex'),1);assert.equal(rotationTimers().length,1,'Autoplay schedules one next photo independently of the midnight refresh timer');
+get('#hero-slideshow').onpointerenter();assert.equal(rotationTimers().length,0);get('#hero-slideshow').onpointerleave();assert.equal(rotationTimers().length,1);
+get('#hero-slideshow').onfocusin();assert.equal(rotationTimers().length,0);get('#hero-slideshow').onfocusout({relatedTarget:null});assert.equal(rotationTimers().length,1);
+context.document.hidden=true;run('scheduleHeroRotation()');assert.equal(rotationTimers().length,0);context.document.hidden=false;
+run("activeView='planner';scheduleHeroRotation()");assert.equal(rotationTimers().length,0);run("activeView='gallery';heroVisible=false;scheduleHeroRotation()");assert.equal(rotationTimers().length,0);run('heroVisible=true;scheduleHeroRotation()');assert.equal(rotationTimers().length,1);
+get('#gallery').onclick({target:{closest:s=>s==='[data-hero-toggle]'?{}:null}});assert.equal(run('heroAutoplay'),false);assert.equal(rotationTimers().length,0);
 context.setTimeout=()=>0;context.clearTimeout=()=>{};context.document.querySelector=get;run('selectHeroPhoto(0)');
 const albumDraft=run('JSON.stringify(compactDraft())'),albumTotal=String(CATALOG.filter(p=>p.image).length).padStart(2,'0');
 get('#gallery').onclick({target:{closest:s=>s==='[data-open-album]'?{dataset:{photoPlace:'hn-longmen'}}:null}});
@@ -97,21 +104,25 @@ const untouched=run('JSON.stringify(compactDraft())');await run('showPlanningExa
 // Run the complete compiled browser script against independently supplied photo
 // catalogues. This catches startup failures that a standalone media helper test
 // cannot detect, without invoking init(), models, maps or outbound requests.
-function photoCatalogueFixture(catalog){
+function photoCatalogueFixture(catalog,instant=fixtureInstant){
  const nodes=new Map(),body={dataset:{view:'gallery'}},get=selector=>{if(!nodes.has(selector))nodes.set(selector,{value:selector==='#days'?'3':selector==='#start'?'09:00':selector==='#city'?'河南':selector==='#maxhours'?'6':selector==='#restmins'?'30':selector==='#travelmode'?'driving':'',style:{},dataset:{},hidden:false,open:false,classList:{add(){},toggle(){}},querySelectorAll:()=>[],addEventListener(){},setAttribute(){},showModal(){this.open=true},close(){this.open=false}});return nodes.get(selector)};
- const context={document:{body,querySelector:get,querySelectorAll:()=>[],createElement:()=>({click(){}}),head:{append(){}}},navigator:{},URL,Blob,Map,Set,console,setTimeout:()=>0,clearTimeout(){},fetch(){throw Error('Photo catalogue fixture must not make network requests')}};context.window=context;vm.createContext(context);
+ const clock={now:instant},timers=new Map(),documentEvents=new Map(),windowEvents=new Map();let timerId=0;
+ const listen=(events,type,callback)=>{if(!events.has(type))events.set(type,[]);events.get(type).push(callback)};
+ const context={document:{body,hidden:false,querySelector:selector=>selector==='dialog[open]'?[...nodes.values()].find(node=>node.open)||null:get(selector),querySelectorAll:()=>[],addEventListener:(type,callback)=>listen(documentEvents,type,callback),createElement:()=>({click(){}}),head:{append(){}}},navigator:{},Date:clockDate(clock),URL,Blob,Map,Set,console,setTimeout:(callback,delay)=>{timers.set(++timerId,{callback,delay,due:clock.now+delay});return timerId},clearTimeout:id=>timers.delete(id),addEventListener:(type,callback)=>listen(windowEvents,type,callback),fetch(){throw Error('Photo catalogue fixture must not make network requests')}};context.window=context;vm.createContext(context);
  let script=HTML.split('<script>')[1].split('</script>')[0].replace(/\ninit\(\);\s*$/,'');const start=script.indexOf('const CATALOG='),end=script.indexOf(';const PRESETS=',start);assert(start>=0&&end>start,'Replace only the compiled catalogue declaration');script=script.slice(0,start)+'const CATALOG='+JSON.stringify(catalog)+script.slice(end);
  assert.doesNotThrow(()=>vm.runInContext(script,context),'Photo availability must not prevent the browser script from initializing');
- return {get,run:expression=>vm.runInContext(expression,context),hero:()=>get('#gallery').innerHTML.split('<div class="gallery-inner">')[0]};
+ return {get,clock,timers,document:context.document,run:expression=>vm.runInContext(expression,context),hero:()=>get('#gallery').innerHTML.split('<div class="gallery-inner">')[0],dispatchDocument:type=>{for(const callback of documentEvents.get(type)||[])callback({type})},dispatchWindow:type=>{for(const callback of windowEvents.get(type)||[])callback({type})},fireTimer:id=>{const timer=timers.get(id);assert(timer,'The requested timer must still be scheduled');timers.delete(id);clock.now=timer.due;timer.callback()}};
 }
 const configuredHeroIds=['hn-qingming','hn-longmen','hn-luoyi','hn-henan-museum','hn-laojunshan'];
-assert.deepEqual(Array.from(run('heroPlaces.map(place=>place.id)')),configuredHeroIds,'Existing verified hero photos keep their editorial order');
+assert.deepEqual(Array.from(run('heroPlaces.map(place=>place.id)')),expectedHero.map(place=>place.id),'The compiled browser uses the same deterministic daily selector');
+assert.deepEqual(Array.from(run('albumPlaces.slice(0,5).map(place=>place.id)')),configuredHeroIds,'The complete album retains its stable editorial order');
 {
  const catalog=CATALOG.map(place=>configuredHeroIds.includes(place.id)?{...place,image:null}:place),fixture=photoCatalogueFixture(catalog),remaining=catalog.filter(place=>place.image);
- assert.deepEqual(Array.from(fixture.run('heroPlaces.map(place=>place.id)')),remaining.slice(0,5).map(place=>place.id),'If all configured covers are removed, use other actual catalogue photographs');
+ const fallbackHero=selectDailyHeroPhotos(remaining,fixtureInstant);
+ assert.deepEqual(Array.from(fixture.run('heroPlaces.map(place=>place.id)')),fallbackHero.map(place=>place.id),'If former editorial covers are removed, select a daily group from other actual photographs');
  assert.equal(fixture.run('albumPlaces.length'),remaining.length);assert.equal(new Set(Array.from(fixture.run('albumPlaces.map(place=>place.id)'))).size,remaining.length,'Fallback photos are not counted twice in the album');
- for(const place of remaining.slice(0,5))assert(fixture.hero().includes(place.image),'A fallback cover uses its actual image URL');
- const draft=fixture.run('JSON.stringify(compactDraft())');fixture.run('selectHeroPhoto(1);openPhotoAlbum()');assert.equal(fixture.get('#photoalbum').open,true);assert.equal(fixture.get('#album-title').textContent,remaining[1].name);assert.equal(fixture.run('JSON.stringify(compactDraft())'),draft);
+ for(const place of fallbackHero)assert(fixture.hero().includes(place.image),'A fallback cover uses its actual image URL');
+ const draft=fixture.run('JSON.stringify(compactDraft())');fixture.run('selectHeroPhoto(1);openPhotoAlbum()');assert.equal(fixture.get('#photoalbum').open,true);assert.equal(fixture.get('#album-title').textContent,fallbackHero[1].name);assert.equal(fixture.run('JSON.stringify(compactDraft())'),draft);
 }
 for(const catalog of [CATALOG.map(place=>({...place,image:null})),[]]){
  const fixture=photoCatalogueFixture(catalog),markup=fixture.hero();assert.equal(fixture.run('albumPlaces.length'),0,'A placeholder is never counted as a real album photo');assert.equal(fixture.run('heroPlaces.length'),1);assert.equal(fixture.run('Boolean(heroPlaces[0].image)'),false);
@@ -122,5 +133,47 @@ for(const catalog of [CATALOG.map(place=>({...place,image:null})),[]]){
  const controls=markup.match(/<div\b[^>]*class="hero-gallery-controls"[^>]*>/)?.[0],toggle=markup.match(/<button\b[^>]*id="hero-toggle"[^>]*>/)?.[0];assert(!controls||/\shidden(?:\s|>)/.test(controls),'Hide unavailable carousel navigation');assert(!toggle||/\shidden(?:\s|>)/.test(toggle),'Hide the unavailable autoplay control');assert(!markup.includes('拍摄于'),'Residual photo metadata cannot imply that a graphic placeholder is a dated photograph');assert(markup.includes('<b>0</b><span>张实景照片</span>'));
  assert.equal(fixture.run('heroAutoplay'),false);assert.equal(fixture.run('heroTimer'),0);assert.equal(fixture.run('heroPhotoIndex'),0);
  fixture.run('selectHeroPhoto(0);scheduleHeroRotation();openPhotoAlbum();stepAlbumPhoto(1)');assert.equal(fixture.get('#photoalbum').open,false,'An absent album cannot be opened programmatically');assert.equal(fixture.run('heroTimer'),0);
+ fixture.clock.now+=86400000;fixture.run('refreshDailyHeroPhotos()');assert.equal(fixture.run('heroPhotos.length'),0);assert.equal(fixture.run('heroPlaces.length'),1);assert.equal(fixture.run('Boolean(heroPlaces[0].image)'),false,'A new date must not turn a missing-photo placeholder into a fictitious photo');
 }
-console.log('Passed: full-frame album, photo navigation and failure recovery, alternate real hero covers and honest all-missing/empty catalogue startup, preserved draft, load-aware/city-aware planning across 75 cases, gallery routes, overview and truthful comparison.');
+
+// Keep a real draft, partially written travel conditions and an open album
+// while China midnight changes only the homepage's photo fragments.
+{
+ const beforeMidnight=Date.parse('2026-10-15T15:59:58Z'),fixture=photoCatalogueFixture(CATALOG,beforeMidnight);
+ fixture.run("trip=[{place:CATALOG.find(place=>place.id==='hn-longmen'),day:2,duration:75,lockedDay:true}];selectHeroPhoto(3);openPhotoAlbum('hn-luoyi')");
+ fixture.get('#brieftext').value='开封两天，想看演出，预算还没写完';
+ fixture.get('#briefbudget').value='45';fixture.get('#briefcity').value='开封';fixture.get('#briefbody').innerHTML='<p>尚未提交的旅行条件</p>';
+ fixture.document.activeElement=fixture.get('#brieftext');
+ const draft=fixture.run('JSON.stringify(compactDraft())'),gallery=fixture.get('#gallery').innerHTML,briefNode=fixture.get('#brieftext'),previousGroup=Array.from(fixture.run('heroPhotos.map(place=>place.id)'));
+ const album={index:fixture.run('albumIndex'),attempt:fixture.run('albumImageAttempt'),title:fixture.get('#album-title').textContent,src:fixture.get('#album-image').src,date:fixture.get('#album-date').textContent,thumbs:fixture.get('#album-thumbnails').innerHTML,onload:fixture.get('#album-image').onload};
+ const midnightTimers=[...fixture.timers.entries()].filter(([,timer])=>timer.delay!==6000);
+ assert.equal(midnightTimers.length,1,'Schedule exactly one separate daily refresh');
+ assert(midnightTimers[0][1].delay>=2000&&midnightTimers[0][1].delay<3000,'Refresh shortly after Beijing midnight, not after local-system midnight');
+ fixture.fireTimer(midnightTimers[0][0]);
+ const expected=selectDailyHeroPhotos(CATALOG,fixture.clock.now),newGroup=Array.from(fixture.run('heroPhotos.map(place=>place.id)'));
+ assert.equal(heroDayIndex(fixture.clock.now),heroDayIndex(beforeMidnight)+1);
+ assert.deepEqual(newGroup,expected.map(place=>place.id));assert.equal(newGroup.length,10);assert(!newGroup.some(id=>previousGroup.includes(id)),'The scheduled midnight switches the complete ten-photo group');
+ assert.equal(fixture.run('heroPhotoIndex'),0,'A new group starts at its first valid photo');
+ for(const place of expected){assert(fixture.get('#hero-photo-slides').innerHTML.includes(place.image),'Replace the actual slide fragment with today’s photographs');assert(fixture.get('#hero-thumbnails').innerHTML.includes(place.image)&&fixture.get('#hero-thumbnails').innerHTML.includes(place.name),'Refresh matching thumbnail photographs and labels')}
+ assert.equal(fixture.get('#gallery').innerHTML,gallery,'Daily refresh must not redraw the gallery and travel form');
+ assert.equal(fixture.run('JSON.stringify(compactDraft())'),draft,'Midnight never edits or saves the itinerary');
+ assert.equal(fixture.get('#brieftext'),briefNode);assert.equal(briefNode.value,'开封两天，想看演出，预算还没写完');assert.equal(fixture.document.activeElement,briefNode,'Keep focus in the current travel input');
+ assert.equal(fixture.get('#briefbudget').value,'45');assert.equal(fixture.get('#briefcity').value,'开封');assert.equal(fixture.get('#briefbody').innerHTML,'<p>尚未提交的旅行条件</p>');
+ assert.equal(fixture.get('#photoalbum').open,true);assert.equal(fixture.run('albumIndex'),album.index);assert.equal(fixture.run('albumImageAttempt'),album.attempt);
+ assert.equal(fixture.get('#album-title').textContent,album.title);assert.equal(fixture.get('#album-image').src,album.src);assert.equal(fixture.get('#album-date').textContent,album.date);assert.equal(fixture.get('#album-thumbnails').innerHTML,album.thumbs);assert.equal(fixture.get('#album-image').onload,album.onload,'An open album retains its image request and failure-recovery callbacks');
+ assert.equal([...fixture.timers.values()].filter(timer=>timer.delay!==6000).length,1,'Daily refresh re-arms one timer for the next midnight');
+}
+for(const event of ['visibilitychange','pageshow']){
+ const fixture=photoCatalogueFixture(CATALOG),before=Array.from(fixture.run('heroPhotos.map(place=>place.id)'));
+ fixture.get('#brieftext').value='回来后继续写的计划';fixture.run('selectHeroPhoto(4)');
+ const draft=fixture.run('JSON.stringify(compactDraft())');
+ fixture.clock.now+=2*86400000;
+ if(event==='visibilitychange'){fixture.document.hidden=true;fixture.dispatchDocument(event);fixture.document.hidden=false;fixture.dispatchDocument(event)}else fixture.dispatchWindow(event);
+ assert.deepEqual(Array.from(fixture.run('heroPhotos.map(place=>place.id)')),selectDailyHeroPhotos(CATALOG,fixture.clock.now).map(place=>place.id),'Returning after a suspended tab checks the actual Beijing date via '+event);
+ assert.notDeepEqual(Array.from(fixture.run('heroPhotos.map(place=>place.id)')),before);assert.equal(fixture.run('heroPhotoIndex'),0);
+ assert.equal(fixture.get('#brieftext').value,'回来后继续写的计划');assert.equal(fixture.run('JSON.stringify(compactDraft())'),draft);
+ fixture.run('selectHeroPhoto(2)');if(event==='visibilitychange')fixture.dispatchDocument(event);else fixture.dispatchWindow(event);
+ assert.equal(fixture.run('heroPhotoIndex'),2,'A same-day '+event+' must not restart the carousel or redraw photo fragments');
+}
+
+console.log('Passed: daily ten-photo groups, Beijing-midnight and resume refresh, preserved draft/travel input/open album, independent autoplay timer, full-frame album and failure recovery, honest sparse/empty catalogue startup, load-aware/city-aware planning across 75 cases, gallery routes, overview and truthful comparison.');

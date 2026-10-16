@@ -605,5 +605,55 @@
       "画面可见新馆外立面与“开封博物馆 / KAIFENG MUSEUM”馆名。"
     ],
     "changes": "采用 Commons 1280px 缩略版；未修改照片内容，网页卡片可能裁切显示。"
+  },
+  {
+    "placeId": "hn-qicheng",
+    "placeName": "戚城文物景区",
+    "city": "濮阳",
+    "file": "hn-qicheng.jpg",
+    "sha256": "014f04e3a1988c949e19aa8b15e91d861b9789968b9f40942c7538cecbb8488a",
+    "source": "https://commons.wikimedia.org/wiki/File:%E6%88%9A%E5%9F%8E%E5%85%A5%E5%8F%A3_%E6%BF%AE%E9%99%BD.jpg",
+    "originalImage": "https://upload.wikimedia.org/wikipedia/commons/7/73/%E6%88%9A%E5%9F%8E%E5%85%A5%E5%8F%A3_%E6%BF%AE%E9%99%BD.jpg",
+    "downloadImage": "https://thumb.wikimedia.org/wikipedia/commons/thumb/7/73/%E6%88%9A%E5%9F%8E%E5%85%A5%E5%8F%A3_%E6%BF%AE%E9%99%BD.jpg/960px-%E6%88%9A%E5%9F%8E%E5%85%A5%E5%8F%A3_%E6%BF%AE%E9%99%BD.jpg",
+    "author": "Vitsuha",
+    "license": "CC0 1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "takenAt": "2024-12-10",
+    "checkedAt": "2026-10-16",
+    "caption": "濮阳戚城文物景区城楼、题字与入口实景。",
+    "sourceDate": "2024-12-10 16:44:00",
+    "locationEvidence": [
+      "来源页 Description 明确为戚城入口/濮陽，Own work，作者 Vitsuha。",
+      "许可章节和结构化数据均为 CC0 1.0。",
+      "来源页 EXIF 拍摄日期 2024-12-10，与页面 Date 和 GPS 日期一致。",
+      "来源页含拍摄设备 HONOR REA-AN00 和濮阳市坐标。"
+    ],
+    "changes": "直接保存 Commons 官方 960px 普通缩略版，未自行裁剪、调色或重编码；网页卡片可能裁切显示。",
+    "editingReview": "原页未见外部修图软件、AI/合成/改色标记，日期与相机信息已核对；此结论不等同于取证级证明零处理。"
+  },
+  {
+    "placeId": "hn-shangqiu-city",
+    "placeName": "商丘古城",
+    "city": "商丘",
+    "file": "hn-shangqiu-city.jpg",
+    "sha256": "ceb5f02a4a02771213ba2d36ed4955293eaa2c73406588509a4afdec0fd11fb8",
+    "source": "https://commons.wikimedia.org/wiki/File:20250601_Gongyang_Men.jpg",
+    "originalImage": "https://upload.wikimedia.org/wikipedia/commons/c/c1/20250601_Gongyang_Men.jpg",
+    "downloadImage": "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/c1/20250601_Gongyang_Men.jpg/1280px-20250601_Gongyang_Men.jpg",
+    "author": "Yumeto",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+    "takenAt": "2025-06-01",
+    "checkedAt": "2026-10-16",
+    "caption": "商丘古城拱阳门、城墙与护城河实景。",
+    "sourceDate": "2025-06-01T09:16:31+08:00",
+    "locationEvidence": [
+      "在线原文件HTML返回200；Commons API extmetadata及原始wikitext重新确认：Gongyang Gate，Own work，作者Yumeto，2025-06-01 09:16:31，self cc-by-sa-4.0。",
+      "Commons 分类City Wall of Guide Fu；分类页明示河南商丘睢阳区归德府城墙，收录此文件；文件相机坐标34.376484,115.609909在古城南门区域。",
+      "EXIF相机HUAWEI nova 11、Scene type直接摄影、对比度/饱和度/锐度Normal，软件为手机固件FOA-AL00；原页File history只有2025-10-31上传原作记录。",
+      "1280×960的Commons标准缩略版已重新下载并view_image逐张查看，未做本地图像编辑。"
+    ],
+    "changes": "直接保存 Commons 官方 1280px 普通缩略版，未自行裁剪、调色或重编码；网页卡片可能裁切显示。",
+    "editingReview": "原页未见外部修图软件、AI/合成/改色标记，日期与相机信息已核对；此结论不等同于取证级证明零处理。"
   }
 ]

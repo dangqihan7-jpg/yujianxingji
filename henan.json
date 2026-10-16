@@ -1981,7 +1981,18 @@
       "district": "华龙区",
       "address": "濮阳市华龙区 · 京开路南段134号",
       "locationReference": "https://www.amap.com/place/B0189008DZ",
-      "locationNote": "参考高德景区或片区点位，具体交通入口需确认。"
+      "locationNote": "参考高德景区或片区点位，具体交通入口需确认。",
+      "image": "/assets/hn-qicheng.jpg?v=014f04e3a198",
+      "photoReference": "https://commons.wikimedia.org/wiki/File:%E6%88%9A%E5%9F%8E%E5%85%A5%E5%8F%A3_%E6%BF%AE%E9%99%BD.jpg",
+      "photoTakenAt": "2024-12-10",
+      "photoSource": "wikimedia",
+      "photoYear": 2024,
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "credit": "Vitsuha / Wikimedia Commons · CC0 1.0 · 官方 960px 版本，卡片可能裁切显示",
+      "photoCaption": "濮阳戚城文物景区城楼、题字与入口实景。",
+      "photoAuthor": "Vitsuha",
+      "photoLicense": "CC0 1.0",
+      "photoCheckedAt": "2026-10-16"
     },
     {
       "id": "hn-pushang",
@@ -2574,7 +2585,18 @@
       "district": "睢阳区",
       "address": "商丘市睢阳区 · 中山大街",
       "locationReference": "https://www.amap.com/place/B0FFGDYZGH",
-      "locationNote": "参考高德景区或片区点位，具体交通入口需确认。"
+      "locationNote": "参考高德景区或片区点位，具体交通入口需确认。",
+      "image": "/assets/hn-shangqiu-city.jpg?v=ceb5f02a4a02",
+      "photoReference": "https://commons.wikimedia.org/wiki/File:20250601_Gongyang_Men.jpg",
+      "photoTakenAt": "2025-06-01",
+      "photoSource": "wikimedia",
+      "photoYear": 2025,
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+      "credit": "Yumeto / Wikimedia Commons · CC BY-SA 4.0 · 官方 1280px 版本，卡片可能裁切显示",
+      "photoCaption": "商丘古城拱阳门、城墙与护城河实景。",
+      "photoAuthor": "Yumeto",
+      "photoLicense": "CC BY-SA 4.0",
+      "photoCheckedAt": "2026-10-16"
     },
     {
       "id": "hn-yingtian-academy",
