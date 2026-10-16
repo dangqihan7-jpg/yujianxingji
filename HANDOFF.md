@@ -32,10 +32,12 @@ node scripts/offline.mjs
 1. 阅读 `docs/province-coverage.md`；城市元数据统一维护在 `henan.json` 的 `cities`，新增地点保持固定 ID、县域归属、资料来源和参考定位说明。
 2. 按 `docs/photo-maintenance.md` 补齐近期、有合法许可且未经改色的实拍，运行 `npm run photos:check` 查看缺图、出处缺失及疑似老照片。缺图与加载失败使用城市主题渐变占位，明确标注“照片占位”，不借用其他地点图片或生成图。
 3. 更新预约和开放状态；目录里暂停开放的地点暂不自动推荐。路线不包含未经核算的交通、票价或排队保证。
-4. 修改后运行 `npm run build`、`npm run validate` 和 `npm test`（16 组），检查电脑/手机布局与保存行为，再备份代码和 SQLite 后部署。
+4. 修改后运行 `npm run build`、`npm run validate` 和完整 `npm test`，检查电脑/手机布局与保存行为，再备份代码和 SQLite 后部署。
 
 真实高德与讯飞密钥只配置在服务端，仓库不包含；不要提交 `.env`、数据库、`.local`、`dist`、离线生成页或临时报告。保留线上 `.local` 数据目录链接与原账号数据。已有授权允许同步该仓库和现有服务器；正常内容维护不需要重新创建基础设施。
 
 PPT、策划书、视频和测试/部署文档位于 `materials`，部分比赛材料早于当前代码，团队与导师信息待填，尚无正式用户效果研究；能力说明以 README 和测试通过的现有代码为准。
 
 首页轮播按北京时间每天零点自动换组，最多 10 张，保留实际拍摄日期；来源规则与日切机制见 docs/photo-maintenance.md。每天维护应检查十张轮播而非旧版五张，继续择图补缺，勿硬凑未审核照片。
+
+候选通过 Fetch POST SSE 实时显示五智能体的真实步骤、来源和模型调用计数；流失败时最多一次 JSON 请求并沿用旧回放。Node 必须使用 scripts/http-response.mjs 流式转发，勿恢复 arrayBuffer 整体缓冲；关闭弹窗或修改条件应取消执行，保留 replayFinished 与确认后应用门禁。协议与测试见 docs/agent-architecture.md。

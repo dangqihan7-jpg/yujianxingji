@@ -1,28 +1,32 @@
-let briefResult=null,briefSnapshot='',briefBusy=false,studyTimer=null,briefGeneration=0;
+let briefResult=null,briefSnapshot='',briefBusy=false,studyTimer=null,briefGeneration=0,briefAgentRequest=null;
 /* trackFlow 定义在 showcase.js；decision.js 被单独测试时用空实现兜底 */
 function trackFlowSafe(event){if(typeof trackFlow==='function')trackFlow(event)}
 const agentReplays=new Map();
+const agentSourceLabels={ai:'AI 生成',rules:'规则回退',confirmed:'已确认条件'};
+function agentSourceLabel(source){return Object.hasOwn(agentSourceLabels,source)?agentSourceLabels[source]:''}
+function agentExecutionHeading(result){const sources=(result.agents||[]).map(a=>a.source);return sources.includes('ai')||result.source==='ai'||result.source==='agent-ai'?'智能体的实际执行记录':'本次规则候选的执行记录'}
 function agentStepHTML(step,replay=false){
  const status=['completed','pending','conflict'].includes(step.status)?step.status:'pending';
- return '<p data-agent-step'+(replay?' hidden':'')+'><span class="agent-step-state '+status+'">'+({completed:'✓ 已完成',pending:'待确认',conflict:'有冲突'}[status])+'</span><span>'+esc(step.label)+'</span></p>';
+ const source=agentSourceLabel(step.source);
+ return '<p data-agent-step'+(replay?' hidden':'')+'><span class="agent-step-state '+status+'">'+({completed:'✓ 已完成',pending:'待确认',conflict:'有冲突'}[status])+'</span><span class="agent-step-copy">'+esc(step.label)+(source?'<small class="agent-step-source" data-agent-source="'+esc(step.source)+'">'+esc(source)+'</small>':'')+'</span></p>';
 }
 function agentResultHTML(result,{replay=false}={}){
  const agent=result.agent;if(!agent)return '';
  const steps=Array.isArray(agent.steps)?agent.steps.filter(s=>s&&typeof s.label==='string'):[],final=replay?' data-agent-final hidden':'';
- return '<section class="agent-result" aria-label="智能体规划依据"><h3>'+(result.source==='ai'?'AI 智能体的执行记录':'本次规则候选的执行记录')+'</h3>'+(replay?'<p class="agent-replay-caption">结果已返回，按实际执行顺序回放。</p><p class="agent-replay-status" data-agent-replay-status role="status" aria-live="polite" aria-atomic="true">'+(steps.length?'逐条展示返回的执行记录。':'本次未返回执行步骤。')+'</p><button class="quiet agent-replay-skip" data-agent-replay-skip>直接查看结果</button>':'')+'<div class="agent-steps">'+steps.map(s=>agentStepHTML(s,replay)).join('')+'</div><div'+final+'>'+(result.summary?'<p>'+esc(result.summary)+'</p>':'')+(result.reasons?.length?'<ul class="agent-reasons">'+result.reasons.map(r=>'<li><b>'+esc((result.draft?.stops||[]).find(s=>s.place.id===r.id)?.place.name||r.id)+'</b> '+esc(r.reason)+'</li>').join('')+'</ul>':'')+(result.pending?.length?'<p class="agent-pending">智能体提醒：'+esc(result.pending.join('；'))+'</p>':'')+(result.transport?.length?'<p class="agent-transport">'+result.transport.map(t=>'第 '+t.day+' 天：'+(t.status==='queried'?'高德站间交通约 '+t.minutes+' 分钟，查询于 '+new Date(t.queriedAt).toLocaleTimeString('zh-CN'):t.note)).map(esc).join('；')+'</p>':'')+'<small>本次模型调用 '+agent.modelCalls+' 次，工具调用 '+agent.toolCalls+' 次。生成结果经你确认后才载入。</small></div></section>';
+ return '<section class="agent-result" aria-label="智能体规划依据"><h3>'+agentExecutionHeading(result)+'</h3>'+(replay?'<p class="agent-replay-caption">结果已返回，按实际执行顺序回放。</p><p class="agent-replay-status" data-agent-replay-status role="status" aria-live="polite" aria-atomic="true">'+(steps.length?'逐条展示返回的执行记录。':'本次未返回执行步骤。')+'</p><button class="quiet agent-replay-skip" data-agent-replay-skip>直接查看结果</button>':'')+'<div class="agent-steps">'+steps.map((s,index)=>agentStepHTML({...s,source:s.source||result.agents?.[index]?.source},replay)).join('')+'</div><div'+final+'>'+(result.summary?'<p>'+esc(result.summary)+'</p>':'')+(result.reasons?.length?'<ul class="agent-reasons">'+result.reasons.map(r=>'<li><b>'+esc((result.draft?.stops||[]).find(s=>s.place.id===r.id)?.place.name||r.id)+'</b> '+esc(r.reason)+'</li>').join('')+'</ul>':'')+(result.pending?.length?'<p class="agent-pending">智能体提醒：'+esc(result.pending.join('；'))+'</p>':'')+(result.transport?.length?'<p class="agent-transport">'+result.transport.map(t=>'第 '+t.day+' 天：'+(t.status==='queried'?'高德站间交通约 '+t.minutes+' 分钟，查询于 '+new Date(t.queriedAt).toLocaleTimeString('zh-CN'):t.note)).map(esc).join('；')+'</p>':'')+'<small>本次模型调用 '+agent.modelCalls+' 次，工具调用 '+agent.toolCalls+' 次。生成结果经你确认后才载入。</small></div></section>';
 }
 function cancelAgentReplay(root){agentReplays.get(root)?.cancel()}
 function agentSourceChip(result){
  const s=result.source;
- if(s==='agent-ai')return esc(result.provider||'模型')+'四智能体规划';
- if(s==='agent-mixed')return '混合四智能体规划（模型+规则）';
- if(s==='agent-rules')return '规则四智能体规划';
+ if(s==='agent-ai')return esc(result.provider||'模型')+'五智能体规划';
+ if(s==='agent-mixed')return '混合五智能体规划（模型+规则）';
+ if(s==='agent-rules')return '规则五智能体规划';
  return result.source==='ai'?esc(result.provider||'模型')+'智能体规划':'规则候选';
 }
 function agentPipelineHTML(result){
  const agents=Array.isArray(result.agents)?result.agents:[];
  if(!agents.length)return '';
- const label=a=>a.source==='ai'?esc(a.provider||'模型')+'决策':a.source==='confirmed'?'使用已确认条件':a.source==='rules'?'规则完成':'未知';
+ const label=a=>agentSourceLabel(a.source)+(a.source==='ai'&&a.provider?' · '+esc(a.provider):'');
  return '<ul class="agent-pipeline">'+agents.map(a=>'<li><b>'+esc(a.name)+'智能体</b><span>'+label(a)+'</span></li>').join('')+'</ul>';
 }
 function agentRationaleHTML(result){
@@ -47,7 +51,7 @@ function startAgentReplay(root,{isCurrent=()=>true,onComplete=()=>{},onCancel=()
  return control;
 }
 function cancelBriefCandidate(){
- briefGeneration++;const preview=$('#candidatepreview'),body=$('#briefbody');cancelAgentReplay(preview);if(preview)preview.innerHTML='';if(body)body.inert=false;
+ briefGeneration++;briefAgentRequest?.abort();briefAgentRequest=null;const preview=$('#candidatepreview'),body=$('#briefbody');cancelAgentReplay(preview);if(preview)preview.innerHTML='';if(body)body.inert=false;
  const button=$('#buildcandidate');if(button){button.disabled=false;button.textContent='让智能体生成行程'}
 }
 const expenseNames={tickets:'门票',food:'餐饮',lodging:'住宿',transport:'全部交通',other:'其他费用'};
@@ -77,13 +81,87 @@ function candidateStops(intent){
  const mentioned=intent.requiredIds.map(id=>CATALOG.find(p=>p.id===id)).filter(p=>p&&!intent.excludedIds.includes(p.id)),pool=CATALOG.filter(p=>p.planningEligible!==false&&!intent.excludedIds.includes(p.id)&&(intent.city==='河南'||p.city===intent.city)),score=p=>intent.interests.reduce((n,t)=>n+(p.interests?.includes(t)||t==='culture'&&/文化|历史|博物|石窟|古城|寺|古都/.test(p.theme+' '+p.name)||t==='nature'&&/山|峡|自然|水|湖/.test(p.theme)||t==='food'&&p.category==='food'||t==='immersive'&&/演艺|戏剧|夜游|武侠|电影|宋韵/.test(p.theme)?3:0),0),ranked=[...pool].sort((a,b)=>score(b)-score(a)||Number(Boolean(b.weekendPick))-Number(Boolean(a.weekendPick))),places=[...new Map([...mentioned,...ranked].map(p=>[p.id,p])).values()].slice(0,Math.min(15,Math.max(mentioned.length,intent.days*2)));
  if(!places.length)throw Error('该城市暂无候选地点，请在地图中选择');return places.map(place=>({place,day:1,duration:place.duration||90}));
 }
+function agentAbortError(){const error=Error('本次智能体请求已取消');error.name='AbortError';return error}
+function agentLiveHTML(state){
+ const counter=state.index==null?'等待服务端执行状态…':'第 '+state.index+'/5 个智能体 · 模型调用 '+state.modelCalls+' 次';
+ return '<section class="agent-result agent-live" aria-label="智能体实时执行记录"><h3>智能体实时执行记录</h3><p class="agent-live-counter" role="status" aria-live="polite" aria-atomic="true">'+esc(counter)+'</p><div class="agent-steps">'+state.steps.map((step,index)=>agentStepHTML(step).replace('<p data-agent-step','<p'+(state.reveal&&index===state.steps.length-1?' class="agent-step-reveal"':'')+' data-agent-step')).join('')+'</div><p class="agent-live-running" role="status" aria-live="polite">'+esc(state.running?state.running+'运行中…':state.index===5&&state.steps.length===5?'全部智能体已完成，等待完整候选结果…':state.index==null?'正在连接智能体服务…':'已收到执行记录，等待下一项服务端状态…')+'</p><small>这里只显示服务端实际执行的状态；结果经你确认后才会应用。</small></section>';
+}
+// Parse fetch's POST response incrementally; EventSource cannot send this POST body.
+// SSE framing is line based, so split UTF-8 characters and CRLF pairs are retained.
+async function readAgentEventStream(response,{signal,isCurrent=()=>true,onEvent=()=>{}}={}){
+ if(!response.body?.getReader||typeof TextDecoder!=='function')throw Error('当前环境不支持读取实时执行记录');
+ const reader=response.body.getReader(),decoder=new TextDecoder('utf-8',{fatal:true}),steps=[];
+ let buffer='',eventName='',data=[],result,finished=false,currentStart=null,modelCalls=0;
+ const valid=()=>{if(signal?.aborted||!isCurrent())throw agentAbortError()};
+ const abort=()=>{reader.cancel().catch(()=>{})};signal?.addEventListener?.('abort',abort,{once:true});
+ const checkIndex=value=>{if(!value||value.total!==5||!Number.isInteger(value.index)||value.index<1||value.index>5||!Number.isInteger(value.modelCalls)||value.modelCalls<0||value.modelCalls<modelCalls)throw Error('实时执行记录格式不完整');modelCalls=value.modelCalls};
+ function dispatch(){
+  const type=eventName||'message',payload=data.join('\n');eventName='';data=[];if(!payload||!['start','progress','step','done','error'].includes(type))return;
+  valid();if(finished)throw Error('实时结果结束后仍收到执行记录');let value;try{value=JSON.parse(payload)}catch{throw Error('实时执行记录格式不完整')}
+  if(type==='error'){const error=Error(typeof value.error==='string'?value.error:'智能体执行中断');error.code=value.code;throw error}
+  if(type==='done'){
+   if(steps.length!==5||!value?.draft||!Array.isArray(value.agent?.steps)||value.agent.steps.length!==5)throw Error('实时结果缺少完整执行记录');
+   if(!Number.isInteger(value.agent.modelCalls)||value.agent.modelCalls!==modelCalls)throw Error('实时结果调用次数不一致');
+   if(value.agents!==undefined&&(!Array.isArray(value.agents)||value.agents.length!==5))throw Error('最终智能体记录不完整');
+   for(let i=0;i<5;i++){const step=value.agent.steps[i],agent=value.agents?.[i];if(step.tool!==steps[i].tool||step.label!==steps[i].label||step.status!==steps[i].status||(step.source??agent?.source)!==steps[i].source||(agent&&(agent.name+'智能体'!==steps[i].tool||agent.source!==steps[i].source)))throw Error('实时记录与最终结果不一致')}
+   result=value;finished=true;return;
+  }
+  checkIndex(value);
+  if(type==='start'){if(value.index!==steps.length+1||currentStart||typeof value.tool!=='string'||!value.tool)throw Error('实时执行顺序不完整');currentStart=value.tool}
+  if(type==='progress'&&(value.index!==steps.length+1||!currentStart))throw Error('实时执行顺序不完整');
+  if(type==='step'){
+   if(value.index!==steps.length+1||value.tool!==currentStart||typeof value.label!=='string'||!['completed','pending','conflict'].includes(value.status)||!agentSourceLabel(value.source))throw Error('实时执行记录格式不完整');
+   steps.push(value);currentStart=null;
+  }
+  onEvent(type,value);
+ }
+ function line(value){if(value===''){dispatch();return}if(value.startsWith(':'))return;const colon=value.indexOf(':'),field=colon<0?value:value.slice(0,colon),raw=colon<0?'':value.slice(colon+1),text=raw.startsWith(' ')?raw.slice(1):raw;if(field==='event')eventName=text;else if(field==='data')data.push(text)}
+ function consume(text,eof=false){buffer+=text;if(buffer.length>2097152)throw Error('实时执行记录过大');let match;while((match=/[\r\n]/.exec(buffer))){const at=match.index;if(buffer[at]==='\r'&&at===buffer.length-1&&!eof)break;const size=buffer[at]==='\r'&&buffer[at+1]==='\n'?2:1;line(buffer.slice(0,at));buffer=buffer.slice(at+size)}}
+ try{while(!finished){valid();const chunk=await reader.read();valid();if(chunk.done){consume(decoder.decode(),true);if(!finished)throw Error('实时连接中断，未收到完整结果');break}consume(decoder.decode(chunk.value,{stream:true}))}return result}
+ finally{signal?.removeEventListener?.('abort',abort);try{await reader.cancel()}catch{}try{reader.releaseLock()}catch{}}
+}
+// The service has a 120-second execution limit. Allow five seconds for delivery,
+// then terminate a stalled transport rather than leaving the dialog waiting.
+const AGENT_TRANSPORT_TIMEOUT_MS=125000;
+async function agentTransportAttempt(run,signal){
+ const controller=new AbortController();let timer=null,rejectGate;
+ const gate=new Promise((resolve,reject)=>{rejectGate=reject});
+ const abort=()=>{rejectGate(agentAbortError());controller.abort()};
+ timer=setTimeout(()=>{const error=Error('智能体连接等待超时，请稍后重试');error.code='AGENT_TRANSPORT_TIMEOUT';rejectGate(error);controller.abort()},AGENT_TRANSPORT_TIMEOUT_MS);
+ signal?.addEventListener?.('abort',abort,{once:true});
+ try{if(signal?.aborted)abort();return await Promise.race([gate,Promise.resolve().then(()=>{if(controller.signal.aborted)throw agentAbortError();return run(controller.signal)})])}
+ finally{if(timer!==null)clearTimeout(timer);signal?.removeEventListener?.('abort',abort);controller.abort()}
+}
+async function requestAgentCandidate(body,{signal,isCurrent=()=>true,onEvent=()=>{},onFallback=()=>{}}={}){
+ // Legacy browser fixtures and environments without fetch retain the existing API path.
+ if(typeof fetch!=='function'||typeof AbortController!=='function')return {result:await api('/api/agent',body),streamed:false};
+ const valid=requestSignal=>{if(signal?.aborted||requestSignal?.aborted||!isCurrent())throw agentAbortError()};
+ async function post(accept,requestSignal){valid(requestSignal);const response=await fetch('/api/agent',{method:'POST',credentials:'same-origin',headers:{'Content-Type':'application/json',Accept:accept},body:JSON.stringify(body),signal:requestSignal});valid(requestSignal);if(!response.ok){let payload;try{payload=await response.json()}catch{}valid(requestSignal);const error=Error(payload?.error||'智能体请求失败');error.status=response.status;error.noFallback=![406,415,500,501,502,503,504].includes(response.status);throw error}return response}
+ try{
+  return await agentTransportAttempt(async requestSignal=>{
+   const response=await post('text/event-stream',requestSignal),type=response.headers.get('Content-Type')||'';
+   // A server or proxy may ignore Accept and already return a complete JSON result.
+   if(/application\/json/i.test(type)){const result=await response.json();valid(requestSignal);return {result,streamed:false}}
+   if(!/text\/event-stream/i.test(type)){try{await response.body?.cancel()}catch{}throw Error('服务端未返回实时执行记录')}
+   const result=await readAgentEventStream(response,{signal:requestSignal,isCurrent,onEvent});valid(requestSignal);return {result,streamed:true};
+  },signal);
+ }catch(error){
+  valid();if(error.noFallback)throw error;onFallback(error);valid();
+  // One fresh JSON attempt has its own deadline. It never retries itself.
+  return await agentTransportAttempt(async requestSignal=>{const response=await post('application/json',requestSignal),result=await response.json();valid(requestSignal);return {result,streamed:false,fallback:true}},signal);
+ }
+}
 async function buildCandidate(){
- if(!guardBrief())return;const button=$('#buildcandidate');if(button.disabled)return;cancelBriefCandidate();const generation=briefGeneration;let replayFinished=false;button.disabled=true;button.textContent='等待智能体返回…';
- try{const intent=readBrief(),seed={...compactDraft(),city:intent.city,days:intent.days,mode:intent.mode,maxHours:intent.maxHours,restMinutes:intent.restMinutes,presetId:null,stops:[],decision:{...validateDecisionState(),records:decisionState.records,intent}};const requestFingerprint=JSON.stringify(intent);$('#candidatepreview').innerHTML='<section class="agent-result" aria-label="智能体请求状态"><h3>智能体规划</h3><p role="status" aria-live="polite">等待智能体返回真实执行记录…</p></section>';$('#candidatepreview').scrollIntoView?.({block:'nearest',behavior:'instant'});const result=await api('/api/agent',{...seed,operation:'select'});if(generation!==briefGeneration||!$('#brief').open)return;if(!guardBrief()||requestFingerprint!==JSON.stringify(readBrief()))throw Error('条件已修改，请重新生成候选');const candidate={...result.draft,decision:{...result.draft.decision,records:decisionState.records,intent}},audit=result.audit||auditDecision(candidate);
- $('#candidatepreview').innerHTML='<div class="candidate-preview"><span class="source-chip">'+agentSourceChip(result)+' · 地点来自河南精选目录</span>'+agentPipelineHTML(result)+agentResultHTML(result,{replay:true})+'<div data-agent-final hidden>'+(result.fallback?'<p class="brief-unresolved">模型回退：'+esc(result.fallback.reason)+'</p>':'')+'<h3>候选地点与分日</h3><p>五个智能体协作完成规划：需求理解→地点推荐→日程编排→交通核算→冲突校验。每条决策的依据列在下方；确认后才会应用，票价、预约和体力条件仍需确认。</p><div class="candidate-days">'+Array.from({length:intent.days},(_,i)=>'<p><b>第 '+(i+1)+' 天</b> '+esc(candidate.stops.filter(s=>s.day===i+1).map(s=>s.place.name).join('、')||'自由安排')+'</p>').join('')+'</div>'+agentRationaleHTML(result)+auditHTML(audit)+'<button class="primary" id="applycandidate" disabled>用候选行程替换当前草稿</button></div></div>';
+ if(!guardBrief())return;const button=$('#buildcandidate');if(button.disabled)return;cancelBriefCandidate();const generation=briefGeneration,controller=typeof AbortController==='function'?new AbortController():null;briefAgentRequest=controller;let replayFinished=false;button.disabled=true;button.textContent='正在连接智能体…';
+ try{const intent=readBrief(),seed={...compactDraft(),city:intent.city,days:intent.days,mode:intent.mode,maxHours:intent.maxHours,restMinutes:intent.restMinutes,presetId:null,stops:[],decision:{...validateDecisionState(),records:decisionState.records,intent}};const requestFingerprint=JSON.stringify(intent),preview=$('#candidatepreview'),isCurrent=()=>{try{return generation===briefGeneration&&$('#brief').open&&briefSnapshot===JSON.stringify(compactDraft())&&requestFingerprint===JSON.stringify(readBrief())}catch{return false}};
+ const live={index:null,modelCalls:0,steps:[],running:'',reveal:false};preview.innerHTML=agentLiveHTML(live);preview.scrollIntoView?.({block:'nearest',behavior:'instant'});
+ const received=await requestAgentCandidate({...seed,operation:'select'},{signal:controller?.signal,isCurrent,onEvent:(type,event)=>{if(!isCurrent())return;live.index=event.index;live.modelCalls=event.modelCalls;live.reveal=type==='step'&&!globalThis.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches;if(type==='start'){live.running=event.tool;button.textContent='智能体运行中…'}if(type==='step'){live.steps.push(event);live.running=''}preview.innerHTML=agentLiveHTML(live)},onFallback:()=>{if(!isCurrent())return;preview.innerHTML='<section class="agent-result agent-live" aria-label="智能体连接状态"><h3>正在获取完整候选</h3><p role="status" aria-live="polite">实时连接未完成，已停止本次连接，正在重新请求完整结果。返回后将回放真实执行记录。</p></section>';button.textContent='等待完整候选结果…'}});
+ if(generation!==briefGeneration||!$('#brief').open)return;if(!isCurrent())throw Error('条件已修改，请重新生成候选');const result=received.result,candidate={...result.draft,decision:{...result.draft.decision,records:decisionState.records,intent}},audit=result.audit||auditDecision(candidate),final=received.streamed?' data-agent-final':' data-agent-final hidden';
+ preview.innerHTML='<div class="candidate-preview"><span class="source-chip">'+agentSourceChip(result)+' · 地点来自河南精选目录</span>'+agentPipelineHTML(result)+(received.streamed?'<p class="agent-live-counter" role="status">第 5/5 个智能体 · 模型调用 '+esc(result.agent.modelCalls)+' 次</p>':'')+(received.fallback?'<p class="agent-replay-caption">实时连接未完成，已重新获取完整结果；以下回放本次返回的真实执行记录。</p>':'')+agentResultHTML(result,{replay:!received.streamed})+'<div'+final+'>'+(result.fallback?'<p class="brief-unresolved">模型回退：'+esc(result.fallback.reason)+'</p>':'')+'<h3>候选地点与分日</h3><p>五个智能体协作完成规划：需求理解→地点推荐→日程编排→交通核算→冲突校验。每条决策的依据列在下方；确认后才会应用，票价、预约和体力条件仍需确认。</p><div class="candidate-days">'+Array.from({length:intent.days},(_,i)=>'<p><b>第 '+(i+1)+' 天</b> '+esc(candidate.stops.filter(s=>s.day===i+1).map(s=>s.place.name).join('、')||'自由安排')+'</p>').join('')+'</div>'+agentRationaleHTML(result)+auditHTML(audit)+'<button class="primary" id="applycandidate" disabled>用候选行程替换当前草稿</button></div></div>';
  $('#applycandidate').onclick=async()=>{const apply=$('#applycandidate');if(apply.disabled||!replayFinished||generation!==briefGeneration)return;if(!guardBrief()||requestFingerprint!==JSON.stringify(readBrief())){toast('条件已修改，请重新生成候选');return}apply.disabled=true;$('#briefbody').inert=true;try{const validated=await api('/api/validate',candidate);validateDecisionState(candidate.decision,validated.stops);if(generation!==briefGeneration||!guardBrief()||requestFingerprint!==JSON.stringify(readBrief()))throw Error('行程或条件已变化，本次载入未应用');checkpoint();candidate.decision.source=result.source;lastPlanningSource=result.source;const applied=await applyDraft(candidate,validated);if(!applied)throw Error('行程已变化，本次载入未应用');$('#brief').close();setView('decision');trackFlowSafe('ai_plan_applied');toast('候选行程已载入，预算和交通仍需核对')}catch(e){toast(e.message)}finally{apply.disabled=false;if(generation===briefGeneration)$('#briefbody').inert=false}};
- startAgentReplay($('#candidatepreview'),{isCurrent:()=>generation===briefGeneration&&$('#brief').open&&briefSnapshot===JSON.stringify(compactDraft())&&requestFingerprint===JSON.stringify(readBrief()),onComplete:()=>{replayFinished=true;$('#applycandidate').disabled=false;trackFlowSafe('ai_plan_generated')},onCancel:()=>{$('#applycandidate').disabled=true}});
- }catch(e){if(generation===briefGeneration){$('#candidatepreview').innerHTML='';toast(e.message)}}finally{if(generation===briefGeneration){button.disabled=false;button.textContent='让智能体生成行程'}}
+ const onComplete=()=>{if(!isCurrent())return;replayFinished=true;$('#applycandidate').disabled=false;trackFlowSafe('ai_plan_generated')};
+ if(received.streamed)onComplete();else startAgentReplay(preview,{isCurrent,onComplete,onCancel:()=>{$('#applycandidate').disabled=true}});
+ }catch(e){if(generation===briefGeneration){$('#candidatepreview').innerHTML='';if(e.name!=='AbortError')toast(e.message)}}finally{if(briefAgentRequest===controller)briefAgentRequest=null;if(generation===briefGeneration){button.disabled=false;button.textContent='让智能体生成行程'}}
 }
 function startStudy(){if(activeStudy)return;const task=$('#studytask').value.trim();if(!task){toast('请填写本次体验任务');return}activeStudy={task,startedAt:Date.now(),edits:0,rating:4,baseline:'',feedback:''};renderDecision();if(globalThis.setInterval)studyTimer=globalThis.setInterval(()=>{const node=$('#studyelapsed');if(activeStudy&&node)node.textContent='已体验 '+Math.floor((Date.now()-activeStudy.startedAt)/1000)+' 秒'},1000);toast('计时已开始，请操作行程，再回来填写反馈')}
 function stopStudyTimer(){if(studyTimer!=null)globalThis.clearInterval?.(studyTimer);studyTimer=null}

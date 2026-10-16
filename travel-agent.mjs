@@ -1,4 +1,4 @@
-// Bundled after decision-core.mjs. Four-agent pipeline: 需求理解→地点推荐→日程编排→冲突校验.
+// Bundled after decision-core.mjs. Five-agent pipeline: 需求理解→地点推荐→日程编排→交通核算→冲突校验.
 // The model makes the key decisions; programs validate and audit. Tools never execute model code.
 const AGENT_LIMITS=Object.freeze({modelCalls:6,toolCalls:0,mapCalls:0,timeoutMs:120000});
 const agentError=message=>{throw Error(message)};
@@ -29,8 +29,11 @@ export function agentPlanDraft(context,items,seen=null){
  if(intent.requiredIds.some(id=>!ids.has(id)))agentError('智能体遗漏了必去地点');
  return {...draft,stops};
 }
-export function agentRuleResult(context,reason='未连接模型，本次使用规则候选',steps=[]){
+export function agentRuleResult(context,reason='未连接模型，本次使用规则候选',steps=[],lifecycle=null){
+ lifecycle?.start('需求理解',1);
  const {draft,intent,allowed,operation}=context;
+ lifecycle?.complete({name:'需求理解',source:'confirmed',provider:null});
+ lifecycle?.start('地点推荐',2);
  let seed=draft;
  if(operation==='select'){
   const score=p=>intent.interests.reduce((n,t)=>n+(p.interests?.includes(t)||t==='culture'&&/文化|历史|博物|石窟|古城|寺|古都/.test(p.theme+' '+p.name)||t==='nature'&&/山|峡|自然|水|湖/.test(p.theme)||t==='food'&&p.category==='food'||t==='immersive'&&/演艺|戏剧|夜游|武侠|电影|宋韵/.test(p.theme)?3:0),0);
@@ -38,6 +41,14 @@ export function agentRuleResult(context,reason='未连接模型，本次使用�
   const places=[...new Map([...required,...ranked].map(p=>[p.id,p])).values()].slice(0,Math.min(15,Math.max(required.length,draft.days*2)));
   seed={...draft,stops:places.map(place=>({place,day:1,duration:place.duration||90}))};
  }
+ lifecycle?.complete({name:'地点推荐',source:'rules',provider:null});
+ lifecycle?.start('日程编排',3);
  const result=agentPlanDraft({...context,draft:seed,operation:'reorder'},rulePlan(seed));result.decision.source='rules';
- return {source:'rules',draft:result,stops:result.stops.map(s=>({id:s.place.id,day:s.day})),audit:auditDecision(result),note:'规则候选按主题、城市与停留负荷生成，交通和费用仍需确认。',tips:['预约、营业与实际费用尚未核实。'],fallback:{reason},agent:{status:'fallback',version:1,steps:[...steps,{tool:'fallback',status:'pending',label:reason}],modelCalls:0,toolCalls:steps.length,limits:AGENT_LIMITS}};
+ lifecycle?.complete({name:'日程编排',source:'rules',provider:null});
+ lifecycle?.start('交通核算',4);
+ lifecycle?.complete({name:'交通核算',source:'rules',provider:null});
+ lifecycle?.start('冲突校验',5);
+ const audit=auditDecision(result);
+ lifecycle?.complete({name:'冲突校验',source:'rules',provider:null});
+ return {source:'rules',draft:result,stops:result.stops.map(s=>({id:s.place.id,day:s.day})),audit,note:'规则候选按主题、城市与停留负荷生成，交通和费用仍需确认。',tips:['预约、营业与实际费用尚未核实。'],fallback:{reason},agent:{status:'fallback',version:1,steps:[...steps,{tool:'fallback',status:'pending',label:reason}],modelCalls:0,toolCalls:steps.length,limits:AGENT_LIMITS}};
 }

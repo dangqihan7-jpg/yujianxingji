@@ -71,3 +71,7 @@ curl -I https://112.124.35.179/
 ```
 
 更新应用前备份SQLite数据库与Nginx配置；构建并完成相关测试后重启应用服务。修改部署配置先运行 `nginx -t` 或 `systemd-analyze verify`，验证失败时保留原配置。
+
+## 智能体 SSE
+
+`POST /api/agent` 增加 `Accept: text/event-stream`，默认 JSON 保持兼容。Node 必须使用 `scripts/http-response.mjs` 逐块转发。SSE 返回 `X-Accel-Buffering: no`，现有 Nginx 默认识别，勿强制响应缓冲或缓存。总等待120秒；部署后可用 `engine: rules` 做只读 SSE 连通检查，不调用真实模型、不改写草稿。协议、超时和中断降级见 [智能体架构](agent-architecture.md)。
