@@ -85,10 +85,72 @@ $('#saveretry').onclick=()=>{if(restoreFailed)return init();saveBlocked=false;re
 $('#restorepreset').onclick=()=>loadPreset(currentPresetId||'classic');
 for(const id of ['travelmode','maxhours','restmins'])$('#'+id).onchange=()=>{if(id==='travelmode'&&decisionState.intent.excludedModes.includes($('#travelmode').value)){$('#travelmode').value=lastRenderedDraft?.mode||decisionState.intent.mode||'driving';toast('该交通方式已被排除，请先修改旅行条件');return}checkpoint(true);decisionState.intent[{travelmode:'mode',maxhours:'maxHours',restmins:'restMinutes'}[id]]=id==='travelmode'?$('#'+id).value:Number($('#'+id).value);renderTrip();renderMap()};
 $('#export').onclick=()=>{if(!trip.length){toast('请先加入地点');return}const blob=new Blob([JSON.stringify(compactDraft(),null,2)],{type:'application/json'});const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='豫见行迹-河南旅行行程.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);toast('已导出行程')};
+function roundRectPath(c,x,y,w,h,r){c.beginPath();c.moveTo(x+r,y);c.arcTo(x+w,y,x+w,y+h,r);c.arcTo(x+w,y+h,x,y+h,r);c.arcTo(x,y+h,x,y,r);c.arcTo(x,y,x+w,y,r);c.closePath()}
+$('#poster').onclick=async()=>{
+ if(!trip.length){toast('请先加入地点');return}
+ const btn=$('#poster'),orig=btn.textContent;btn.disabled=true;btn.textContent='AI 绘制中…';
+ let cover=null;
+ try{
+  const days=Number($('#days').value)||1,names=[...new Set(trip.map(s=>s.place.name))];
+  const r=await api('/api/poster',{places:names,days});
+  if(r&&r.image)cover=await new Promise((res,rej)=>{const img=new Image();img.onload=()=>res(img);img.onerror=rej;img.src=r.image});
+ }catch(e){toast('AI 封面生成失败，用默认样式出图')}
+ btn.textContent=orig;btn.disabled=false;
+ try{drawPoster(cover)}catch(e){toast('海报生成失败，请稍后重试')}
+};
+function drawPoster(cover){
+ const W=1080,pad=64,gap=40;
+ const days=Number($('#days').value)||1,dayNames=['一','二','三','四','五','六','七'];
+ const dayData=[];for(let d=1;d<=days;d++)dayData.push(trip.filter(s=>s.day===d));
+ const coverH=cover?620:220,titleH=200,dayTitleH=90,placeH=72,footH=170;
+ let H=pad+coverH+gap+titleH+gap;
+ for(const stops of dayData)H+=dayTitleH+Math.max(stops.length,1)*placeH+gap;
+ H+=footH+pad;
+ const cv=document.createElement('canvas');cv.width=W;cv.height=H;
+ const c=cv.getContext('2d');
+ const bg=c.createLinearGradient(0,0,0,H);bg.addColorStop(0,'#0a1428');bg.addColorStop(1,'#060b18');
+ c.fillStyle=bg;c.fillRect(0,0,W,H);
+ c.strokeStyle='rgba(64,160,255,0.07)';c.lineWidth=1;
+ for(let x=0;x<W;x+=90){c.beginPath();c.moveTo(x,0);c.lineTo(x,H);c.stroke()}
+ for(let y=0;y<H;y+=90){c.beginPath();c.moveTo(0,y);c.lineTo(W,y);c.stroke()}
+ let y=pad;
+ if(cover){
+  const ch=620,cw=W-pad*2,scale=Math.max(cw/cover.width,ch/cover.height),dw=cover.width*scale,dh=cover.height*scale;
+  c.save();roundRectPath(c,pad,y,cw,ch,24);c.clip();
+  c.drawImage(cover,pad+(cw-dw)/2,y+(ch-dh)/2,dw,dh);
+  const fade=c.createLinearGradient(0,y+ch-170,0,y+ch);fade.addColorStop(0,'rgba(6,11,24,0)');fade.addColorStop(1,'rgba(6,11,24,1)');
+  c.fillStyle=fade;c.fillRect(pad,y,cw,ch);c.restore();
+ }else{
+  const g=c.createLinearGradient(0,y,0,y+220);g.addColorStop(0,'#123a6b');g.addColorStop(1,'#0a1c38');
+  c.save();roundRectPath(c,pad,y,W-pad*2,220,24);c.clip();c.fillStyle=g;c.fillRect(pad,y,W-pad*2,220);c.restore();
+  c.fillStyle='rgba(140,200,255,0.95)';c.font='600 44px system-ui';c.textAlign='center';
+  c.fillText('豫见行迹 · 河南周末游',W/2,y+132);c.textAlign='left';
+ }
+ y+=coverH+gap;
+ c.fillStyle='#7dd3fc';c.font='600 36px system-ui';c.fillText('豫见行迹',pad,y+40);
+ c.fillStyle='#ffffff';c.font='800 84px system-ui';c.fillText('河南 '+days+' 日游',pad,y+140);
+ y+=titleH+gap;
+ dayData.forEach((stops,idx)=>{
+  c.fillStyle='#38bdf8';c.font='700 40px system-ui';
+  c.fillText('DAY '+(idx+1)+' · 第'+(dayNames[idx]||idx+1)+'天',pad,y+52);y+=dayTitleH;
+  const list=stops.length?stops:[null];
+  list.forEach((s,i)=>{
+   c.fillStyle='rgba(125,211,252,0.13)';roundRectPath(c,pad,y,W-pad*2,60,12);c.fill();
+   c.fillStyle='#e2e8f0';c.font='500 36px system-ui';
+   const label=s?((i+1)+'. '+String(s.place.name).slice(0,22)+(s.place.city?' · '+s.place.city:'')):'（自由安排）';
+   c.fillText(label,pad+24,y+42);y+=placeH;
+  });
+  y+=gap;
+ });
+ c.fillStyle='rgba(148,163,184,0.92)';c.font='400 30px system-ui';
+ c.fillText('封面由讯飞星火 AI 生成 · 仅作纪念示意',pad,y+52);
+ c.fillText(new Date().toLocaleDateString('zh-CN')+' · 豫见行迹',pad,y+102);
+ cv.toBlob(blob=>{if(!blob){toast('海报生成失败，请稍后重试');return}const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='豫见行迹-河南'+days+'日游海报.png';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);toast('海报已生成')},'image/png');
+}
 $('#file').onchange=async e=>{const file=e.target.files[0];if(!file)return;try{if(file.size>100000)throw Error('行程文件过大');const operation=++draftOperation,raw=JSON.parse(await file.text()),validated=await api('/api/validate',raw);if(operation!==draftOperation)throw Error('行程已修改，请重新导入');validateDecisionState(raw.decision||{},validated.stops);checkpoint();const applied=await applyDraft(raw,validated);if(!applied)throw Error('行程已修改，本次导入未应用');toast('已导入行程')}catch(e){toast(e.message||'无法导入此文件')}finally{$('#file').value=''}};
 document.addEventListener?.('visibilitychange',()=>{if(document.visibilityState==='hidden')flushSave();else{renderTrip();renderMap();scheduleTrafficExpiry()}});
 globalThis.addEventListener?.('pagehide',()=>{if(!saveBooting&&!saveBlocked&&cfg.persistenceConfigured&&JSON.stringify(compactDraft())!==lastSaved&&!saveInFlight)fetch('/api/draft',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({draft:compactDraft(),revision:saveRevision}),keepalive:true}).catch(()=>{})});
-function setHydrating(active){for(const selector of ['#decision','#presets','#cityform','.filters','#searchform','#places','#trip','#days','#start','#travelmode','#maxhours','#restmins','#clear','#undo','#plan','#restorepreset','#import','#export','#trafficreview','#route','#map']){const node=$(selector);if(node)node.inert=active;}}
+function setHydrating(active){for(const selector of ['#decision','#presets','#cityform','.filters','#searchform','#places','#trip','#days','#start','#travelmode','#maxhours','#restmins','#clear','#undo','#plan','#restorepreset','#import','#export','#poster','#trafficreview','#route','#map']){const node=$(selector);if(node)node.inert=active;}}
 async function init(){
   saveBooting=true;setHydrating(true);$('#saveretry').disabled=true;restoreFailed=false;saveBlocked=false;
   renderPhotoCredits();renderPresets();loadPreset('luoyang',true);

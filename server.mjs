@@ -168,6 +168,42 @@ async function reserveModelCall(request,env){
  const limits=[['client:'+hash,Math.min(50,Math.max(1,Number(env.LLM_CLIENT_DAILY_LIMIT)||10))],['global',Math.min(1000,Math.max(1,Number(env.LLM_DAILY_LIMIT)||120))]];
  try{for(const [scope,limit]of limits){const result=await env.DB.prepare('INSERT INTO model_usage (usage_key, calls, updated_at) VALUES (?, 1, ?) ON CONFLICT(usage_key) DO UPDATE SET calls = calls + 1, updated_at = excluded.updated_at WHERE calls < ?').bind(date+':'+scope,Date.now(),limit).run();if(result.meta?.changes!==1)fail(scope==='global'?'今日模型演示总额度已用完':'当前访问者今日模型演示额度已用完')}await env.DB.prepare('DELETE FROM model_usage WHERE updated_at < ?').bind(Date.now()-7*86400000).run()}catch(e){if(e.status)throw e;fail('模型额度控制暂不可用')}
 }
+// 讯飞图片生成（tti）签名：HMAC-SHA256，官方文档签名机制
+async function ttiSignedUrl(env){
+ const host='spark-api.cn-huabei-1.xf-yun.com',path='/v2.1/tti',date=new Date().toGMTString();
+ const origin=`host: ${host}\ndate: ${date}\nPOST ${path} HTTP/1.1`;
+ const key=await crypto.subtle.importKey('raw',new TextEncoder().encode(env.XF_TTI_APISECRET),{name:'HMAC',hash:'SHA-256'},false,['sign']);
+ const sig=await crypto.subtle.sign('HMAC',key,new TextEncoder().encode(origin));
+ const signature=btoa(String.fromCharCode(...new Uint8Array(sig)));
+ const authorization=btoa(`api_key="${env.XF_TTI_APIKEY}", algorithm="hmac-sha256", headers="host date request-line", signature="${signature}"`);
+ return `https://${host}${path}?authorization=${encodeURIComponent(authorization)}&date=${encodeURIComponent(date)}&host=${host}`;
+}
+async function posterEndpoint(request,env){
+ if(request.method!=='POST')fail('方法不支持',405);
+ if(!env.XF_TTI_APPID||!env.XF_TTI_APIKEY||!env.XF_TTI_APISECRET)fail('图片生成服务尚未配置',503);
+ const body=await readBody(request);
+ const places=Array.isArray(body.places)?[...new Set(body.places.filter(p=>typeof p==='string').map(p=>p.trim()).filter(Boolean))].slice(0,12):[];
+ if(!places.length)fail('请先加入地点');
+ const days=Math.min(7,Math.max(1,Number(body.days)||1));
+ // 限流：匿名每天 3 次，登录用户每天 10 次，全局每天 100 次
+ const me=await currentUser(request,env),user=me?me.id:null;
+ const today=new Date().toISOString().slice(0,10);
+ const identity=user?'account:'+user:'guest:'+(request.headers.get('CF-Connecting-IP')||request.headers.get('X-Forwarded-For')||'shared');
+ const hash=Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode('poster|'+identity)))).map(b=>b.toString(16).padStart(2,'0')).join('');
+ const limits=[['poster:client:'+hash,user?Math.min(50,Math.max(1,Number(env.POSTER_CLIENT_DAILY_LIMIT)||10)):Math.min(10,Math.max(1,Number(env.POSTER_GUEST_DAILY_LIMIT)||3))],['poster:global',Math.min(500,Math.max(1,Number(env.POSTER_DAILY_LIMIT)||100))]];
+ if(env.DB){try{for(const [scope,limit]of limits){const result=await env.DB.prepare('INSERT INTO model_usage (usage_key, calls, updated_at) VALUES (?, 1, ?) ON CONFLICT(usage_key) DO UPDATE SET calls = calls + 1, updated_at = excluded.updated_at WHERE calls < ?').bind(today+':'+scope,Date.now(),limit).run();if(result.meta?.changes!==1)fail(scope==='poster:global'?'今日海报生成总额度已用完':'今日海报生成次数已用完，明天再来')}await env.DB.prepare('DELETE FROM model_usage WHERE updated_at < ?').bind(Date.now()-7*86400000).run()}catch(e){if(e.status)throw e;fail('海报额度控制暂不可用')}}
+ const prompt=`中国河南旅行纪念插画，包含${places.slice(0,6).join('、')}等景点元素，${days}日周末游的美好回忆，壮美山水与中原古建筑，黄昏暖光，现代旅行插画海报风格，横构图，画面中不出现任何文字`;
+ const url=await ttiSignedUrl(env);
+ let r;try{r=await fetch(url,{method:'POST',headers:{'Content-Type':'application/json;charset=UTF-8'},body:JSON.stringify({header:{app_id:env.XF_TTI_APPID},parameter:{chat:{domain:'general',width:1024,height:640}},payload:{message:{text:[{role:'user',content:prompt}]}}}),signal:AbortSignal.timeout(90000)})}catch{fail('图片生成服务连接超时，请稍后重试',502)}
+ let d;try{d=await r.json()}catch{fail('图片生成服务返回异常',502)}
+ const content=d?.payload?.choices?.text?.[0]?.content;
+ if(!content)fail(d?.header?.message||'图片生成失败，请稍后重试',502);
+ // 统一转为 data URL，避免前端跨域污染画布
+ let image=String(content).trim();
+ if(/^https?:\/\//.test(image)){try{const ir=await fetch(image,{signal:AbortSignal.timeout(30000)});if(!ir.ok)throw Error();const buf=new Uint8Array(await ir.arrayBuffer());const mime=ir.headers.get('Content-Type')?.split(';')[0]||'image/jpeg';let bin='';for(let i=0;i<buf.length;i++)bin+=String.fromCharCode(buf[i]);image=`data:${mime};base64,${btoa(bin)}`}catch{fail('封面图片下载失败，请稍后重试',502)}}
+ else if(!image.startsWith('data:'))image='data:image/jpeg;base64,'+image;
+ return json({image,aiGenerated:true});
+}
 function fallbackResponse(result,reason){return json({...result,fallback:{reason:String(reason).slice(0,250)},note:result.note+' 模型未产出可用结果，已给出规则候选；确认后才会应用。'})}
 const FLOW_EVENTS=['ai_brief_opened','ai_plan_generated','ai_plan_applied','preset_previewed','preset_started','preset_ai_optimized'];
 async function flowStatsEndpoint(request,env){
@@ -420,6 +456,7 @@ if(url.pathname==='/api/intent'&&request.method==='POST')return await intentEndp
 if(url.pathname==='/api/agent'&&request.method==='POST')return await agentEndpoint(request,env);
 if(url.pathname==='/api/plan'&&request.method==='POST')return await plan(request,env);
 if(url.pathname==='/api/validate'&&request.method==='POST')return json(validateDraft(await readBody(request)));
+if(url.pathname==='/api/poster')return await posterEndpoint(request,env);
 if(url.pathname==='/api/flow-stats')return await flowStatsEndpoint(request,env);
 if(url.pathname==='/api/route'&&request.method==='POST'){const body=await readBody(request);if(!Array.isArray(body.locations)||body.locations.length<2||body.locations.length>9||!body.locations.every(coordinates))fail('步行路线需要 2–9 个有效坐标');const legs=[];for(let i=1;i<body.locations.length;i++){const d=await upstream('/v3/direction/walking',{origin:body.locations[i-1].join(','),destination:body.locations[i].join(',')},env);const p=d.route?.paths?.[0];if(!p)fail('部分地点之间没有可用的步行路线',502);const path=(p.steps||[]).flatMap(s=>String(s.polyline||'').split(';').map(x=>x.split(',').map(Number))).filter(coordinates);legs.push({distance:Number(p.distance),duration:Number(p.duration),path})}return json({source:'amap',mode:'walking',legs})}
 if(url.pathname.startsWith('/api/'))fail('接口不存在或方法不支持',404);

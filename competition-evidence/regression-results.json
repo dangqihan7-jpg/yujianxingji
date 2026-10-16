@@ -1,13 +1,13 @@
 {
-  "generatedAt": "2026-10-15T14:19:22.033Z",
+  "generatedAt": "2026-10-16T02:13:48.763Z",
   "target": "/home/hatch/workspace/yujianxingji",
   "scope": "Isolated local regression tests. Model failures use synthetic mocked responses; no real provider request or secret was used.",
   "sourceHashes": {
     "decision-core.mjs": "2f23e69ab6d3d83c85d8763ef84263a24f26e01efa5f2760fa65eadfc9358ada",
     "decision.js": "1960fe49f5e9b90455e5e14835ffbb777039680c46139d4914c016268cf62259",
-    "app.html": "630e5d864ec3273c0c2f9a3912a24ea22724cb2d69ee4b9a0680c3e3f63b5f12",
-    "server.mjs": "19e93f4b898399f322f1446c97b44247129d2678ba540874003f764fb7faec4d",
-    "worker/index.js": "81e9bad08b2a75f7bac513e2d21a6c2cfc3100ab8107b50c57cf825490021f5a"
+    "app.html": "9a6ed37991eb7bf0a2fb52e6ead3d82c6f07a177cf9836ffaf3722389ddfacba",
+    "server.mjs": "cf7ba11a0adf10de1f77c0814f4f72b1153f40ee74d484737e8139c0ac3ce000",
+    "worker/index.js": "4d453f454fb238150f1f035ee95a0eb97d0e187839f194f17ef9678c3aa97bfa"
   },
   "total": 66,
   "passed": 66,
@@ -17,7 +17,7 @@
       "id": "intent-negative-place",
       "description": "不去龙门石窟不会成为必去地点，同时保留正向白马寺",
       "status": "passed",
-      "startedAt": "2026-10-15T14:19:21.661Z",
+      "startedAt": "2026-10-16T02:13:48.428Z",
       "observation": {
         "fields": {
           "city": "洛阳",
@@ -45,7 +45,7 @@
       "id": "intent-negative-place-postfix",
       "description": "后置否定龙门石窟不去了，不应成为必去",
       "status": "passed",
-      "startedAt": "2026-10-15T14:19:21.666Z",
+      "startedAt": "2026-10-16T02:13:48.433Z",
       "observation": {
         "fields": {
           "city": "洛阳",
@@ -73,7 +73,7 @@
       "id": "intent-negative-mode-2",
       "description": "不坐公交，选择自驾",
       "status": "passed",
-      "startedAt": "2026-10-15T14:19:21.671Z",
+      "startedAt": "2026-10-16T02:13:48.437Z",
       "observation": {
         "fields": {
           "city": "洛阳",
@@ -97,7 +97,7 @@
       "id": "intent-negative-mode-3",
       "description": "不要坐公交和地铁，选择自驾",
       "status": "passed",
-      "startedAt": "2026-10-15T14:19:21.673Z",
+      "startedAt": "2026-10-16T02:13:48.438Z",
       "observation": {
         "fields": {
           "city": "洛阳",
@@ -121,7 +121,7 @@
       "id": "intent-negative-mode-4",
       "description": "不坐公交也不步行，自驾",
       "status": "passed",
-      "startedAt": "2026-10-15T14:19:21.674Z",
+      "startedAt": "2026-10-16T02:13:48.440Z",
       "observation": {
         "fields": {
           "city": "洛阳",
@@ -146,7 +146,7 @@
       "id": "intent-negative-mode-only",
       "description": "单独否定公交不应被解释为选择公交",
       "status": "passed",
-      "startedAt": "2026-10-15T14:19:21.676Z",
+      "startedAt": "2026-10-16T02:13:48.441Z",
       "observation": {
         "fields": {
           "city": "洛阳",
@@ -172,7 +172,7 @@
       "id": "intent-unsupported-budget",
       "description": "预算120000元不得截断为1200元，其他字段仍保留",
       "status": "passed",
-      "startedAt": "2026-10-15T14:19:21.676Z",
+      "startedAt": "2026-10-16T02:13:48.441Z",
       "observation": {
         "fields": {
           "city": "洛阳",
@@ -196,7 +196,7 @@
       "id": "intent-full-unsupported-numbers-7",
       "description": "洛阳12天，自驾，预算500元，每天16小时",
       "status": "passed",
-      "startedAt": "2026-10-15T14:19:21.677Z",
+      "startedAt": "2026-10-16T02:13:48.442Z",
       "observation": {
         "fields": {
           "city": "洛阳",
@@ -221,7 +221,7 @@
       "id": "intent-full-unsupported-numbers-8",
       "description": "洛阳十二天，自驾，预算500元，每天十六小时",
       "status": "passed",
-      "startedAt": "2026-10-15T14:19:21.679Z",
+      "startedAt": "2026-10-16T02:13:48.443Z",
       "observation": {
         "fields": {
           "city": "洛阳",
@@ -246,7 +246,7 @@
       "id": "intent-full-unsupported-numbers-9",
       "description": "洛阳周末12天，自驾，预算500元，每天16小时",
       "status": "passed",
-      "startedAt": "2026-10-15T14:19:21.680Z",
+      "startedAt": "2026-10-16T02:13:48.445Z",
       "observation": {
         "fields": {
           "city": "洛阳",
@@ -271,7 +271,7 @@
       "id": "intent-full-unsupported-numbers-10",
       "description": "洛阳6天，自驾，预算500元，每天7小时",
       "status": "passed",
-      "startedAt": "2026-10-15T14:19:21.681Z",
+      "startedAt": "2026-10-16T02:13:48.446Z",
       "observation": {
         "fields": {
           "city": "洛阳",
@@ -296,7 +296,7 @@
       "id": "intent-supported-days-1",
       "description": "1天完整识别",
       "status": "passed",
-      "startedAt": "2026-10-15T14:19:21.682Z",
+      "startedAt": "2026-10-16T02:13:48.447Z",
       "observation": {
         "city": "洛阳",
         "days": 1,
@@ -315,7 +315,7 @@
       "id": "intent-supported-days-2",
       "description": "2天完整识别",
       "status": "passed",
-      "startedAt": "2026-10-15T14:19:21.683Z",
+      "startedAt": "2026-10-16T02:13:48.448Z",
       "observation": {
         "city": "洛阳",
         "days": 2,
@@ -334,7 +334,7 @@
       "id": "intent-supported-days-3",
       "description": "3天完整识别",
       "status": "passed",
-      "startedAt": "2026-10-15T14:19:21.689Z",
+      "startedAt": "2026-10-16T02:13:48.449Z",
       "observation": {
         "city": "洛阳",
         "days": 3,
@@ -353,7 +353,7 @@
       "id": "intent-supported-days-4",
       "description": "4天完整识别",
       "status": "passed",
-      "startedAt": "2026-10-15T14:19:21.689Z",
+      "startedAt": "2026-10-16T02:13:48.454Z",
       "observation": {
         "city": "洛阳",
         "days": 4,
@@ -372,7 +372,7 @@
       "id": "intent-supported-days-5",
       "description": "5天完整识别",
       "status": "passed",
-      "startedAt": "2026-10-15T14:19:21.690Z",
+      "startedAt": "2026-10-16T02:13:48.455Z",
       "observation": {
         "city": "洛阳",
         "days": 5,
@@ -391,7 +391,7 @@
       "id": "intent-supported-days-7",
       "description": "7天完整识别",
       "status": "passed",
-      "startedAt": "2026-10-15T14:19:21.691Z",
+      "startedAt": "2026-10-16T02:13:48.455Z",
       "observation": {
         "city": "洛阳",
         "days": 7,
@@ -410,7 +410,7 @@
       "id": "locked-day-dropdown-atomic",
       "description": "天数2→1，固定第2天时拒绝整体更改且撤销栈不增加",
       "status": "passed",
-      "startedAt": "2026-10-15T14:19:21.691Z",
+      "startedAt": "2026-10-16T02:13:48.456Z",
       "observation": {
         "days": "2",
         "notice": "无法缩短为 1 天：白马寺 已固定在第 2 天。请先取消固定日期或手动调整。"
@@ -420,7 +420,7 @@
       "id": "locked-day-brief-atomic",
       "description": "需求确认天数2→1，固定第2天时拒绝整体更改",
       "status": "passed",
-      "startedAt": "2026-10-15T14:19:21.713Z",
+      "startedAt": "2026-10-16T02:13:48.478Z",
       "observation": {
         "notice": "无法缩短为 1 天：白马寺 已固定在第 2 天。请先取消固定日期或手动调整。",
         "lockedDay": 2
@@ -430,7 +430,7 @@
       "id": "unlocked-day-reduction-valid",
       "description": "未固定地点可缩短天数，最终草稿仍合法",
       "status": "passed",
-      "startedAt": "2026-10-15T14:19:21.728Z",
+      "startedAt": "2026-10-16T02:13:48.492Z",
       "observation": {
         "days": 1,
         "stops": 5
@@ -440,7 +440,7 @@
       "id": "candidate-excluded-place",
       "description": "候选不重新加入明确排除地点，识别和预览均不改草稿",
       "status": "passed",
-      "startedAt": "2026-10-15T14:19:21.735Z",
+      "startedAt": "2026-10-16T02:13:48.499Z",
       "observation": {
         "candidateIds": [
           "hn-whitehorse",
@@ -455,7 +455,7 @@
       "id": "negative-mode-brief-default",
       "description": "当前公交草稿遇“不坐公交”，确认页不能再次默认公交",
       "status": "passed",
-      "startedAt": "2026-10-15T14:19:21.753Z",
+      "startedAt": "2026-10-16T02:13:48.517Z",
       "observation": {
         "excludedModes": [
           "transit"
@@ -467,7 +467,7 @@
       "id": "excluded-mode-dropdown-atomic",
       "description": "地图交通下拉不能选择已排除方式，恢复原方式且不增加撤销栈",
       "status": "passed",
-      "startedAt": "2026-10-15T14:19:21.761Z",
+      "startedAt": "2026-10-16T02:13:48.524Z",
       "observation": {
         "mode": "driving",
         "notice": "该交通方式已被排除，请先修改旅行条件",
@@ -478,7 +478,7 @@
       "id": "editable-excluded-mode-remove",
       "description": "确认页可以取消交通排除，并重新开放该方式",
       "status": "passed",
-      "startedAt": "2026-10-15T14:19:21.770Z",
+      "startedAt": "2026-10-16T02:13:48.530Z",
       "observation": {
         "excludedModes": [],
         "transitAvailable": true
@@ -488,7 +488,7 @@
       "id": "editable-excluded-mode-add",
       "description": "确认页新增排除当前方式，允许下拉与readBrief同步",
       "status": "passed",
-      "startedAt": "2026-10-15T14:19:21.778Z",
+      "startedAt": "2026-10-16T02:13:48.539Z",
       "observation": {
         "excludedModes": [
           "driving"
@@ -500,7 +500,7 @@
       "id": "editable-excluded-all-modes-blocked",
       "description": "确认页排除全部方式时明确阻止生成，不默认自驾",
       "status": "passed",
-      "startedAt": "2026-10-15T14:19:21.785Z",
+      "startedAt": "2026-10-16T02:13:48.546Z",
       "observation": {
         "draftUnchanged": true,
         "candidateBlocked": true,
@@ -511,7 +511,7 @@
       "id": "audit-excluded-constraints",
       "description": "现有行程含排除地点和排除交通方式时分别报告冲突",
       "status": "passed",
-      "startedAt": "2026-10-15T14:19:21.796Z",
+      "startedAt": "2026-10-16T02:13:48.557Z",
       "observation": {
         "daily": [
           {
@@ -571,7 +571,7 @@
       "id": "validate-unknown-exclusion",
       "description": "未知排除地点也不能写入有效条件状态",
       "status": "passed",
-      "startedAt": "2026-10-15T14:19:21.797Z",
+      "startedAt": "2026-10-16T02:13:48.558Z",
       "observation": {
         "unknownIdRejected": true
       }
@@ -580,7 +580,7 @@
       "id": "single-stop-rest-consistency",
       "description": "单站120分钟+每日休息30分钟：检查与时间线统一",
       "status": "passed",
-      "startedAt": "2026-10-15T14:19:21.797Z",
+      "startedAt": "2026-10-16T02:13:48.558Z",
       "observation": {
         "knownMinutes": 150,
         "timeline": "<div class=\"stop\"><span class=\"stop-num\">1</span><button class=\"stop-heading\" data-stop-detail=\"hn-whitehorse\"><span class=\"stop-photo\"><span class=\"photo-media is-compact\" data-photo-media data-photo-theme=\"luoyang\"><img data-photo-image src=\"/assets/white-horse-temple.jpg?v=526b7d9789da\" alt=\"\" loading=\"lazy\"><span class=\"photo-placeholder is-compact\" data-photo-placeholder data-photo-theme=\"luoyang\" hidden><span class=\"photo-placeholder-label\">实景待补 · 照片占位</span><span class=\"photo-placeholder-city\">洛阳 / HENAN</span><strong class=\"photo-placeholder-name\">白马寺</strong><span class=\"photo-placeholder-tag\">景点 · 古寺文化</span></span></span></span><span class=\"stop-name\"><strong>白马寺</strong><span class=\"stop-meta\">预计 09:00 起 · 2 小时 · 洛阳</span></span></button><details class=\"stop-editor\"><summary>调整时间与日期</summary><div class=\"stop-fields\"><div><label>安排到</label><select aria-label=\"白马寺所在日期\" data-chday=\"hn-whitehorse\"><option value=\"1\" selected>第 1 天</option><option value=\"2\" >第 2 天</option></select></div><div><label>停留（分钟）</label><input aria-label=\"白马寺停留分钟\" data-duration=\"hn-whitehorse\" type=\"number\" min=\"15\" max=\"720\" step=\"15\" value=\"120\"></div></div><div class=\"stop-controls\"><button data-move=\"hn-whitehorse\" data-dir=\"-1\" disabled>提前</button><button data-move=\"hn-whitehorse\" data-dir=\"1\" disabled>延后</button><button data-remove=\"hn-whitehorse\">移除</button></div></details></div><div class=\"travel-leg rest\">休息预留 30 分钟 · 11:00–11:30</div>"
@@ -590,7 +590,7 @@
       "id": "empty-day-no-rest",
       "description": "空日不虚构休息时长",
       "status": "passed",
-      "startedAt": "2026-10-15T14:19:21.803Z",
+      "startedAt": "2026-10-16T02:13:48.564Z",
       "observation": {
         "knownMinutes": 0
       }
@@ -599,7 +599,7 @@
       "id": "model-cannot-erase-explicit-negation",
       "description": "模拟合法目录但违反明确否定的模型输出，仍保留用户排除边界",
       "status": "passed",
-      "startedAt": "2026-10-15T14:19:21.809Z",
+      "startedAt": "2026-10-16T02:13:48.570Z",
       "observation": {
         "simulation": true,
         "source": "ai",
@@ -626,7 +626,7 @@
       "id": "model-cannot-truncate-explicit-unsupported-numbers",
       "description": "模拟模型把12天/16小时截断为支持值，最终仍将完整原值列为待确认",
       "status": "passed",
-      "startedAt": "2026-10-15T14:19:21.812Z",
+      "startedAt": "2026-10-16T02:13:48.573Z",
       "observation": {
         "simulation": true,
         "source": "ai",
@@ -653,7 +653,7 @@
       "id": "model-cannot-truncate-unsupported-budget",
       "description": "模拟模型预算120000→1200，最终预算为空且完整原值待确认",
       "status": "passed",
-      "startedAt": "2026-10-15T14:19:21.814Z",
+      "startedAt": "2026-10-16T02:13:48.575Z",
       "observation": {
         "simulation": true,
         "source": "ai",
@@ -679,7 +679,7 @@
       "id": "model-failure-intent-network",
       "description": "模拟network；intent失败应明确返回规则回退或可操作的错误",
       "status": "passed",
-      "startedAt": "2026-10-15T14:19:21.816Z",
+      "startedAt": "2026-10-16T02:13:48.577Z",
       "observation": {
         "simulation": true,
         "httpStatus": 200,
@@ -692,7 +692,7 @@
       "id": "model-failure-plan-network",
       "description": "模拟network；plan失败应明确返回规则回退或可操作的错误",
       "status": "passed",
-      "startedAt": "2026-10-15T14:19:21.818Z",
+      "startedAt": "2026-10-16T02:13:48.579Z",
       "observation": {
         "simulation": true,
         "httpStatus": 200,
@@ -705,7 +705,7 @@
       "id": "model-failure-ui-network",
       "description": "模拟network；前端给出规则候选且明确载入之前草稿不变",
       "status": "passed",
-      "startedAt": "2026-10-15T14:19:21.819Z",
+      "startedAt": "2026-10-16T02:13:48.580Z",
       "observation": {
         "simulation": true,
         "draftUnchanged": true,
@@ -717,7 +717,7 @@
       "id": "model-failure-intent-quota429",
       "description": "模拟quota429；intent失败应明确返回规则回退或可操作的错误",
       "status": "passed",
-      "startedAt": "2026-10-15T14:19:21.835Z",
+      "startedAt": "2026-10-16T02:13:48.595Z",
       "observation": {
         "simulation": true,
         "httpStatus": 200,
@@ -730,7 +730,7 @@
       "id": "model-failure-plan-quota429",
       "description": "模拟quota429；plan失败应明确返回规则回退或可操作的错误",
       "status": "passed",
-      "startedAt": "2026-10-15T14:19:21.836Z",
+      "startedAt": "2026-10-16T02:13:48.596Z",
       "observation": {
         "simulation": true,
         "httpStatus": 200,
@@ -743,7 +743,7 @@
       "id": "model-failure-ui-quota429",
       "description": "模拟quota429；前端给出规则候选且明确载入之前草稿不变",
       "status": "passed",
-      "startedAt": "2026-10-15T14:19:21.837Z",
+      "startedAt": "2026-10-16T02:13:48.597Z",
       "observation": {
         "simulation": true,
         "draftUnchanged": true,
@@ -755,7 +755,7 @@
       "id": "model-failure-intent-nonJson",
       "description": "模拟nonJson；intent失败应明确返回规则回退或可操作的错误",
       "status": "passed",
-      "startedAt": "2026-10-15T14:19:21.849Z",
+      "startedAt": "2026-10-16T02:13:48.607Z",
       "observation": {
         "simulation": true,
         "httpStatus": 200,
@@ -768,7 +768,7 @@
       "id": "model-failure-plan-nonJson",
       "description": "模拟nonJson；plan失败应明确返回规则回退或可操作的错误",
       "status": "passed",
-      "startedAt": "2026-10-15T14:19:21.850Z",
+      "startedAt": "2026-10-16T02:13:48.609Z",
       "observation": {
         "simulation": true,
         "httpStatus": 200,
@@ -781,7 +781,7 @@
       "id": "model-failure-ui-nonJson",
       "description": "模拟nonJson；前端给出规则候选且明确载入之前草稿不变",
       "status": "passed",
-      "startedAt": "2026-10-15T14:19:21.851Z",
+      "startedAt": "2026-10-16T02:13:48.610Z",
       "observation": {
         "simulation": true,
         "draftUnchanged": true,
@@ -793,7 +793,7 @@
       "id": "model-failure-intent-null",
       "description": "模拟null；intent失败应明确返回规则回退或可操作的错误",
       "status": "passed",
-      "startedAt": "2026-10-15T14:19:21.864Z",
+      "startedAt": "2026-10-16T02:13:48.621Z",
       "observation": {
         "simulation": true,
         "httpStatus": 200,
@@ -806,7 +806,7 @@
       "id": "model-failure-plan-null",
       "description": "模拟null；plan失败应明确返回规则回退或可操作的错误",
       "status": "passed",
-      "startedAt": "2026-10-15T14:19:21.865Z",
+      "startedAt": "2026-10-16T02:13:48.623Z",
       "observation": {
         "simulation": true,
         "httpStatus": 200,
@@ -819,7 +819,7 @@
       "id": "model-failure-ui-null",
       "description": "模拟null；前端给出规则候选且明确载入之前草稿不变",
       "status": "passed",
-      "startedAt": "2026-10-15T14:19:21.866Z",
+      "startedAt": "2026-10-16T02:13:48.624Z",
       "observation": {
         "simulation": true,
         "draftUnchanged": true,
@@ -831,7 +831,7 @@
       "id": "model-failure-intent-array",
       "description": "模拟array；intent失败应明确返回规则回退或可操作的错误",
       "status": "passed",
-      "startedAt": "2026-10-15T14:19:21.876Z",
+      "startedAt": "2026-10-16T02:13:48.633Z",
       "observation": {
         "simulation": true,
         "httpStatus": 200,
@@ -844,7 +844,7 @@
       "id": "model-failure-plan-array",
       "description": "模拟array；plan失败应明确返回规则回退或可操作的错误",
       "status": "passed",
-      "startedAt": "2026-10-15T14:19:21.877Z",
+      "startedAt": "2026-10-16T02:13:48.634Z",
       "observation": {
         "simulation": true,
         "httpStatus": 200,
@@ -857,7 +857,7 @@
       "id": "model-failure-ui-array",
       "description": "模拟array；前端给出规则候选且明确载入之前草稿不变",
       "status": "passed",
-      "startedAt": "2026-10-15T14:19:21.878Z",
+      "startedAt": "2026-10-16T02:13:48.635Z",
       "observation": {
         "simulation": true,
         "draftUnchanged": true,
@@ -869,7 +869,7 @@
       "id": "model-failure-intent-string",
       "description": "模拟string；intent失败应明确返回规则回退或可操作的错误",
       "status": "passed",
-      "startedAt": "2026-10-15T14:19:21.889Z",
+      "startedAt": "2026-10-16T02:13:48.645Z",
       "observation": {
         "simulation": true,
         "httpStatus": 200,
@@ -882,7 +882,7 @@
       "id": "model-failure-plan-string",
       "description": "模拟string；plan失败应明确返回规则回退或可操作的错误",
       "status": "passed",
-      "startedAt": "2026-10-15T14:19:21.890Z",
+      "startedAt": "2026-10-16T02:13:48.646Z",
       "observation": {
         "simulation": true,
         "httpStatus": 200,
@@ -895,7 +895,7 @@
       "id": "model-failure-ui-string",
       "description": "模拟string；前端给出规则候选且明确载入之前草稿不变",
       "status": "passed",
-      "startedAt": "2026-10-15T14:19:21.891Z",
+      "startedAt": "2026-10-16T02:13:48.647Z",
       "observation": {
         "simulation": true,
         "draftUnchanged": true,
@@ -907,7 +907,7 @@
       "id": "model-failure-intent-invalidPlace",
       "description": "模拟invalidPlace；intent失败应明确返回规则回退或可操作的错误",
       "status": "passed",
-      "startedAt": "2026-10-15T14:19:21.901Z",
+      "startedAt": "2026-10-16T02:13:48.657Z",
       "observation": {
         "simulation": true,
         "httpStatus": 200,
@@ -920,7 +920,7 @@
       "id": "model-failure-plan-invalidPlace",
       "description": "模拟invalidPlace；plan失败应明确返回规则回退或可操作的错误",
       "status": "passed",
-      "startedAt": "2026-10-15T14:19:21.902Z",
+      "startedAt": "2026-10-16T02:13:48.658Z",
       "observation": {
         "simulation": true,
         "httpStatus": 200,
@@ -933,7 +933,7 @@
       "id": "model-failure-ui-invalidPlace",
       "description": "模拟invalidPlace；前端给出规则候选且明确载入之前草稿不变",
       "status": "passed",
-      "startedAt": "2026-10-15T14:19:21.903Z",
+      "startedAt": "2026-10-16T02:13:48.658Z",
       "observation": {
         "simulation": true,
         "draftUnchanged": true,
@@ -945,7 +945,7 @@
       "id": "model-failure-intent-missingFields",
       "description": "模拟missingFields；intent失败应明确返回规则回退或可操作的错误",
       "status": "passed",
-      "startedAt": "2026-10-15T14:19:21.914Z",
+      "startedAt": "2026-10-16T02:13:48.670Z",
       "observation": {
         "simulation": true,
         "httpStatus": 200,
@@ -958,7 +958,7 @@
       "id": "model-failure-plan-missingFields",
       "description": "模拟missingFields；plan失败应明确返回规则回退或可操作的错误",
       "status": "passed",
-      "startedAt": "2026-10-15T14:19:21.915Z",
+      "startedAt": "2026-10-16T02:13:48.671Z",
       "observation": {
         "simulation": true,
         "httpStatus": 200,
@@ -971,7 +971,7 @@
       "id": "model-failure-ui-missingFields",
       "description": "模拟missingFields；前端给出规则候选且明确载入之前草稿不变",
       "status": "passed",
-      "startedAt": "2026-10-15T14:19:21.916Z",
+      "startedAt": "2026-10-16T02:13:48.671Z",
       "observation": {
         "simulation": true,
         "draftUnchanged": true,
@@ -983,7 +983,7 @@
       "id": "model-failure-intent-fieldsNull",
       "description": "模拟fieldsNull；intent失败应明确返回规则回退或可操作的错误",
       "status": "passed",
-      "startedAt": "2026-10-15T14:19:21.925Z",
+      "startedAt": "2026-10-16T02:13:48.680Z",
       "observation": {
         "simulation": true,
         "httpStatus": 200,
@@ -996,7 +996,7 @@
       "id": "model-failure-plan-fieldsNull",
       "description": "模拟fieldsNull；plan失败应明确返回规则回退或可操作的错误",
       "status": "passed",
-      "startedAt": "2026-10-15T14:19:21.926Z",
+      "startedAt": "2026-10-16T02:13:48.681Z",
       "observation": {
         "simulation": true,
         "httpStatus": 200,
@@ -1009,7 +1009,7 @@
       "id": "model-failure-ui-fieldsNull",
       "description": "模拟fieldsNull；前端给出规则候选且明确载入之前草稿不变",
       "status": "passed",
-      "startedAt": "2026-10-15T14:19:21.927Z",
+      "startedAt": "2026-10-16T02:13:48.682Z",
       "observation": {
         "simulation": true,
         "draftUnchanged": true,
@@ -1021,7 +1021,7 @@
       "id": "model-failure-intent-fieldsArray",
       "description": "模拟fieldsArray；intent失败应明确返回规则回退或可操作的错误",
       "status": "passed",
-      "startedAt": "2026-10-15T14:19:21.940Z",
+      "startedAt": "2026-10-16T02:13:48.694Z",
       "observation": {
         "simulation": true,
         "httpStatus": 200,
@@ -1034,7 +1034,7 @@
       "id": "model-failure-plan-fieldsArray",
       "description": "模拟fieldsArray；plan失败应明确返回规则回退或可操作的错误",
       "status": "passed",
-      "startedAt": "2026-10-15T14:19:21.941Z",
+      "startedAt": "2026-10-16T02:13:48.695Z",
       "observation": {
         "simulation": true,
         "httpStatus": 200,
@@ -1047,7 +1047,7 @@
       "id": "model-failure-ui-fieldsArray",
       "description": "模拟fieldsArray；前端给出规则候选且明确载入之前草稿不变",
       "status": "passed",
-      "startedAt": "2026-10-15T14:19:21.942Z",
+      "startedAt": "2026-10-16T02:13:48.696Z",
       "observation": {
         "simulation": true,
         "draftUnchanged": true,
@@ -1059,7 +1059,7 @@
       "id": "model-failure-intent-fieldsString",
       "description": "模拟fieldsString；intent失败应明确返回规则回退或可操作的错误",
       "status": "passed",
-      "startedAt": "2026-10-15T14:19:21.952Z",
+      "startedAt": "2026-10-16T02:13:48.705Z",
       "observation": {
         "simulation": true,
         "httpStatus": 200,
@@ -1072,7 +1072,7 @@
       "id": "model-failure-plan-fieldsString",
       "description": "模拟fieldsString；plan失败应明确返回规则回退或可操作的错误",
       "status": "passed",
-      "startedAt": "2026-10-15T14:19:21.953Z",
+      "startedAt": "2026-10-16T02:13:48.706Z",
       "observation": {
         "simulation": true,
         "httpStatus": 200,
@@ -1085,7 +1085,7 @@
       "id": "model-failure-ui-fieldsString",
       "description": "模拟fieldsString；前端给出规则候选且明确载入之前草稿不变",
       "status": "passed",
-      "startedAt": "2026-10-15T14:19:21.954Z",
+      "startedAt": "2026-10-16T02:13:48.707Z",
       "observation": {
         "simulation": true,
         "draftUnchanged": true,
