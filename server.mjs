@@ -195,7 +195,7 @@ async function posterEndpoint(request,env){
  if(env.DB){try{for(const [scope,limit]of limits){const result=await env.DB.prepare('INSERT INTO model_usage (usage_key, calls, updated_at) VALUES (?, 1, ?) ON CONFLICT(usage_key) DO UPDATE SET calls = calls + 1, updated_at = excluded.updated_at WHERE calls < ?').bind(today+':'+scope,Date.now(),limit).run();if(result.meta?.changes!==1)fail(scope==='poster:global'?'今日海报生成总额度已用完':'今日海报生成次数已用完，明天再来')}await env.DB.prepare('DELETE FROM model_usage WHERE updated_at < ?').bind(Date.now()-7*86400000).run()}catch(e){if(e.status)throw e;fail('海报额度控制暂不可用')}}
  const prompt=`中国河南旅行纪念插画，包含${places.slice(0,6).join('、')}等景点元素，${days}日周末游的美好回忆，壮美山水与中原古建筑，黄昏暖光，现代旅行插画海报风格，横构图，画面中不出现任何文字`;
  const url=await ttiSignedUrl(env);
- let r;try{r=await fetch(url,{method:'POST',headers:{'Content-Type':'application/json;charset=UTF-8'},body:JSON.stringify({header:{app_id:env.XF_TTI_APPID},parameter:{chat:{domain:'general',width:1024,height:640}},payload:{message:{text:[{role:'user',content:prompt}]}}}),signal:AbortSignal.timeout(90000)})}catch{fail('图片生成服务连接超时，请稍后重试',502)}
+ let r;try{r=await fetch(url,{method:'POST',headers:{'Content-Type':'application/json;charset=UTF-8'},body:JSON.stringify({header:{app_id:env.XF_TTI_APPID},parameter:{chat:{domain:'tti',width:1024,height:640}},payload:{message:{text:[{role:'user',content:prompt}]}}}),signal:AbortSignal.timeout(90000)})}catch{fail('图片生成服务连接超时，请稍后重试',502)}
  let d;try{d=await r.json()}catch{fail('图片生成服务返回异常',502)}
  const content=d?.payload?.choices?.text?.[0]?.content;
  if(!content)fail(d?.header?.message||'图片生成失败，请稍后重试',502);
