@@ -75,3 +75,7 @@ curl -I https://112.124.35.179/
 ## 智能体 SSE
 
 `POST /api/agent` 增加 `Accept: text/event-stream`，默认 JSON 保持兼容。Node 必须使用 `scripts/http-response.mjs` 逐块转发。SSE 返回 `X-Accel-Buffering: no`，现有 Nginx 默认识别，勿强制响应缓冲或缓存。总等待120秒；部署后可用 `engine: rules` 做只读 SSE 连通检查，不调用真实模型、不改写草稿。协议、超时和中断降级见 [智能体架构](agent-architecture.md)。
+
+## 分享行程迁移
+
+发布分享功能前备份SQLite并应用 `drizzle/0004_trip_shares.sql`。独立Node入口会按local_migrations依次应用；D1需先执行迁移再发布。构建前使用锁文件安装依赖（可用 `npm ci --ignore-scripts --no-audit --no-fund`）；本地qrcode构建不依赖安装脚本，不需要CDN或额外密钥。分享存储与限流要求DB可用，未配置时返回503，不静默丢失。完整说明见 [行程分享](share.md)。

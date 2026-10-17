@@ -29,6 +29,13 @@
       "when": 1792065827353,
       "tag": "0003_bright_falcon",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "6",
+      "when": 1792255745942,
+      "tag": "0004_trip_shares",
+      "breakpoints": true
     }
   ]
 }

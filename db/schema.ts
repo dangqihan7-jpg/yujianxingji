@@ -17,3 +17,14 @@ export const sessions=sqliteTable("sessions",{
  createdAt:integer("created_at").notNull(),
  expiresAt:integer("expires_at").notNull()
 });
+export const flowStats=sqliteTable("flow_stats",{
+ statKey:text("stat_key").primaryKey(),
+ calls:integer("calls").notNull(),
+ updatedAt:integer("updated_at").notNull()
+});
+export const shares=sqliteTable("shares",{
+ token:text("token").primaryKey(),
+ data:text("data").notNull(),
+ createdAt:integer("created_at").notNull(),
+ expiresAt:integer("expires_at").notNull()
+});

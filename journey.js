@@ -101,13 +101,12 @@ $('#poster').onclick=async()=>{
 function drawPoster(cover){
  const W=1080,pad=64,tlX=104;
  const days=Number($('#days').value)||1,dayNames=['一','二','三','四','五','六','七'];
- const dayData=[];for(let d=1;d<=days;d++)dayData.push(trip.filter(s=>s.day===d));
+ const dayData=shareTimelineDays(trip,days,stops=>cachedTraffic(stops)).map(block=>block.stops);
  const modeNames={driving:'驾车',transit:'公交',walking:'步行'},mode=modeNames[$('#travelmode').value]||'驾车';
- const fmtMin=m=>m>=60?(Math.floor(m/60)+'小时'+(m%60?m%60+'分钟':'')):m+'分钟';
+ const fmtMin=shareFormatMinutes;
  // 高度估算
  const headH=170,bannerH=cover?400:0,statsH=96,dayHeadH=120,stopH=104,legH=52,footH=170,gapS=36,gapL=56;
  let H=pad+headH+gapS+(bannerH?bannerH+gapS:0)+statsH+gapL;
- const dayLegs=dayData.map(stops=>{const t=cachedTraffic(stops);return t?t.legs:[]});
  dayData.forEach((stops,di)=>{
   H+=dayHeadH;
   stops.forEach(()=>{H+=stopH});
@@ -159,7 +158,7 @@ function drawPoster(cover){
  y+=statsH+gapL;
  // 每天时间线
  dayData.forEach((stops,di)=>{
-  const legs=dayLegs[di],cities=[...new Set(stops.map(s=>s.place.city).filter(Boolean))];
+  const cities=[...new Set(stops.map(s=>s.city).filter(Boolean))];
   const dayMin=stops.reduce((n,s)=>n+(Number(s.duration)||0),0);
   // 天标题
   c.fillStyle='#38bdf8';c.font='800 44px system-ui';
@@ -176,7 +175,7 @@ function drawPoster(cover){
     c.strokeStyle='rgba(56,189,248,0.35)';c.lineWidth=3;
     c.beginPath();c.moveTo(tlX,lineTop+(si-1)*stopH+26);c.lineTo(tlX,y+8);c.stroke();
     // 站间交通
-    const leg=legs[si-1],tmin=leg?Math.max(1,Math.round(leg.duration/60)):null;
+    const tmin=s.travelMinutes;
     if(tmin){c.fillStyle='rgba(148,163,184,0.85)';c.font='400 26px system-ui';c.textAlign='center';
      c.fillText(mode+'约'+fmtMin(tmin),tlX+150,(lineTop+(si-1)*stopH+34+y+8)/2+9);c.textAlign='left'}
    }
@@ -191,9 +190,9 @@ function drawPoster(cover){
    c.fillStyle='rgba(148,197,255,0.07)';roundRectPath(c,cx,y,cw,chh,18);c.fill();
    c.strokeStyle='rgba(148,197,255,0.16)';c.lineWidth=1.5;roundRectPath(c,cx,y,cw,chh,18);c.stroke();
    c.fillStyle='#f1f5f9';c.font='600 38px system-ui';
-   c.fillText(String(s.place.name).slice(0,20),cx+28,y+40);
+   c.fillText(String(s.name).slice(0,20),cx+28,y+40);
    c.fillStyle='rgba(125,211,252,0.75)';c.font='400 28px system-ui';
-   const meta=[s.place.city,Number(s.duration)?'建议'+fmtMin(Number(s.duration)):null].filter(Boolean).join(' · ');
+   const meta=[s.city,Number(s.duration)?'建议'+fmtMin(Number(s.duration)):null].filter(Boolean).join(' · ');
    c.fillText(meta,cx+28,y+72);
    // 序号
    c.fillStyle='rgba(56,189,248,0.55)';c.font='800 30px system-ui';c.textAlign='right';
@@ -214,7 +213,7 @@ function drawPoster(cover){
 $('#file').onchange=async e=>{const file=e.target.files[0];if(!file)return;try{if(file.size>100000)throw Error('行程文件过大');const operation=++draftOperation,raw=JSON.parse(await file.text()),validated=await api('/api/validate',raw);if(operation!==draftOperation)throw Error('行程已修改，请重新导入');validateDecisionState(raw.decision||{},validated.stops);checkpoint();const applied=await applyDraft(raw,validated);if(!applied)throw Error('行程已修改，本次导入未应用');toast('已导入行程')}catch(e){toast(e.message||'无法导入此文件')}finally{$('#file').value=''}};
 document.addEventListener?.('visibilitychange',()=>{if(document.visibilityState==='hidden')flushSave();else{renderTrip();renderMap();scheduleTrafficExpiry()}});
 globalThis.addEventListener?.('pagehide',()=>{if(!saveBooting&&!saveBlocked&&cfg.persistenceConfigured&&JSON.stringify(compactDraft())!==lastSaved&&!saveInFlight)fetch('/api/draft',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({draft:compactDraft(),revision:saveRevision}),keepalive:true}).catch(()=>{})});
-function setHydrating(active){for(const selector of ['#decision','#presets','#cityform','.filters','#searchform','#places','#trip','#days','#start','#travelmode','#maxhours','#restmins','#clear','#undo','#plan','#restorepreset','#import','#export','#poster','#trafficreview','#route','#map']){const node=$(selector);if(node)node.inert=active;}}
+function setHydrating(active){for(const selector of ['#decision','#presets','#cityform','.filters','#searchform','#places','#trip','#days','#start','#travelmode','#maxhours','#restmins','#clear','#undo','#plan','#restorepreset','#import','#export','#poster','#share','#trafficreview','#route','#map']){const node=$(selector);if(node)node.inert=active;}}
 async function init(){
   saveBooting=true;setHydrating(true);$('#saveretry').disabled=true;restoreFailed=false;saveBlocked=false;
   renderPhotoCredits();renderPresets();loadPreset('luoyang',true);

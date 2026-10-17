@@ -206,6 +206,78 @@ async function posterEndpoint(request,env){
  else if(!image.startsWith('data:'))image='data:image/jpeg;base64,'+image;
  return json({image,aiGenerated:true});
 }
+// Shares are public snapshots. Whitelist every nested field before storage; account
+// details, routing coordinates and other draft state never enter the public JSON.
+export function validateShare(input){
+ if(!input||typeof input!=='object'||Array.isArray(input))fail('分享行程格式不正确');
+ if(!Number.isInteger(input.days)||input.days<1||input.days>7)fail('旅行天数需要为 1–7 天');
+ if(!Array.isArray(input.places)||!input.places.length||input.places.length>15)fail('分享行程需要 1–15 个地点');
+ const cleanName=(value,max,label)=>{if(typeof value!=='string'||!value.trim()||value.length>max)fail(label+'格式不正确');return value.trim()};
+ const places=[...new Set(input.places.map(p=>cleanName(p,150,'地点名称')))];
+ if(!Array.isArray(input.schedule)||input.schedule.length!==input.days)fail('请提供完整的分日行程');
+ const names=new Set(places),seenDays=new Set(),seenStops=new Set();let stopCount=0;
+ const schedule=input.schedule.map(block=>{
+  if(!block||typeof block!=='object'||!Number.isInteger(block.day)||block.day<1||block.day>input.days||seenDays.has(block.day)||!Array.isArray(block.stops)||block.stops.length>15)fail('分日行程格式不正确');
+  seenDays.add(block.day);
+  const stops=block.stops.map(stop=>{
+   if(!stop||typeof stop!=='object')fail('行程站点格式不正确');
+   const name=cleanName(stop.name,150,'地点名称');
+   if(!names.has(name)||++stopCount>15)fail('分日行程需要与地点清单一致，最多安排 15 站');
+   if(!Number.isInteger(stop.duration)||stop.duration<15||stop.duration>720)fail('停留时间需要为 15–720 分钟');
+   if(stop.city!=null&&(typeof stop.city!=='string'||stop.city.length>80))fail('城市名称格式不正确');
+   if(stop.travelMinutes!=null&&(!Number.isInteger(stop.travelMinutes)||stop.travelMinutes<0||stop.travelMinutes>1440))fail('交通时间格式不正确');
+   seenStops.add(name);
+   return {name,city:typeof stop.city==='string'?stop.city.trim():'',duration:stop.duration,travelMinutes:stop.travelMinutes??null};
+  });
+  return {day:block.day,stops};
+ }).sort((a,b)=>a.day-b.day);
+ if(seenStops.size!==places.length)fail('分日行程的地点需要与地点清单一致');
+ return {places,days:input.days,schedule};
+}
+const SHARE_LIFETIME=30*86400000;
+function shareHTML(content,status=200,head=false){return new Response(head?null:content,{status,headers:{'Content-Type':'text/html; charset=utf-8','Cache-Control':'no-store','X-Content-Type-Options':'nosniff','Referrer-Policy':'no-referrer','Content-Security-Policy':"default-src 'none'; style-src 'unsafe-inline'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'"}})}
+async function reserveShare(request,env){
+ const me=await currentUser(request,env),user=me?me.id:null;
+ // Standalone Nginx overwrites X-Real-IP. It must take precedence over visitor-
+ // supplied forwarding headers, while managed Workers use trusted CF identity.
+ const address=standaloneAuth(env)?request.headers.get('X-Real-IP')||request.headers.get('CF-Connecting-IP')||request.headers.get('X-Forwarded-For')||'shared':request.headers.get('CF-Connecting-IP')||request.headers.get('X-Forwarded-For')||'shared';
+ const identity=user?'account:'+user:'guest:'+address;
+ const hash=Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode('share|'+identity)))).map(b=>b.toString(16).padStart(2,'0')).join('');
+ const today=new Date().toISOString().slice(0,10),now=Date.now();
+ for(const [scope,limit]of [['share:client:'+hash,user?10:3],['share:global',100]]){
+  const result=await env.DB.prepare('INSERT INTO model_usage (usage_key, calls, updated_at) VALUES (?, 1, ?) ON CONFLICT(usage_key) DO UPDATE SET calls = calls + 1, updated_at = excluded.updated_at WHERE calls < ?').bind(today+':'+scope,now,limit).run();
+  if(result.meta?.changes!==1)fail(scope==='share:global'?'今日分享总额度已用完，明天再来':'今日分享次数已用完，明天再来',429);
+ }
+}
+async function shareCreateEndpoint(request,env){
+ if(request.method!=='POST')fail('方法不支持',405);
+ const origin=request.headers.get('Origin');if(origin&&origin!==new URL(request.url).origin)fail('分享请求来源不正确',403);
+ const data=validateShare(await readBody(request));
+ if(!env.DB)fail('分享存储暂不可用，请稍后重试',503);
+ try{
+  // Confirm migration availability before charging the visitor's daily quota.
+  await env.DB.prepare('SELECT token FROM shares LIMIT 1').first();
+  await reserveShare(request,env);
+  const now=Date.now();
+  for(let attempt=0;attempt<8;attempt++){
+   const token=b64url(crypto.getRandomValues(new Uint8Array(6)));
+   const result=await env.DB.prepare('INSERT INTO shares (token, data, created_at, expires_at) VALUES (?, ?, ?, ?) ON CONFLICT(token) DO NOTHING').bind(token,JSON.stringify(data),now,now+SHARE_LIFETIME).run();
+   if(result.meta?.changes===1)return json({token});
+  }
+  fail('分享链接暂时生成失败，请稍后重试',503);
+ }catch(error){if(error.status)throw error;fail('分享存储或额度控制暂不可用，请稍后重试',503)}
+}
+async function shareReadEndpoint(request,env,token,page=false){
+ if(request.method!=='GET'&&!(page&&request.method==='HEAD'))fail('方法不支持',405);
+ if(!/^[A-Za-z0-9_-]{8}$/.test(token))return shareHTML(shareNotFoundHTML(),404,request.method==='HEAD');
+ if(!env.DB)return shareHTML(shareNotFoundHTML('分享服务暂时不可用，请稍后重试'),503,request.method==='HEAD');
+ try{
+  const row=await env.DB.prepare('SELECT data FROM shares WHERE token = ? AND expires_at > ?').bind(token,Date.now()).first();
+  if(!row)return shareHTML(shareNotFoundHTML(),404,request.method==='HEAD');
+  const data=validateShare(JSON.parse(row.data));
+  return page?shareHTML(sharePageHTML(data),200,request.method==='HEAD'):json(data,200,{'Referrer-Policy':'no-referrer'});
+ }catch{return shareHTML(shareNotFoundHTML('分享服务暂时不可用，请稍后重试'),503,request.method==='HEAD')}
+}
 function fallbackResponse(result,reason){return json({...result,fallback:{reason:String(reason).slice(0,250)},note:result.note+' 模型未产出可用结果，已给出规则候选；确认后才会应用。'})}
 const FLOW_EVENTS=['ai_brief_opened','ai_plan_generated','ai_plan_applied','preset_previewed','preset_started','preset_ai_optimized'];
 async function flowStatsEndpoint(request,env){
@@ -507,7 +579,10 @@ async function agentEndpoint(request,env){
  return new Response(stream,{headers:{'Content-Type':'text/event-stream; charset=utf-8','Cache-Control':'no-cache, no-store, no-transform','X-Accel-Buffering':'no','X-Content-Type-Options':'nosniff'}});
 }
 async function mapProxy(url,env){if(!env.AMAP_JS_KEY||!env.AMAP_SECURITY_JS_CODE)fail('高德地图尚未配置',503);const path=url.pathname.slice('/_AMapService'.length);if(!/^\/(v3\/(place\/(text|around|detail)|assistant\/inputtips|geocode\/(geo|regeo)|direction\/(walking|driving|transit\/integrated))|v4\/map\/styles|v5\/direction\/(walking|driving))$/.test(path))fail('不支持此地图请求',404);if(url.searchParams.get('key')!==env.AMAP_JS_KEY)fail('地图请求密钥不匹配',403);const target=new URL(path,path==='/v4/map/styles'?'https://webapi.amap.com':'https://restapi.amap.com');target.search=url.search;target.searchParams.set('jscode',env.AMAP_SECURITY_JS_CODE);const r=await fetch(target,{signal:AbortSignal.timeout(12000)});return new Response(r.body,{status:r.status,headers:{'Content-Type':r.headers.get('Content-Type')||'application/json','Cache-Control':'no-store'}})}
-export default {async fetch(request,env={}){try{const url=new URL(request.url);if(url.pathname.startsWith('/_AMapService/')){if(request.method!=='GET')fail('方法不支持',405);return await mapProxy(url,env)}if(url.pathname==='/api/draft')return await draftEndpoint(request,env);
+export default {async fetch(request,env={}){try{const url=new URL(request.url);if(url.pathname.startsWith('/_AMapService/')){if(request.method!=='GET')fail('方法不支持',405);return await mapProxy(url,env)}if(url.pathname==='/api/share')return await shareCreateEndpoint(request,env);
+if(url.pathname.startsWith('/api/share/'))return await shareReadEndpoint(request,env,url.pathname.slice('/api/share/'.length));
+if(url.pathname==='/s'||url.pathname.startsWith('/s/'))return await shareReadEndpoint(request,env,url.pathname.slice('/s/'.length),true);
+if(url.pathname==='/api/draft')return await draftEndpoint(request,env);
 if(url.pathname==='/api/auth/register')return await authEndpoint(request,env,'register');
 if(url.pathname==='/api/auth/login')return await authEndpoint(request,env,'login');
 if(url.pathname==='/api/auth/logout')return await authEndpoint(request,env,'logout');

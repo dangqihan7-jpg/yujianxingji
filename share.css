@@ -1,0 +1,18 @@
+/* Scoped to sharing: existing page layout and colors remain unchanged. */
+#sharetrip{width:min(510px,calc(100vw - 28px));max-height:calc(100dvh - 32px);overflow:auto}
+#sharetrip .dialog-head{gap:12px}#sharetrip .dialog-head h2{min-width:0}
+#sharetrip .share-disclosure{font-size:14px;line-height:1.8;margin:0 0 14px;color:var(--muted,#94a3b8)}
+#sharetrip .share-status{font-size:14px;line-height:1.75;overflow-wrap:anywhere;margin:8px 0 16px}
+#sharetrip .share-link-row{display:flex;align-items:stretch;gap:8px;margin:8px 0 20px}
+#sharetrip #sharelink{flex:1;min-width:0;width:100%;font:12px/1.5 var(--mono,monospace);padding:10px;border:1px solid var(--line,rgba(77,216,255,.2));border-radius:6px;min-height:44px}
+#sharetrip #copyshare{flex:none;white-space:nowrap;min-height:44px;font-size:13px}
+#sharetrip .share-qr{margin:20px 0 14px;display:flex;align-items:center;flex-direction:column;gap:12px}
+#sharetrip #shareqr{display:block;width:224px;max-width:100%;height:auto;border-radius:8px;background:#fff}
+#sharetrip #shareqr[hidden],#sharetrip [hidden]{display:none!important}
+#sharetrip figcaption,#sharetrip .share-note{font-size:12px;line-height:1.7;color:var(--muted,#94a3b8);text-align:center;margin:0}
+#sharetrip #retryshare{width:100%;min-height:44px}
+#sharetrip button:focus-visible,#sharetrip input:focus-visible{outline:2px solid var(--neon,#4dd8ff);outline-offset:3px}
+/* Keep existing action button typography/padding; only this footer row may wrap. */
+.foot-actions:has(#share){flex-wrap:wrap}
+@media(max-width:640px){.foot-actions:has(#share){flex-wrap:wrap}.foot-actions:has(#share)>button{flex:1 1 calc(50% - 7px)}#sharetrip .dialog-content{padding:18px}#sharetrip .share-link-row{flex-wrap:wrap}#sharetrip #sharelink{flex-basis:100%}#sharetrip #copyshare{width:100%}}
+@media(prefers-reduced-motion:reduce){#sharetrip,#sharetrip *{animation:none!important;transition:none!important}}

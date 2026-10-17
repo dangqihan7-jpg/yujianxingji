@@ -2,7 +2,7 @@
   "version": "6",
   "dialect": "sqlite",
   "id": "0003_bright_falcon",
-  "prevId": "fb667127-9b04-4222-86f2-a4e273b1071e",
+  "prevId": "93ca091c-a434-4d92-bad0-47012f4b9fb7",
   "tables": {
     "model_usage": {
       "name": "model_usage",
