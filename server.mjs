@@ -198,7 +198,8 @@ async function posterEndpoint(request,env){
  let r;try{r=await fetch(url,{method:'POST',headers:{'Content-Type':'application/json;charset=UTF-8'},body:JSON.stringify({header:{app_id:env.XF_TTI_APPID},parameter:{chat:{domain:'tti',width:1024,height:640}},payload:{message:{text:[{role:'user',content:prompt}]}}}),signal:AbortSignal.timeout(90000)})}catch{fail('图片生成服务连接超时，请稍后重试',502)}
  let d;try{d=await r.json()}catch{fail('图片生成服务返回异常',502)}
  const content=d?.payload?.choices?.text?.[0]?.content;
- if(!content)fail(d?.header?.message||'图片生成失败，请稍后重试',502);
+ // 注意：讯飞鉴权失败时返回 HTTP 401/403 + {"message":"..."}，不是 header.message 格式，必须透出
+ if(!content)fail(d?.header?.message||d?.message||('图片生成失败(上游HTTP '+r.status+')，请稍后重试'),502);
  // 统一转为 data URL，避免前端跨域污染画布
  let image=String(content).trim();
  if(/^https?:\/\//.test(image)){try{const ir=await fetch(image,{signal:AbortSignal.timeout(30000)});if(!ir.ok)throw Error();const buf=new Uint8Array(await ir.arrayBuffer());const mime=ir.headers.get('Content-Type')?.split(';')[0]||'image/jpeg';let bin='';for(let i=0;i<buf.length;i++)bin+=String.fromCharCode(buf[i]);image=`data:${mime};base64,${btoa(bin)}`}catch{fail('封面图片下载失败，请稍后重试',502)}}
