@@ -22,6 +22,14 @@ wrangler.jsonc 是新部署模板，原项目使用 Sites 托管，没有原生 
 ## 服务配置
 AMAP_JS_KEY 为浏览器 Key；AMAP_SECURITY_JS_CODE、AMAP_WEB_SERVICE_KEY 留在后端。LLM_API_KEY、LLM_BASE_URL、LLM_MODEL 配置模型接口。真实上游服务与国内访问效果需要在目标部署环境重新验证。
 
+### 拍照识景点
+
+在 `/etc/yujianxingji.env` 填入 `XF_VISION_APIKEY` 和 `XF_VISION_MODEL`，后者从已开通图像理解服务的控制台调用信息复制。`XF_VISION_BASE_URL` 默认 `https://maas-api.cn-huabei-1.xf-yun.com/v2`，只配置基础地址，程序追加 `/chat/completions`。HTTP服务采用Bearer凭据，无需APISECRET或HMAC签名；已有星火文字模型权限不等于图像模型权限。示例文件只有空值，真实凭据只留在权限600的服务端配置中，不发到聊天或写入源码。
+
+Node本地入口通过 `scripts/dev.mjs` 白名单读取这三项配置。只为 `/api/vision` 放宽JSON请求体限制到2,000,000字节；服务端还检查解码图片不超过1,400,000字节、JPEG/PNG以及最长边1024px。现有Nginx模板已在443 server配置 `client_max_body_size 2m`，满足上传需要，无需新增location或重复修改线上配置；维护时核对该限制即可。其他API的请求大小限制与行为保持不变。
+
+配额需要已有 `model_usage` 表，按UTC日匿名3次、登录用户10次、全局100次，使用 `vision:` scope，不需要新迁移。保存环境配置后重启 `yujianxingji.service`。未配置时接口应返回503及“图片识别服务尚未配置”，不要为了通过界面演示而伪造识别结果。已有自动测试使用模拟上游；配置后再人工验收龙门石窟、非景点和配额提示。完整协议与验收说明见 [拍照识景点](vision.md)。
+
 ## 文件
 前端作者文件、server.mjs、完整 worker/index.js、迁移、测试、照片均提交。Worker 由 assemble.py 生成，修改作者文件后重新构建。dist/build、依赖、真实环境配置、日志、临时文件排除。index-offline.html 通过 node scripts/offline.mjs 重建，不计为缺失源码。
 

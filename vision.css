@@ -1,0 +1,48 @@
+/* The photo recognizer owns its dialog; existing planner/export UI is untouched. */
+dialog.vision-dialog {
+  width: min(560px, calc(100% - 32px));
+  max-width: calc(100% - 32px);
+  max-height: calc(100dvh - 32px);
+  margin: auto;
+  padding: 0;
+  overflow: auto;
+  border: 1px solid #4dd8ff66;
+  border-radius: 12px;
+  color: #e5f1ff;
+  background: var(--space, #0b1220);
+  box-shadow: 0 0 48px #4dd8ff16, 0 20px 80px #0008;
+}
+.vision-dialog::backdrop { background: #030916b8; }
+.vision-dialog .dialog-head { background: #102036; border-bottom-color: #4dd8ff35; }
+.vision-dialog .dialog-head h2 { color: #e5f1ff; }
+.vision-dialog .dialog-head button { min-width: 44px; min-height: 44px; color: #bddff3; }
+.vision-dialog .vision-content { padding: 22px; }
+.vision-dialog .vision-intro { margin: 0; color: #d9e9fa; font-size: 14px; line-height: 1.85; }
+.vision-dialog .vision-disclosure { margin: 9px 0 0; color: #9cb3ca; font-size: 12px; line-height: 1.8; }
+.vision-dialog .vision-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 20px; }
+.vision-dialog .vision-actions button, .vision-dialog #vision-add { min-height: 44px; padding: 11px 18px; font-family: inherit; font-size: 14px; }
+.vision-dialog .primary { border: 1px solid #7ee5ff; color: #071927; background: var(--neon, #4dd8ff); }
+.vision-dialog .quiet { border: 1px solid #4dd8ff45; color: #c7edff; background: #15283d; }
+.vision-dialog button:focus-visible { outline: 3px solid #d8f8ff; outline-offset: 3px; }
+.vision-dialog button:disabled { opacity: .55; }
+.vision-dialog .vision-file { display: none; font-size: 16px; }
+.vision-dialog .vision-status { min-height: 24px; margin: 16px 0 0; color: #9cb3ca; font-size: 13px; line-height: 1.85; overflow-wrap: anywhere; }
+.vision-dialog .vision-status[data-state="loading"] { color: var(--neon, #4dd8ff); }
+.vision-dialog .vision-status[data-state="error"] { color: #ffc2bf; }
+.vision-dialog .vision-result { margin-top: 18px; padding: 18px; border: 1px solid #4dd8ff42; border-radius: 9px; background: #12243a; }
+.vision-dialog .vision-result-label { color: var(--neon, #4dd8ff); font-family: var(--mono, monospace); font-size: 11px; letter-spacing: .7px; }
+.vision-dialog #vision-name { margin: 10px 0 0; color: #eff8ff; font-size: 25px; line-height: 1.45; overflow-wrap: anywhere; }
+.vision-dialog .vision-city { margin: 5px 0 0; color: #bed3e9; font-size: 13px; }
+.vision-dialog .vision-confidence, .vision-dialog .vision-reference-note { margin: 7px 0 0; color: #93acc6; font-size: 11px; line-height: 1.8; }
+.vision-dialog .vision-description { margin: 15px 0 0; color: #d6e4f5; font-size: 14px; line-height: 1.9; overflow-wrap: anywhere; white-space: pre-wrap; }
+.vision-dialog .vision-match { margin: 14px 0; color: #9fb7d0; font-size: 12px; line-height: 1.8; overflow-wrap: anywhere; }
+.vision-dialog [hidden] { display: none !important; }
+@media (max-width: 767px) {
+  dialog.vision-dialog { width: calc(100% - 24px); max-width: calc(100% - 24px); max-height: calc(100dvh - 24px); border-radius: 10px; }
+  .vision-dialog .dialog-head { padding: 12px 14px; }
+  .vision-dialog .vision-content { padding: 18px 16px; }
+  .vision-dialog .vision-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .vision-dialog .vision-actions button, .vision-dialog #vision-add { min-width: 0; font-size: 16px; }
+  .vision-dialog .vision-result { padding: 15px; }
+  .vision-dialog #vision-add { width: 100%; }
+}

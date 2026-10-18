@@ -25,7 +25,7 @@ function aiHeroAvailability(){
 function aiPlanningHeroHTML(){
   return `<section id="ai-planning-hero" class="ai-planning-hero" aria-labelledby="ai-planning-title">
     <div class="ai-hero-content">
-      <p class="ai-hero-kicker"><span aria-hidden="true"></span>AI WEEKEND PLANNER</p>
+      <div class="ai-hero-eyebrow"><p class="ai-hero-kicker"><span aria-hidden="true"></span>AI WEEKEND PLANNER</p><button id="ai-hero-vision" class="ai-hero-vision" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 6 9.5 3h5L16 6h4v14H4V6h4Z"/><circle cx="12" cy="12" r="3.5"/></svg>拍照识景点</button></div>
       <h1 id="ai-planning-title">一句话，让 AI 为你规划河南周末游</h1>
       <p class="ai-hero-subtitle"><strong>5 个 AI 智能体协同</strong><span>需求理解 → 地点推荐 → 日程编排 → 交通核算 → 冲突校验</span></p>
       <form id="ai-hero-form" aria-label="用一句话开始 AI 规划">
@@ -81,6 +81,7 @@ async function submitAIHero(event){
 }
 function bindAIPlanningHero(){
   const form=aiHeroElement('ai-hero-form'),input=aiHeroElement('ai-hero-input');if(!form||!input)return;
+  const visionButton=aiHeroElement('ai-hero-vision');if(visionButton)visionButton.onclick=()=>{if(typeof openVision==='function')openVision()};
   input.value=aiHeroDraft;form.onsubmit=submitAIHero;
   input.oninput=()=>{captureAIHeroDraft();if(!aiHeroBusy){const status=aiHeroElement('ai-hero-status');if(status)status.textContent=aiHeroAvailability()}scheduleAIHeroPlaceholder()};
   input.onfocus=scheduleAIHeroPlaceholder;input.onblur=scheduleAIHeroPlaceholder;

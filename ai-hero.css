@@ -27,6 +27,35 @@
   min-width: 0;
   margin: 0 auto;
 }
+.ai-hero-eyebrow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+.ai-hero-eyebrow .ai-hero-kicker { margin: 0; }
+.ai-hero-vision {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  min-height: 44px;
+  margin: 0;
+  padding: 8px 12px;
+  border: 1px solid #4dd8ff55;
+  border-radius: 7px;
+  color: #c4f3ff;
+  background: #12243b;
+  font-family: inherit;
+  font-size: 12px;
+  line-height: 1.5;
+  white-space: nowrap;
+}
+.ai-hero-vision svg { width: 17px; height: 17px; }
+.ai-hero-vision:hover { background: #1b3450; border-color: var(--neon, #4dd8ff); }
+.ai-hero-vision:focus-visible { outline: 3px solid #d8f8ff; outline-offset: 3px; }
 .ai-hero-kicker {
   display: flex;
   align-items: center;
@@ -266,6 +295,9 @@ body[data-view="gallery"] .ai-hero-input-wrap::before {
 }
 @media (max-width: 767px) {
   .ai-planning-hero { padding: 24px 18px 22px; }
+  .ai-hero-eyebrow { gap: 7px; margin-bottom: 9px; }
+  .ai-hero-eyebrow .ai-hero-kicker { font-size: 9px; letter-spacing: 1px; }
+  .ai-hero-vision { gap: 5px; padding-right: 9px; padding-left: 9px; font-size: 11px; }
   .ai-hero-kicker { margin-bottom: 9px; font-size: 10px; letter-spacing: 1.7px; }
   #ai-planning-title { font-size: 29px; line-height: 1.3; letter-spacing: -.025em; }
   .ai-hero-subtitle { display: block; margin-top: 10px; font-size: 11px; line-height: 1.7; }
@@ -293,6 +325,7 @@ body[data-view="gallery"] .ai-hero-input-wrap::before {
 /* A short phone viewport keeps all five abilities in view without clipping text. */
 @media (max-width: 767px) and (max-height: 720px) {
   .ai-planning-hero { padding-top: 16px; padding-bottom: 16px; }
+  .ai-hero-eyebrow { margin-bottom: 6px; }
   .ai-hero-kicker { margin-bottom: 6px; font-size: 9px; }
   #ai-planning-title { font-size: 26px; line-height: 1.25; }
   .ai-hero-subtitle { margin-top: 8px; font-size: 10px; line-height: 1.6; }

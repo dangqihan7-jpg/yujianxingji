@@ -45,3 +45,5 @@ PPT、策划书、视频和测试/部署文档位于 `materials`，部分比赛�
 行程分享使用 /api/share 与只读 /s/:token，公开快照30天过期；发布须应用0004_trip_shares迁移。复用导出图的share-timeline.mjs分日数据，二维码由npm qrcode本地打包。新增分享测试已纳入全量20组；不得在分享JSON加入账号、原草稿、密钥或AI请求。构建前执行npm ci，详见docs/share.md。
 
 首页显性AI入口由ai-hero.js/ai-hero.css实现，位于原照片轮播上方；复用openBrief条件确认、五阶段SSE和确认后应用，不新增后端规划分支。维护入口需保留用户文字、示例轮换暂停和减少动态效果。见docs/ai-homepage.md。
+
+拍照识景点使用 `POST /api/vision`，由独立图片理解HTTP服务完成，图片只在请求内转发、不写入本站数据库。需要服务端 `XF_VISION_APIKEY` 和图像模型服务的 `XF_VISION_MODEL`；默认MaaS HTTPS `/v2`，不把星火文字模型ID或TTI签名凭据当作图片权限。识别仅在明确匹配本地地点后显示手动加入入口，不能凭模型返回的任意ID修改草稿。配额复用 `model_usage`，使用独立 `vision:` scope，UTC日匿名3/登录10/全局100，失败尝试计数。真实模型尚未验收，不应宣称已经识别成功；配置后需实测龙门石窟和非景点照片。见 `docs/vision.md`。
