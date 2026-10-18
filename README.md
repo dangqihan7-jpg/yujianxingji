@@ -145,3 +145,7 @@ X2.5 请求不发送 response_format、tools 或 thinking_budget。仅对 MaaS �
 - 红旗渠：Windmemories / Wikimedia Commons · CC BY-SA 4.0 · 拍摄于 2026-08-15 · 已缩放、压缩；缩略图裁切显示。[照片来源](https://commons.wikimedia.org/wiki/File:20260815_Red_Flag_Canal_05.jpg) · [许可](https://creativecommons.org/licenses/by-sa/4.0/)
 
 照片更新流程与此次替换记录见 [照片维护文档](docs/photo-maintenance.md)。
+
+### 旅行氛围与交互
+
+首页使用已核对出处的河南实景、深藏青与青绿玻璃输入层，保留真实五智能体执行和确认后应用。目的地照片卡、滚动入场、实际结果逐段显现与操作微反馈均为原生实现，支持减少动态效果；见[界面维护与改动清单](docs/travel-ui.md)。

@@ -60,6 +60,7 @@ function ensureHeroThumbnailVisible(){
 function refreshDailyHeroPhotos(now=Date.now()){
   const day=heroDayIndex(now);if(day===heroSelectionDay)return false;
   heroSelectionDay=day;heroPhotos=selectDailyHeroPhotos(CATALOG,now);heroPlaces=heroPhotos.length?heroPhotos:[heroEmptyPlace()];heroPhotoIndex=0;
+  if(typeof refreshAIHeroScenery==='function')refreshAIHeroScenery();
   const hero=$('#hero-slideshow'),slides=$('#hero-photo-slides'),thumbnails=$('#hero-thumbnails');
   if(hero&&slides&&thumbnails){
     slides.innerHTML=heroSlidesHTML();thumbnails.innerHTML=heroThumbnailsHTML();bindPhotoMedia(slides);bindPhotoMedia(thumbnails);
@@ -155,7 +156,7 @@ function renderGallery(){
       <div id="hero-photo-slides">${heroSlidesHTML()}</div>
       <div class="hero-content">
         <p class="hero-eyebrow">HENAN · A WEEKEND AWAY <span class="hero-seal">AI 智游</span></p>
-        <h2 id="hero-title">豫见行迹<span>把周末，交给河南。</span></h2>
+        <h2 id="hero-title">今天，想去哪里？<span>从一张风景，开始你的周末。</span></h2>
         <p class="hero-description">走进古都的日常，或去山水间慢下来。<br>从你的时间与预算出发，安排一段刚刚好的旅程。</p>
         <div class="hero-actions"><button class="primary" data-gallery-scroll="weekend-plan">开始规划 <span aria-hidden="true">↗</span></button><button class="hero-secondary" data-gallery-scroll="theme-routes">看看灵感路线 <span aria-hidden="true">↓</span></button><button class="hero-city-entry" data-gallery-scroll="henan-cities">探索河南 ${CITY_GUIDES.length} 城 ↓</button></div>
         <div class="hero-stats" aria-label="站点数据"><div><b>${CITY_GUIDES.length}</b><span>城目的地</span></div><div><b>${CATALOG.length}</b><span>精选去处</span></div><div><b>${albumPlaces.length}</b><span>张实景照片</span></div><div><b>${PRESETS.length}</b><span>条主题路线</span></div></div>

@@ -22,8 +22,41 @@ function aiHeroAvailability(){
   if(cfg.authMode==='standalone'&&!authUser&&!cfg.publicAiDemo)return '访客可用规则规划 · 登录后使用 AI';
   return 'AI 已连接 · 确认条件后开始协同';
 }
+// Choose only a real catalogue photograph. This is a cover crop, never a new
+// generated picture; the original photograph and its licence remain reachable.
+function aiHeroScenery(){
+  const catalogue=typeof CATALOG!=='undefined'&&Array.isArray(CATALOG)?CATALOG:[];
+  const daily=typeof heroPlaces!=='undefined'&&Array.isArray(heroPlaces)?heroPlaces:[];
+  const usable=place=>Boolean(place?.image&&/^https:\/\//i.test(place.photoReference||'')&&/^https:\/\//i.test(place.licenseUrl||'')&&/^\/assets\/[A-Za-z0-9_-]+\.(?:jpe?g|png|webp)(?:\?[^\s<>]*)?$/i.test(place.image));
+  const landscapes=['hn-baoquan','hn-laojunshan','hn-yuntai','hn-wanxianshan','hn-wangwu','hn-nanwan'];
+  const dailyLandscape=landscapes.map(id=>daily.find(place=>place.id===id&&usable(place))).find(Boolean);
+  // Cultural landmarks stay in the daily album, while this cover keeps a
+  // landscape composition even on dates whose selected group has no mountains.
+  return dailyLandscape||['hn-laojunshan','hn-baoquan','hn-yuntai','hn-wanxianshan','hn-wangwu','hn-nanwan'].map(id=>catalogue.find(place=>place.id===id&&usable(place))).find(Boolean)||null;
+}
+function aiHeroBackdropHTML(place=aiHeroScenery()){
+  return place&&typeof photoMediaHTML==='function'?photoMediaHTML(place,{loading:'eager',fetchpriority:'high',alt:''}):'<span class="ai-hero-scenery-placeholder">河南实景照片待补充</span>';
+}
+function aiHeroCreditHTML(place=aiHeroScenery()){
+  if(!place)return '<span class="ai-hero-photo-empty">图形背景 · 未使用实景照片</span>';
+  const date=typeof photoDateLabel==='function'?photoDateLabel(place):/^\d{4}$/.test(String(place.photoYear||''))?'拍摄于 '+place.photoYear+' 年':'拍摄日期未注明';
+  // Links come from the curated catalogue, but still reject executable schemes.
+  const safeLink=value=>/^https:\/\//i.test(String(value||''))?String(value):'';
+  const reference=safeLink(place.photoReference),license=safeLink(place.licenseUrl);
+  return '<span class="ai-hero-photo-location"><span aria-hidden="true">⌖</span> '+esc(place.city+' · '+place.name)+'</span><span class="ai-hero-photo-date">'+esc(date)+'</span>'+(reference?'<a href="'+esc(reference)+'" target="_blank" rel="noreferrer">实景出处 ↗</a>':'')+(license?'<a href="'+esc(license)+'" target="_blank" rel="noreferrer">许可 ↗</a>':'');
+}
+function refreshAIHeroScenery(){
+  const backdrop=aiHeroElement('ai-hero-backdrop'),credit=aiHeroElement('ai-hero-photo-credit');
+  if(!backdrop||!credit)return;
+  const place=aiHeroScenery(),key=place?.id||'placeholder';
+  if(backdrop.dataset?.place===key)return;
+  backdrop.innerHTML=aiHeroBackdropHTML(place);if(backdrop.dataset)backdrop.dataset.place=key;
+  credit.innerHTML=aiHeroCreditHTML(place);
+  if(typeof bindPhotoMedia==='function')bindPhotoMedia(backdrop);
+}
 function aiPlanningHeroHTML(){
   return `<section id="ai-planning-hero" class="ai-planning-hero" aria-labelledby="ai-planning-title">
+    <div id="ai-hero-backdrop" class="ai-hero-backdrop" aria-hidden="true" data-place="${esc(aiHeroScenery()?.id||'placeholder')}">${aiHeroBackdropHTML()}</div>
     <div class="ai-hero-content">
       <div class="ai-hero-eyebrow"><p class="ai-hero-kicker"><span aria-hidden="true"></span>AI WEEKEND PLANNER</p><button id="ai-hero-vision" class="ai-hero-vision" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 6 9.5 3h5L16 6h4v14H4V6h4Z"/><circle cx="12" cy="12" r="3.5"/></svg>拍照识景点</button></div>
       <h1 id="ai-planning-title">一句话，让 AI 为你规划河南周末游</h1>
@@ -34,6 +67,7 @@ function aiPlanningHeroHTML(){
       </form>
     </div>
     <ol class="ai-hero-agents" aria-label="5 个智能体的能力">${AI_HERO_AGENTS.map((agent,index)=>`<li class="ai-hero-agent" data-ai-agent="${index+1}"><span class="ai-hero-agent-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">${agent.icon}</svg></span><div class="ai-hero-agent-copy"><strong>${esc(agent.name)}</strong><span>${esc(agent.description)}</span></div></li>`).join('')}</ol>
+    <div id="ai-hero-photo-credit" class="ai-hero-photo-credit" aria-label="背景实景照片信息">${aiHeroCreditHTML()}</div>
   </section>`;
 }
 function captureAIHeroDraft(){
@@ -60,7 +94,7 @@ function scheduleAIHeroPlaceholder(){
     scheduleAIHeroPlaceholder();
   },5000);
 }
-function refreshAIHeroLifecycle(){scheduleAIHeroPlaceholder()}
+function refreshAIHeroLifecycle(){scheduleAIHeroPlaceholder();refreshAIHeroScenery()}
 function updateAIHeroSubmit(){
   const form=aiHeroElement('ai-hero-form'),button=aiHeroElement('ai-hero-submit'),status=aiHeroElement('ai-hero-status');
   if(form)form.setAttribute?.('aria-busy',String(aiHeroBusy));
