@@ -43,3 +43,5 @@ PPT、策划书、视频和测试/部署文档位于 `materials`，部分比赛�
 候选通过 Fetch POST SSE 实时显示五智能体的真实步骤、来源和模型调用计数；流失败时最多一次 JSON 请求并沿用旧回放。Node 必须使用 scripts/http-response.mjs 流式转发，勿恢复 arrayBuffer 整体缓冲；关闭弹窗或修改条件应取消执行，保留 replayFinished 与确认后应用门禁。协议与测试见 docs/agent-architecture.md。
 
 行程分享使用 /api/share 与只读 /s/:token，公开快照30天过期；发布须应用0004_trip_shares迁移。复用导出图的share-timeline.mjs分日数据，二维码由npm qrcode本地打包。新增分享测试已纳入全量20组；不得在分享JSON加入账号、原草稿、密钥或AI请求。构建前执行npm ci，详见docs/share.md。
+
+首页显性AI入口由ai-hero.js/ai-hero.css实现，位于原照片轮播上方；复用openBrief条件确认、五阶段SSE和确认后应用，不新增后端规划分支。维护入口需保留用户文字、示例轮换暂停和减少动态效果。见docs/ai-homepage.md。

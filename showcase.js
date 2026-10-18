@@ -142,10 +142,12 @@ function previewFeaturedRoute(id){
   globalThis.scrollTo?.({top:position,behavior:'instant'});
 }
 function renderGallery(){
+  if(typeof captureAIHeroDraft==='function')captureAIHeroDraft();
   const pendingText=$('#brieftext')?.value||'';
   const r=PRESETS.find(p=>p.id===featuredRouteId)||PRESETS[0];
   const hero=heroPlaces[heroPhotoIndex];
   $('#gallery').innerHTML=`
+    ${typeof aiPlanningHeroHTML==='function'?aiPlanningHeroHTML():''}
     <section id="hero-slideshow" class="journey-hero" aria-labelledby="hero-title" aria-roledescription="${heroPhotos.length?'照片轮播':'地点展示'}" data-hero-day="${heroSelectionDay}">
       <div class="hero-grid" aria-hidden="true"></div>
       <p id="hero-daily-label" class="hero-daily-label" data-hero-day="${heroSelectionDay}">每日精选 · ${heroDateString(heroSelectionDay*HERO_DAY_MS-HERO_BEIJING_OFFSET_MS)}（北京时间）</p>
@@ -181,6 +183,7 @@ function renderGallery(){
   if(pendingText)$('#brieftext').value=pendingText;
   renderCityAtlas();
   bindPhotoMedia($('#gallery'));initializeHeroSlideshow();
+  if(typeof bindAIPlanningHero==='function')bindAIPlanningHero();
 }
 
 function revealPlannerMap(){
@@ -206,6 +209,7 @@ function setView(view){
   if(view==='gallery')renderGallery();if(view==='overview')renderOverview();if(view==='decision')renderDecision();
   if(view==='planner')revealPlannerMap();
   scheduleHeroRotation();
+  if(typeof refreshAIHeroLifecycle==='function')refreshAIHeroLifecycle();
   globalThis.scrollTo?.({top:0,behavior:'instant'});
 }
 

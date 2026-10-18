@@ -146,7 +146,8 @@ for(const catalog of [CATALOG.map(place=>({...place,image:null})),[]]){
  fixture.document.activeElement=fixture.get('#brieftext');
  const draft=fixture.run('JSON.stringify(compactDraft())'),gallery=fixture.get('#gallery').innerHTML,briefNode=fixture.get('#brieftext'),previousGroup=Array.from(fixture.run('heroPhotos.map(place=>place.id)'));
  const album={index:fixture.run('albumIndex'),attempt:fixture.run('albumImageAttempt'),title:fixture.get('#album-title').textContent,src:fixture.get('#album-image').src,date:fixture.get('#album-date').textContent,thumbs:fixture.get('#album-thumbnails').innerHTML,onload:fixture.get('#album-image').onload};
- const midnightTimers=[...fixture.timers.entries()].filter(([,timer])=>timer.delay!==6000);
+ const independentPhotoTimers=()=>[...fixture.timers.entries()].filter(([id,timer])=>timer.delay!==6000&&id!==fixture.run('aiHeroPlaceholderTimer'));
+ const midnightTimers=independentPhotoTimers();
  assert.equal(midnightTimers.length,1,'Schedule exactly one separate daily refresh');
  assert(midnightTimers[0][1].delay>=2000&&midnightTimers[0][1].delay<3000,'Refresh shortly after Beijing midnight, not after local-system midnight');
  fixture.fireTimer(midnightTimers[0][0]);
@@ -161,7 +162,7 @@ for(const catalog of [CATALOG.map(place=>({...place,image:null})),[]]){
  assert.equal(fixture.get('#briefbudget').value,'45');assert.equal(fixture.get('#briefcity').value,'开封');assert.equal(fixture.get('#briefbody').innerHTML,'<p>尚未提交的旅行条件</p>');
  assert.equal(fixture.get('#photoalbum').open,true);assert.equal(fixture.run('albumIndex'),album.index);assert.equal(fixture.run('albumImageAttempt'),album.attempt);
  assert.equal(fixture.get('#album-title').textContent,album.title);assert.equal(fixture.get('#album-image').src,album.src);assert.equal(fixture.get('#album-date').textContent,album.date);assert.equal(fixture.get('#album-thumbnails').innerHTML,album.thumbs);assert.equal(fixture.get('#album-image').onload,album.onload,'An open album retains its image request and failure-recovery callbacks');
- assert.equal([...fixture.timers.values()].filter(timer=>timer.delay!==6000).length,1,'Daily refresh re-arms one timer for the next midnight');
+ assert.equal(independentPhotoTimers().length,1,'Daily refresh re-arms one timer for the next midnight independently of the AI placeholder');
 }
 for(const event of ['visibilitychange','pageshow']){
  const fixture=photoCatalogueFixture(CATALOG),before=Array.from(fixture.run('heroPhotos.map(place=>place.id)'));
