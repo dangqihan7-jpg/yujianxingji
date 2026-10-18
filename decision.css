@@ -26,3 +26,41 @@ body:not([data-view="decision"]) .decision-view{display:none}body[data-view="dec
 /* Live execution uses the existing step rows and the site's technology palette. */
 .agent-live{background:var(--space,#0b1220);border-color:color-mix(in srgb,var(--neon,#4dd8ff) 32%,transparent);color:#e7f4ff}.agent-live h3{color:#e7f4ff}.agent-live-counter{font-family:var(--mono,monospace);font-size:13px;line-height:1.7;color:var(--neon,#4dd8ff);overflow-wrap:anywhere}.agent-live .agent-live-counter{margin:0 0 12px}.agent-live .agent-live-running{color:#cfdfef;font-size:13px}.agent-live small{color:#9cb2c8}.agent-step-copy{min-width:0}.agent-result .agent-step-source{display:inline-block;margin:3px 0 0 8px;padding:0 6px;border:1px solid currentColor;border-radius:3px;font-size:11px;line-height:1.7;vertical-align:baseline}.agent-live .agent-step-source{color:var(--neon,#4dd8ff)}.agent-live .agent-step-source[data-agent-source="rules"]{color:#f7c87d}.agent-live .agent-step-source[data-agent-source="confirmed"]{color:#b4d2ed}.agent-live .agent-step-state.completed{background:#173845;color:#a3f5d2}.agent-live .agent-step-state.pending{background:#3d3422;color:#f7d99b}.agent-live .agent-step-state.conflict{background:#442a34;color:#ffc2bf}
 @media(max-width:480px){.agent-live{padding:14px}.agent-live-counter{font-size:12px}.agent-result .agent-step-source{display:table;margin-left:0}.agent-steps p{gap:7px}.agent-step-state{padding:1px 5px}}
+
+/* Keep the five actual execution records readable inside a phone dialog. */
+@media(max-width:767px){
+  .decision-layout{grid-template-columns:minmax(0,1fr)}
+  .decision-main,.decision-side,.decision-block,.candidate-preview,.agent-result,.brief-compose{min-width:0}
+  .decision-heading,.study-heading{display:block}
+  .decision-heading-actions,.audit-actions,.brief-compose-actions{flex-wrap:wrap;gap:10px}
+  .decision-heading-actions button,.audit-actions button{flex:1 1 130px;min-height:44px}
+  .brief-entry{grid-template-columns:minmax(0,1fr);padding:18px}
+  .brief-compose-actions>span{flex-basis:100%}
+  .brief-fields,.study-fields{grid-template-columns:minmax(0,1fr)}
+  .brief-fields>label,.study-fields>label,.study-start>label{min-width:0}
+  .brief-confirm-actions{display:grid;grid-template-columns:minmax(0,1fr);gap:10px}
+  .brief-confirm-actions button,.candidate-preview button{width:100%;min-height:44px;white-space:normal;overflow-wrap:anywhere}
+  .brief-interests{gap:4px 14px}
+  .brief-interests label,.brief-cross,.brief-place-conditions label,.lock-list label{display:flex;align-items:center;min-height:44px;gap:8px;margin-bottom:0;line-height:1.7}
+  .brief-place-conditions label{padding-block:5px}
+  .brief-place-conditions input,.brief-interests input,.brief-cross input,.lock-list input{width:20px;height:20px;flex:none;margin:0}
+  .brief-place-conditions{min-width:0;padding:12px}
+  .agent-pipeline{display:grid;grid-template-columns:minmax(0,1fr);gap:8px}
+  .agent-pipeline li{min-width:0;min-height:44px;justify-content:space-between;flex-wrap:wrap;line-height:1.7;gap:4px 10px}
+  .agent-pipeline span{overflow-wrap:anywhere}
+  .agent-result{padding:14px}
+  .agent-steps{gap:12px}
+  .agent-steps p{display:grid;grid-template-columns:max-content minmax(0,1fr);align-items:start;gap:8px}
+  .agent-step-state{line-height:1.9;white-space:nowrap}
+  .agent-step-copy{overflow-wrap:anywhere;line-height:1.9}
+  .agent-result .agent-step-source{display:table;margin:4px 0 0;max-width:100%;white-space:normal}
+  .agent-result .agent-replay-skip{min-height:44px}
+  .agent-live-counter{line-height:1.9}
+  .audit-day{min-width:0;padding:16px}
+  .audit-day>div:first-child{flex-wrap:wrap;gap:8px}
+  .audit-day p,.candidate-days p,.agent-days p,.agent-reasons,.agent-rationale li{overflow-wrap:anywhere}
+  .expense-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+  .study-start{display:block}
+  .study-start button{width:100%;margin-top:12px}
+  .study-records{grid-template-columns:minmax(0,1fr)}
+}

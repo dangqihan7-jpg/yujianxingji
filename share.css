@@ -16,3 +16,6 @@
 .foot-actions:has(#share){flex-wrap:wrap}
 @media(max-width:640px){.foot-actions:has(#share){flex-wrap:wrap}.foot-actions:has(#share)>button{flex:1 1 calc(50% - 7px)}#sharetrip .dialog-content{padding:18px}#sharetrip .share-link-row{flex-wrap:wrap}#sharetrip #sharelink{flex-basis:100%}#sharetrip #copyshare{width:100%}}
 @media(prefers-reduced-motion:reduce){#sharetrip,#sharetrip *{animation:none!important;transition:none!important}}
+@media(max-width:767px){
+ #sharetrip #sharelink{font-size:16px}
+}

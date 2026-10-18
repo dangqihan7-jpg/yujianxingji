@@ -85,10 +85,57 @@ $('#saveretry').onclick=()=>{if(restoreFailed)return init();saveBlocked=false;re
 $('#restorepreset').onclick=()=>loadPreset(currentPresetId||'classic');
 for(const id of ['travelmode','maxhours','restmins'])$('#'+id).onchange=()=>{if(id==='travelmode'&&decisionState.intent.excludedModes.includes($('#travelmode').value)){$('#travelmode').value=lastRenderedDraft?.mode||decisionState.intent.mode||'driving';toast('该交通方式已被排除，请先修改旅行条件');return}checkpoint(true);decisionState.intent[{travelmode:'mode',maxhours:'maxHours',restmins:'restMinutes'}[id]]=id==='travelmode'?$('#'+id).value:Number($('#'+id).value);renderTrip();renderMap()};
 $('#export').onclick=()=>{if(!trip.length){toast('请先加入地点');return}const blob=new Blob([JSON.stringify(compactDraft(),null,2)],{type:'application/json'});const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='豫见行迹-河南旅行行程.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);toast('已导出行程')};
+let posterPreviewOperation=0,posterPreviewURL='',posterPreviewFile=null;
+function mobilePosterExport(){return !!globalThis.matchMedia?.('(max-width: 767px)').matches}
+function resetPosterPreview(){
+ posterPreviewOperation++;posterPreviewFile=null;
+ if(posterPreviewURL){URL.revokeObjectURL(posterPreviewURL);posterPreviewURL=''}
+ $('#posterpreviewimage').removeAttribute('src');$('#posterpreviewimage').hidden=true;
+ $('#posterpreviewdownload').removeAttribute('href');$('#posterpreviewdownload').hidden=true;
+ $('#posterpreviewshare').hidden=true;$('#posterpreviewshare').disabled=false;
+}
+function beginPosterPreview(){
+ if(!mobilePosterExport()||typeof $('#posterpreview').showModal!=='function')return null;
+ resetPosterPreview();$('#posterpreviewstatus').textContent='正在生成行程图…';
+ if(!$('#posterpreview').open)$('#posterpreview').showModal();
+ return posterPreviewOperation;
+}
+function showPosterPreview(blob,filename,operation){
+ const dialog=$('#posterpreview');if(operation!==posterPreviewOperation||!dialog.open)return;
+ // Do not reopen a mobile dialog if the viewport changes during generation.
+ if(!mobilePosterExport()){dialog.close();return}
+ posterPreviewURL=URL.createObjectURL(blob);
+ const image=$('#posterpreviewimage'),download=$('#posterpreviewdownload');
+ image.src=posterPreviewURL;image.hidden=false;download.href=posterPreviewURL;download.download=filename;download.hidden=false;
+ try{
+  if(typeof File==='function'&&typeof navigator.share==='function'&&typeof navigator.canShare==='function'){
+   const file=new File([blob],filename,{type:'image/png'});if(navigator.canShare({files:[file]}))posterPreviewFile=file;
+  }
+ }catch{/* The visible image and download link also work without file sharing. */}
+ $('#posterpreviewshare').hidden=!posterPreviewFile;
+ $('#posterpreviewstatus').textContent='长按下方图片，选择保存到照片。'+(posterPreviewFile?'也可点“系统保存 / 分享”，在 iPhone / iPad 上选择“存储图像”。':'')+'点“打开 / 下载图片”时，浏览器可能先显示图片预览。';
+}
+async function sharePosterPreview(){
+ const operation=posterPreviewOperation,file=posterPreviewFile,button=$('#posterpreviewshare');
+ if(!file||!$('#posterpreview').open||button.disabled)return;
+ button.disabled=true;$('#posterpreviewstatus').textContent='正在打开系统分享，可选择“存储图像”保存到照片。';
+ try{
+  // Called directly by a fresh tap, after the async poster generation is complete.
+  await navigator.share({files:[file],title:'豫见行迹 · 河南旅行行程'});
+  if(operation===posterPreviewOperation&&$('#posterpreview').open)$('#posterpreviewstatus').textContent='系统分享已结束；也可继续长按下方图片保存到照片。';
+ }catch(error){
+  if(operation===posterPreviewOperation&&$('#posterpreview').open)$('#posterpreviewstatus').textContent=error?.name==='AbortError'?'已取消系统分享，可再次点击，或长按下方图片保存。':'系统分享暂不可用，请长按下方图片保存，或点“打开 / 下载图片”。';
+ }finally{if(operation===posterPreviewOperation)button.disabled=false}
+}
+$('#posterpreview').addEventListener('close',resetPosterPreview);
+$('#posterpreviewshare').onclick=sharePosterPreview;
+$('#posterpreviewdownload').onclick=()=>{$('#posterpreviewstatus').textContent='如果浏览器先打开图片预览，请长按图片保存到照片；当前预览仍可继续使用。'};
+globalThis.addEventListener?.('resize',()=>{if($('#posterpreview').open&&!mobilePosterExport())$('#posterpreview').close()});
 function roundRectPath(c,x,y,w,h,r){c.beginPath();c.moveTo(x+r,y);c.arcTo(x+w,y,x+w,y+h,r);c.arcTo(x+w,y+h,x,y+h,r);c.arcTo(x,y+h,x,y,r);c.arcTo(x,y,x+w,y,r);c.closePath()}
 $('#poster').onclick=async()=>{
  if(!trip.length){toast('请先加入地点');return}
  const btn=$('#poster'),orig=btn.textContent;btn.disabled=true;btn.textContent='AI 绘制中…';
+ const previewOperation=beginPosterPreview();
  let cover=null;
  try{
   const days=Number($('#days').value)||1,names=[...new Set(trip.map(s=>s.place.name))];
@@ -96,9 +143,10 @@ $('#poster').onclick=async()=>{
   if(r&&r.image)cover=await new Promise((res,rej)=>{const img=new Image();img.onload=()=>res(img);img.onerror=rej;img.src=r.image});
  }catch(e){toast('AI 封面生成失败，用默认样式出图')}
  btn.textContent=orig;btn.disabled=false;
- try{drawPoster(cover)}catch(e){toast('海报生成失败，请稍后重试')}
+ try{drawPoster(cover,previewOperation)}catch(e){if(previewOperation===posterPreviewOperation&&$('#posterpreview').open)$('#posterpreviewstatus').textContent='行程图生成失败，请关闭后重试。';toast('海报生成失败，请稍后重试')}
 };
 function drawPoster(cover){
+ const previewOperation=arguments[1];
  const W=1080,pad=64,tlX=104;
  const days=Number($('#days').value)||1,dayNames=['一','二','三','四','五','六','七'];
  const dayData=shareTimelineDays(trip,days,stops=>cachedTraffic(stops)).map(block=>block.stops);
@@ -208,7 +256,7 @@ function drawPoster(cover){
  c.fillStyle='rgba(100,116,139,0.9)';c.font='400 28px system-ui';
  c.fillText('路线由豫见行迹 AI 规划 · 交通耗时为高德估计，仅供参考',pad,y+46);
  c.fillText(cover?'封面由讯飞星火 AI 生成 · 仅作纪念示意':'豫见行迹 · 河南周末游决策助手',pad,y+92);
- cv.toBlob(blob=>{if(!blob){toast('海报生成失败，请稍后重试');return}const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='豫见行迹-河南'+days+'日游行程.png';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);toast('行程图已生成')},'image/png');
+ cv.toBlob(blob=>{if(!blob){if(typeof previewOperation==='number'&&previewOperation===posterPreviewOperation&&$('#posterpreview').open)$('#posterpreviewstatus').textContent='行程图生成失败，请关闭后重试。';toast('海报生成失败，请稍后重试');return}const filename='豫见行迹-河南'+days+'日游行程.png';if(typeof previewOperation==='number'){showPosterPreview(blob,filename,previewOperation);return}const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=filename;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);toast('行程图已生成')},'image/png');
 }
 $('#file').onchange=async e=>{const file=e.target.files[0];if(!file)return;try{if(file.size>100000)throw Error('行程文件过大');const operation=++draftOperation,raw=JSON.parse(await file.text()),validated=await api('/api/validate',raw);if(operation!==draftOperation)throw Error('行程已修改，请重新导入');validateDecisionState(raw.decision||{},validated.stops);checkpoint();const applied=await applyDraft(raw,validated);if(!applied)throw Error('行程已修改，本次导入未应用');toast('已导入行程')}catch(e){toast(e.message||'无法导入此文件')}finally{$('#file').value=''}};
 document.addEventListener?.('visibilitychange',()=>{if(document.visibilityState==='hidden')flushSave();else{renderTrip();renderMap();scheduleTrafficExpiry()}});

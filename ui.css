@@ -368,3 +368,92 @@ dialog {border:1px solid var(--line);border-radius:8px;background:#fffefb;color:
 @media(max-width:380px){.hero-daily-label{left:22px;max-width:calc(100% - 174px);font-size:9px}.hero-content{padding-top:80px}.hero-eyebrow{margin-bottom:4px}}
 /* A phone list grows with its cards instead of painting over the itinerary. */
 @media(max-width:760px){.workspace .explore{max-height:none}.hero-image .photo-placeholder-name{display:none}}
+
+/* Phone ergonomics stay below the desktop breakpoint, including landscape. */
+@media(max-width:767px){
+  input:not([type="hidden"]),select,textarea{font-size:16px!important}
+  input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]),select{min-height:44px;max-width:100%}
+  button,a[href],summary,[role="button"]{min-height:44px;min-width:44px}
+  a[href]{display:inline-flex;align-items:center;max-width:100%;overflow-wrap:anywhere}
+  button,summary{max-width:100%;overflow-wrap:anywhere}
+  body{min-width:0}
+  .site-header{height:auto;min-height:114px;flex-wrap:wrap;padding:13px 12px 0;gap:10px 8px}
+  .brand-home{min-width:0;gap:9px}
+  .brand-home h1{font-size:20px;letter-spacing:2px}
+  .brand-home p{font-size:8px;letter-spacing:1.5px}
+  .brandmark{width:29px;height:35px}
+  .header-right{margin-left:auto;gap:7px;min-width:0}
+  .header-right .quiet{min-width:44px;max-width:85px;font-size:11px}
+  .header-trip{min-height:44px;padding:10px 8px;font-size:11px}
+  .view-nav{order:3;flex-basis:100%;height:44px;gap:8px;padding:0 2px;justify-content:space-between}
+  .view-nav button{height:44px;flex:1;min-width:0;font-size:13px}
+  .mobile-nav{position:sticky;top:114px;z-index:35;display:flex;background:#f7f5eff5;backdrop-filter:blur(12px);padding:8px 14px;gap:8px;margin:0 0 12px;border-bottom:1px solid var(--line)}
+  .mobile-nav a{min-height:44px;justify-content:center;flex:1}
+  #exploresection,#mapsection,#tripsection{scroll-margin-top:190px}
+  .workspace{display:flex;flex-direction:column;gap:16px;margin:0 14px 20px;min-width:0}
+  .workspace .explore,.workspace .trip{max-height:none;overflow:visible;padding:20px 17px}
+  .explore .citysearch,.search,.trip-title,.stop-name,.folio-heading>div,.folio-stop>div,.atlas-city-heading>div{min-width:0}
+  .explore .citysearch{width:100%;flex-basis:auto}
+  .explore .citysearch select,.search input{flex:1;min-width:0;width:100%}
+  .citychips button,.filters button,.trip-head-actions button,.daytabs button,.brief-examples button{min-height:44px}
+  .section-head{flex-wrap:wrap}
+  .trip-title{flex-wrap:wrap}
+  .trip-head-actions{margin-left:auto}
+  .trip-settings,.travel-options,.stop-fields{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .trip-settings select,.trip-settings input,.stop-fields input,.stop-fields select{height:44px;width:100%;min-width:0}
+  .daytabs{padding:3px 0 6px;scroll-padding-inline:3px}
+  .place-name,.stop-name strong,.folio-stop button,.folio-tip,.folio-leg,.traffic-title,.draftnote{overflow-wrap:anywhere}
+  .card-bottom{flex-wrap:wrap}
+  .card-bottom>span{flex:1;min-width:120px;line-height:1.8}
+  .card-bottom button{flex-shrink:0;min-height:44px}
+  .stop{padding-left:20px;margin-left:10px}
+  .stop-heading{align-items:flex-start}
+  .stop-editor summary,.route-note summary,.traffic-details summary{display:flex;align-items:center;min-height:44px}
+  .stop-controls,.foot-actions{flex-wrap:wrap;gap:8px}
+  .stop-controls button{flex:1;min-height:44px}
+  .foot-actions>button{flex:1 1 calc(50% - 8px);min-height:44px}
+  .traffic-title{flex-wrap:wrap}
+  .traffic-review button,.restore-preset{min-height:44px}
+  .map-panel{display:flex;flex-direction:column;height:auto;min-height:0;flex:none}
+  .map-panel #map{position:relative;inset:auto;width:100%;height:380px;flex:none}
+  .map-panel #map.amap-container,.map-panel #map .amap-maps{touch-action:none}
+  .map-panel #map:has(>#schematic){height:494px;overflow:auto;touch-action:pan-x pan-y;-webkit-overflow-scrolling:touch}
+  .map-panel #schematic{width:760px;min-width:760px;max-width:none;height:494px;touch-action:pan-x pan-y}
+  .map-toolbar{top:12px;left:12px;right:12px;flex-wrap:wrap;gap:8px}
+  .map-heading{max-width:100%;padding:10px 12px}
+  .map-heading strong{font-size:16px}
+  .map-tools{position:static;top:auto;right:auto;margin-left:auto}
+  .map-tools .map-pill{min-height:44px;min-width:44px;padding:9px 10px;font-size:12px}
+  .map-panel .map-legend{position:relative;left:auto;right:auto;bottom:auto;max-width:none;width:100%;padding:12px;margin:0;border-radius:0;box-shadow:none;line-height:1.8}
+  .marker-pill{min-height:44px;min-width:44px}
+  .overview-view,.decision-view{width:100%;padding:26px 18px 40px}
+  .folio-heading{display:block}
+  .folio-actions{flex-wrap:wrap;justify-content:flex-start;margin-top:16px}
+  .folio-actions button{min-height:44px;flex:1 1 calc(50% - 8px)}
+  .folio-metrics{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+  .folio-metric{min-width:0;padding:16px}
+  .folio-metric b{overflow-wrap:anywhere}
+  .folio-days{grid-template-columns:minmax(0,1fr)}
+  .folio-day-content{padding:18px 16px}
+  .folio-stop{grid-template-columns:28px minmax(0,1fr)}
+  .folio-stop button{min-height:44px;max-width:100%;line-height:1.7}
+  .folio-proof{flex-direction:column;gap:12px}
+  .compare-grid{grid-template-columns:minmax(0,1fr)}
+  .hero-content,.hero-bottom,.gallery-inner,.gallery-grid,.route-sidebar,.atlas-city-heading{min-width:0}
+  .hero-photo-meta .hero-photo-info #hero-photo-source{min-height:44px}
+  .photo-context button,.pick-copy>button.pick-photo-note,.route-preview-days summary{min-height:44px}
+  .atlas-city-heading{flex-wrap:wrap}
+  .atlas-city-count{white-space:normal}
+  .route-picker select{min-width:0;width:100%}
+  dialog{width:calc(100% - 24px);max-height:calc(100svh - 24px);overscroll-behavior:contain}
+  .dialog-head{position:sticky;top:0;z-index:5;padding:14px 16px;gap:10px}
+  .dialog-head h2{min-width:0;font-size:20px;overflow-wrap:anywhere}
+  .dialog-head button{width:44px;height:44px;flex:none;padding:0}
+  .dialog-content{min-width:0;padding:18px;overflow-wrap:anywhere}
+  .detail-gallery figcaption a,.credit a,.statusline a{min-height:44px}
+  .notice{width:max-content;max-width:calc(100vw - 24px);overflow-wrap:anywhere}
+  #posterpreview .poster-preview-image{display:block;width:100%;height:auto;max-width:100%;object-fit:contain;-webkit-touch-callout:default;user-select:auto}
+  #posterpreview .poster-preview-actions{display:flex;flex-direction:column;gap:10px;margin-top:16px}
+  #posterpreview .poster-preview-actions>*{display:flex;align-items:center;justify-content:center;width:100%;min-height:44px}
+  #posterpreview .poster-preview-note,#posterpreviewstatus{font-size:14px;line-height:1.8;overflow-wrap:anywhere;margin:12px 0}
+}
