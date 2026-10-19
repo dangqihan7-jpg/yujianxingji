@@ -22,6 +22,12 @@ wrangler.jsonc 是新部署模板，原项目使用 Sites 托管，没有原生 
 ## 服务配置
 AMAP_JS_KEY 为浏览器 Key；AMAP_SECURITY_JS_CODE、AMAP_WEB_SERVICE_KEY 留在后端。LLM_API_KEY、LLM_BASE_URL、LLM_MODEL 配置模型接口。真实上游服务与国内访问效果需要在目标部署环境重新验证。
 
+### 当前行程问答
+
+`POST /api/ask` 复用已有 `LLM_API_KEY`、`LLM_BASE_URL`、`LLM_MODEL`，不增加 `.env` 字段或问答专用密钥。服务端需配置MaaS HTTPS `/v2` 基础地址和有权限的 X2.5 系列ModelID，浏览器只发送当前问题与最小行程快照。问答不进入五智能体流水线，不改变现有规划、海报、分享或识图接口。轻量适配遵循[讯飞官方X2.5协议](https://www.xfyun.cn/doc/spark/Spark-X2.5.html)，关闭思考并限制最终回答长度。
+
+需要已有 `model_usage` 表，使用独立 `ask:` scope，按UTC日匿名10次、登录30次、全局200次，无需新迁移。未配置或额度数据库不可用时，需模型回答的请求应返回明确503；已超限返回429，不能退化为无限制模型访问。配额表不存问答内容、行程上下文或原始IP；前端历史只留本页内存。发布前备份代码与SQLite，保留 `.local` 数据链接和权限600的私密配置；构建、校验、全量测试通过后再重启应用。真实服务验收须核对分日数量、用户开始时间、未知政策兜底与官方尾句，不能仅凭mock通过宣称模型质量达标；详见 [问答协议与验收](ask.md)。
+
 ### 拍照识景点
 
 在 `/etc/yujianxingji.env` 填入 `XF_VISION_APIKEY` 和 `XF_VISION_MODEL`，后者从已开通图像理解服务的控制台调用信息复制。`XF_VISION_BASE_URL` 默认 `https://maas-api.cn-huabei-1.xf-yun.com/v2`，只配置基础地址，程序追加 `/chat/completions`。HTTP服务采用Bearer凭据，无需APISECRET或HMAC签名；已有星火文字模型权限不等于图像模型权限。示例文件只有空值，真实凭据只留在权限600的服务端配置中，不发到聊天或写入源码。
