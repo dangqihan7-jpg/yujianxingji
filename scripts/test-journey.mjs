@@ -47,7 +47,7 @@ assert(f.get('#trafficreview').innerHTML.includes('交通耗时待核算'));
 await f.run('checkTraffic()');assert(f.get('#trafficreview').innerHTML.includes('当天安排偏满'));assert(f.get('#trip').innerHTML.includes('约 10 分钟'));
 assert(f.get('#trip').innerHTML.includes('预计 12:40 起'));
 let release;f.setDelayRoute(cb=>release=cb);const pending=f.run('checkTraffic()');await new Promise(resolve=>setImmediate(resolve));const count=f.routeCalls();await f.run('checkTraffic()');assert.equal(f.routeCalls(),count);f.run("trip.reverse();renderTrip()");release();await pending;assert.equal(f.run('trafficCache.has(trafficKey())'),false,'Changed route must discard older response');
-f.run("loadPreset('luoyang',true);cfg.placesConfigured=true");await f.run('checkTraffic()');assert.equal(f.get('#match').open,true);assert(f.get('#matchbody').innerHTML.includes('data-match="0"'));f.get('#matchbody').onclick({target:{closest:()=>({dataset:{match:'0'}})}});assert.equal(f.run('trip[0].place.routing.id'),'B101');
+f.run("loadPreset('luoyang',true);cfg.placesConfigured=true");await f.run('checkTraffic()');assert.equal(f.get('#match').open,true);assert(f.get('#matchbody').innerHTML.includes('data-match="0"'));f.get('#matchbody').onclick({target:{closest:()=>({dataset:{match:'0'}})}});assert.notEqual(f.run('trip[0].place.routing?.id'),'B101','Selecting a candidate must not commit routing before confirmation');assert.equal(f.get('#continuecheck').disabled,false);f.get('#continuecheck').onclick();assert.equal(f.run('trip[0].place.routing.id'),'B101');await new Promise(resolve=>setImmediate(resolve));await new Promise(resolve=>setImmediate(resolve));
 
 // A failed restore must not allow Retry Save to overwrite an existing draft.
 let writes=0;const broken=fixture(async(path,options)=>{
