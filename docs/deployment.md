@@ -30,7 +30,7 @@ AMAP_JS_KEY 为浏览器 Key；AMAP_SECURITY_JS_CODE、AMAP_WEB_SERVICE_KEY 留�
 
 ### 拍照识景点
 
-在 `/etc/yujianxingji.env` 填入 `XF_VISION_APIKEY` 和 `XF_VISION_MODEL`，后者从已开通图像理解服务的控制台调用信息复制。`XF_VISION_BASE_URL` 默认 `https://maas-api.cn-huabei-1.xf-yun.com/v2`，只配置基础地址，程序追加 `/chat/completions`。HTTP服务采用Bearer凭据，无需APISECRET或HMAC签名；已有星火文字模型权限不等于图像模型权限。示例文件只有空值，真实凭据只留在权限600的服务端配置中，不发到聊天或写入源码。
+在 `/etc/yujianxingji.env` 填入 `XF_VISION_APPID`、`XF_VISION_APIKEY`、`XF_VISION_APISECRET`（图片理解服务所在应用的三件套，从控制台该应用的服务页复制）。接口固定为 `wss://spark-api.cn-huabei-1.xf-yun.com/v2.1/image`，走 HMAC-SHA256 签名；`XF_VISION_DOMAIN` 可选，默认 `imagev3`（高级版），应用只开通基础版时填 `general`。该组凭据与海报 `XF_TTI_*` 分开配置、不要混用；已有星火文字模型权限不等于图片理解权限。示例文件只有空值，真实凭据只留在权限600的服务端配置中，不发到聊天或写入源码。
 
 Node本地入口通过 `scripts/dev.mjs` 白名单读取这三项配置。只为 `/api/vision` 放宽JSON请求体限制到2,000,000字节；服务端还检查解码图片不超过1,400,000字节、JPEG/PNG以及最长边1024px。现有Nginx模板已在443 server配置 `client_max_body_size 2m`，满足上传需要，无需新增location或重复修改线上配置；维护时核对该限制即可。其他API的请求大小限制与行为保持不变。
 

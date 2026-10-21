@@ -46,7 +46,7 @@ PPT、策划书、视频和测试/部署文档位于 `materials`，部分比赛�
 
 首页显性AI入口由ai-hero.js/ai-hero.css实现，位于原照片轮播上方；复用openBrief条件确认、五阶段SSE和确认后应用，不新增后端规划分支。维护入口需保留用户文字、示例轮换暂停和减少动态效果。见docs/ai-homepage.md。
 
-拍照识景点使用 `POST /api/vision`，由独立图片理解HTTP服务完成，图片只在请求内转发、不写入本站数据库。需要服务端 `XF_VISION_APIKEY` 和图像模型服务的 `XF_VISION_MODEL`；默认MaaS HTTPS `/v2`，不把星火文字模型ID或TTI签名凭据当作图片权限。识别仅在明确匹配本地地点后显示手动加入入口，不能凭模型返回的任意ID修改草稿。配额复用 `model_usage`，使用独立 `vision:` scope，UTC日匿名3/登录10/全局100，失败尝试计数。真实模型尚未验收，不应宣称已经识别成功；配置后需实测龙门石窟和非景点照片。见 `docs/vision.md`。
+拍照识景点使用 `POST /api/vision`，由讯飞图片理解 WebSocket 服务（`wss://spark-api.cn-huabei-1.xf-yun.com/v2.1/image`，HMAC-SHA256 签名，domain 默认 `imagev3`）完成，图片只在请求内转发、不写入本站数据库。需要服务端 `XF_VISION_APPID`、`XF_VISION_APIKEY`、`XF_VISION_APISECRET`（图片理解应用的三件套，与海报 `XF_TTI_*` 分开配置）；不把星火文字模型权限当作图片理解权限。识别仅在明确匹配本地地点后显示手动加入入口，不能凭模型返回的任意ID修改草稿。配额复用 `model_usage`，使用独立 `vision:` scope，UTC日匿名3/登录10/全局100，失败尝试计数。真实模型尚未验收，不应宣称已经识别成功；配置后需实测龙门石窟和非景点照片。见 `docs/vision.md`。
 
 旅行氛围样式由travel-theme.css统一，沉浸首屏仍复用ai-hero.js，滚动/结果/微反馈由travel-motion.js增强。动画仅transform/opacity，减少动态效果或缺观察器时内容始终可读；不得将结果入场当作实时模型思考，不得改变SSE/回放确认门禁。见docs/travel-ui.md。
 

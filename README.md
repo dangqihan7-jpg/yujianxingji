@@ -79,7 +79,7 @@ npm run dev
 - `LLM_PUBLIC_DEMO=true`：开启有额度限制的公共演示。需要 D1 的 model_usage 表，否则回退规则。
 - `STANDALONE_AUTH=true`：独立服务器部署时启用自建账号登录（注册/登录/会话 cookie），替代平台注入的 `oai-authenticated-user-id` 身份；独立模式下客户端提交的该头一律忽略。默认不启用。
 - `LLM_DAILY_LIMIT=120`、`LLM_CLIENT_DAILY_LIMIT=10`：按 UTC 日限制调用尝试次数；失败也计数，不重试模型。匿名访问使用服务端IP的加盐哈希，数据库不保留原IP，7天清理。IP缺失时共享额度；不是强账户配额或精确金额上限。
-- `XF_VISION_APIKEY`、`XF_VISION_MODEL`：图片理解HTTP服务的Bearer凭据和控制台实际ModelID，两项都必须配置。`XF_VISION_BASE_URL` 默认 `https://maas-api.cn-huabei-1.xf-yun.com/v2`，程序追加 `/chat/completions`。不需要 `XF_VISION_APISECRET`，不复用海报HMAC签名。匿名每天3次、登录每天10次、全局每天100次，按UTC日计数；详见 [图片理解配置](docs/vision.md#服务端配置)。
+- `XF_VISION_APPID`、`XF_VISION_APIKEY`、`XF_VISION_APISECRET`：图片理解 WebSocket 服务（`wss://spark-api.cn-huabei-1.xf-yun.com/v2.1/image`）所在应用的三件套，三项都必须配置，走 HMAC-SHA256 签名（与海报同机制、不同凭据，不要混用）。`XF_VISION_DOMAIN` 可选，默认 `imagev3`（高级版），基础版填 `general`。匿名每天3次、登录每天10次、全局每天100次，按UTC日计数；详见 [图片理解配置](docs/vision.md#服务端配置)。
 
 X2.5 请求不发送 response_format、tools 或 thinking_budget。仅对 MaaS 上的 `spark-x2.5-1.7b` 发送 `thinking: {type: "disabled"}`，避免长时间思考耗尽25秒窗口、无法返回最终JSON；该配置已在真实接口验证，其他模型保持原有请求参数。只读取最终 content，进行JSON与业务约束校验。未配置、模型异常、25秒超时、非法结果或额度不足时，HTTP200返回 source=rules 与 fallback.reason（明确请求规则/未配置除外），显示原因。生成候选不会自动修改草稿；用户确认后才应用。固定日期、地点完整性、明确排除和完整数字由程序保护。小数天数会转为待确认；分组金额与千/万单位完整解析；并列否定条件逐项保留。跨游览日城市发生变化时，城际转场仍标记待核算，不把每日内部交通可用误当成全程可行。预算采用整数分求和，避免浮点误差。官方协议：https://www.xfyun.cn/doc/spark/推理服务-http.html
 

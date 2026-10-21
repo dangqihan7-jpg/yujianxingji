@@ -1,24 +1,25 @@
 # 拍照识景点
 
-首页相机入口将用户选择的照片交给讯飞图像理解HTTP服务，展示识别出的景点、城市与简介。接口还返回模型置信度供阈值校验。只有匹配本地95个地点目录的结果可以手动加入现有草稿；未收录地点显示“暂未收录该地点”。识别不会自动改行程，也不调用行程规划、海报或分享接口。
+首页相机入口将用户选择的照片交给讯飞图片理解 WebSocket 服务，展示识别出的景点、城市与简介。接口还返回模型置信度供阈值校验。只有匹配本地95个地点目录的结果可以手动加入现有草稿；未收录地点显示“暂未收录该地点”。识别不会自动改行程，也不调用行程规划、海报或分享接口。
 
-当前实现与自动化测试已包含请求校验、模拟上游识别、失败提示、配额和手动加入流程。真实图片理解服务尚需配置专用凭据和ModelID，不能把mock通过表述为龙门石窟实拍已验收；模型自报置信度也不是经过校准的准确率。
+当前实现与自动化测试已包含请求校验、模拟上游识别、失败提示、配额和手动加入流程。真实图片理解服务尚需配置应用三件套凭据，不能把mock通过表述为龙门石窟实拍已验收；模型自报置信度也不是经过校准的准确率。
 
 ## 官方接口依据
 
-2026-10-18核对[讯飞官方图像理解HTTP文档](https://www.xfyun.cn/doc/spark/%E5%9B%BE%E5%83%8F%E7%90%86%E8%A7%A3API-http.html)：2026-01-10及后发布的服务使用MaaS `/v2`，服务的APIKey和ModelID从控制台“服务管控 → 模型服务列表 → 调用信息”获取；多模态内容为 `text` 与 `image_url` 数组，可传Base64 data URL。
+2026-10-21核对[讯飞官方图片理解API文档](https://www.xfyun.cn/doc/spark/ImageUnderstanding.html)：服务地址固定为 `wss://spark-api.cn-huabei-1.xf-yun.com/v2.1/image`，HMAC-SHA256 签名鉴权（签名串为 host/date/GET request-line，与海报 tti 同机制）；`parameter.chat.domain` 取 `imagev3`（高级版，效果更优）或 `general`（基础版）；请求 `payload.message.text` 中图片为纯 Base64（`content_type: "image"`）、问题为文本（`content_type: "text"`）；响应为分片帧，累积 `payload.choices.text[].content` 至 `header.status` 为 2，`header.code` 非 0 为上游错误（其中 10013 为内容审核拒绝，按未识别处理）。
 
-[星火通用HTTP文档](https://www.xfyun.cn/doc/spark/HTTP%E8%B0%83%E7%94%A8%E6%96%87%E6%A1%A3.html)将 `spark-api-open.xf-yun.com/v1/chat/completions` 列为语言模型接口，并未提供通用视觉模型授权。不要自行给 `generalv3.5`、X2.5等文字模型附图片就认定支持视觉。本项目默认采用明确有图像协议的MaaS入口；如需使用兼容入口，须先由控制台确认该地址和具体模型支持多模态。
+此前评估过的 MaaS HTTP 图像服务（Bearer + ModelID）需要另行开通的模型服务，本项目账号未开通，故采用已开通的图片理解 WebSocket 服务；不要把星火文字模型（如 X2.5）的凭据或 ID 当作图片理解权限。上游地址在代码中固定，不通过环境变量改成任意服务器。
 
 ## 服务端配置
 
 | 变量 | 配置方式 |
 | --- | --- |
-| `XF_VISION_APIKEY` | 所用图像理解HTTP服务的Bearer凭据；必填，只在服务端。 |
-| `XF_VISION_BASE_URL` | 默认 `https://maas-api.cn-huabei-1.xf-yun.com/v2`；基础地址，程序追加 `/chat/completions`。 |
-| `XF_VISION_MODEL` | 控制台对应图像服务的ModelID；必填，不提供猜测的默认模型。 |
+| `XF_VISION_APPID` | 图片理解服务所在应用的 APPID；必填，只在服务端。 |
+| `XF_VISION_APIKEY` | 同一应用的 APIKey，用于签名授权串；必填。 |
+| `XF_VISION_APISECRET` | 同一应用的 APISecret，用于 HMAC-SHA256 签名；必填，永不下发到浏览器。 |
+| `XF_VISION_DOMAIN` | 可选，默认 `imagev3`（高级版）；应用只开通基础版时填 `general`。 |
 
-本适配器不使用 `XF_VISION_APISECRET`。图片理解HTTP凭据与海报 `XF_TTI_*` 的HMAC签名方式不同，也不自动复用 `LLM_API_KEY`。上游地址只允许既定讯飞HTTPS域名，不能通过环境变量改成任意服务器。
+本适配器与海报 `XF_TTI_*` 使用相同的签名机制，但凭据独立配置、互不复用，也不复用 `LLM_API_KEY`。
 
 本地可以复制 `.env.example` 后用 `node --env-file=.env scripts/dev.mjs` 加载，或从终端注入环境变量。阿里云只修改 `/etc/yujianxingji.env`，保持权限600，然后重启应用；不打印或提交实际值。D1/Worker部署使用secret。若只配置文字模型，图片识别仍保持未配置状态并返回明确提示。
 
