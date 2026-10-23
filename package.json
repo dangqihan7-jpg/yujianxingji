@@ -7,7 +7,7 @@
     "build": "bash scripts/build.sh",
     "validate": "node scripts/validate-artifact.mjs",
     "db:generate": "drizzle-kit generate",
-    "test": "node scripts/test.mjs && node scripts/test-decision.mjs && node scripts/test-journey.mjs && node scripts/test-js-api.mjs && node scripts/test-map-loader.mjs && node scripts/test-offline.mjs && node scripts/test-hero-photos.mjs && node scripts/test-showcase.mjs && node scripts/test-photo-media.mjs && node scripts/test-province.mjs && node scripts/test-regressions.mjs && node scripts/test-model-limits.mjs && node scripts/test-edge-cases.mjs && node scripts/test-auth.mjs && node scripts/test-agent.mjs && node scripts/test-agent-replay.mjs && node scripts/test-check-photos.mjs && node scripts/test-http-stream.mjs && node scripts/test-share.mjs && node scripts/test-share-ui.mjs && node scripts/test-mobile-export.mjs && node scripts/test-ai-hero.mjs && node scripts/test-vision.mjs && node scripts/test-vision-ui.mjs && node scripts/test-travel-hero.mjs && node scripts/test-travel-motion.mjs && node scripts/test-ask.mjs && node scripts/test-ask-ui.mjs",
+    "test": "node scripts/test.mjs && node scripts/test-decision.mjs && node scripts/test-journey.mjs && node scripts/test-js-api.mjs && node scripts/test-map-loader.mjs && node scripts/test-offline.mjs && node scripts/test-hero-photos.mjs && node scripts/test-showcase.mjs && node scripts/test-photo-media.mjs && node scripts/test-province.mjs && node scripts/test-regressions.mjs && node scripts/test-model-limits.mjs && node scripts/test-edge-cases.mjs && node scripts/test-auth.mjs && node scripts/test-agent.mjs && node scripts/test-agent-replay.mjs && node scripts/test-check-photos.mjs && node scripts/test-http-stream.mjs && node scripts/test-share.mjs && node scripts/test-share-ui.mjs && node scripts/test-mobile-export.mjs && node scripts/test-ai-hero.mjs && node scripts/test-vision.mjs && node scripts/test-vision-ui.mjs && node scripts/test-travel-hero.mjs && node scripts/test-travel-motion.mjs && node scripts/test-ask.mjs && node scripts/test-ask-ui.mjs && node scripts/test-stt.mjs && node scripts/test-stt-ui.mjs",
     "pretest": "node scripts/offline.mjs",
     "test:agent": "node scripts/test-agent.mjs",
     "test:agent-replay": "node scripts/test-agent-replay.mjs",
@@ -18,7 +18,8 @@
     "test:ai-hero": "node scripts/test-ai-hero.mjs",
     "test:vision": "node scripts/test-vision.mjs && node scripts/test-vision-ui.mjs",
     "test:travel-ui": "node scripts/test-travel-hero.mjs && node scripts/test-travel-motion.mjs",
-    "test:ask": "node scripts/test-ask.mjs && node scripts/test-ask-ui.mjs"
+    "test:ask": "node scripts/test-ask.mjs && node scripts/test-ask-ui.mjs",
+    "test:stt": "node scripts/test-stt.mjs && node scripts/test-stt-ui.mjs"
   },
   "devDependencies": {
     "drizzle-kit": "0.31.10",

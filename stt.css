@@ -1,0 +1,16 @@
+/* Optional speech control; all styles remain scoped to the existing Hero. */
+.stt-controls { display: flex; align-items: center; gap: 10px; margin-top: 8px; }
+.stt-mic { display: inline-flex; flex: none; align-items: center; justify-content: center; gap: 7px; min-width: 46px; min-height: 46px; padding: 8px 12px; border: 1px solid #00d4aa70; border-radius: 9px; color: #a7f8df; background: #00d4aa10; font-family: inherit; font-size: 12px; line-height: 1.4; white-space: nowrap; }
+.stt-mic svg { width: 18px; height: 20px; }
+.stt-mic:focus-visible { outline: 3px solid #b1ffe7; outline-offset: 3px; }
+.stt-mic:disabled { opacity: .55; cursor: default; }
+.stt-mic[data-state="recording"] { color: #ffc49c; border-color: #ff8a3d; background: #ff8a3d15; }
+.stt-mic[data-state="recording"] svg { animation: stt-record-pulse 1.2s cubic-bezier(.2,.7,.2,1) infinite; }
+.stt-status { min-width: 0; color: #bed8d4; font-size: 11px; line-height: 1.6; overflow-wrap: anywhere; }
+.stt-result-wrap { margin-top: 8px; }
+.stt-result-wrap[hidden] { display: none; }
+.stt-result-wrap label { display: block; color: #ffcbab; font-size: 11px; line-height: 1.6; }
+#stt-result { box-sizing: border-box; width: 100%; min-width: 0; margin: 6px 0 0; padding: 8px; border: 1px solid #b2e9db40; border-radius: 8px; color: #f3fbff; background: #0a1628; font-family: inherit; font-size: 16px; line-height: 1.6; resize: vertical; }
+@keyframes stt-record-pulse { 0%,100% { opacity: 1; transform: scale(1); } 50% { opacity: .55; transform: scale(.92); } }
+@media (max-width: 767px) { .stt-controls { gap: 8px; } .stt-mic { padding: 8px 10px; font-size: 11px; } .stt-status { font-size: 10px; } }
+@media (prefers-reduced-motion: reduce) { .stt-mic[data-state="recording"] svg { animation: none; } }

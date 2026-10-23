@@ -28,6 +28,14 @@ AMAP_JS_KEY 为浏览器 Key；AMAP_SECURITY_JS_CODE、AMAP_WEB_SERVICE_KEY 留�
 
 需要已有 `model_usage` 表，使用独立 `ask:` scope，按UTC日匿名10次、登录30次、全局200次，无需新迁移。未配置或额度数据库不可用时，需模型回答的请求应返回明确503；已超限返回429，不能退化为无限制模型访问。配额表不存问答内容、行程上下文或原始IP；前端历史只留本页内存。发布前备份代码与SQLite，保留 `.local` 数据链接和权限600的私密配置；构建、校验、全量测试通过后再重启应用。真实服务验收须核对分日数量、用户开始时间、未知政策兜底与官方尾句，不能仅凭mock通过宣称模型质量达标；详见 [问答协议与验收](ask.md)。
 
+### 首页语音输入
+
+在现有 `/etc/yujianxingji.env` 填入同一应用的 `XF_ASR_APPID`、`XF_ASR_APIKEY`、`XF_ASR_APISECRET`，保持权限600，并在讯飞控制台为该应用开通“语音听写（流式版）”。保存后重启 `yujianxingji.service`。没有这组三件套时 `/api/stt` 明确返回503，不影响键盘输入或规划；已有文字/图片模型权限不能代替听写权限，不需要再配文字模型 Key。
+
+浏览器上传原始16kHz/16bit/单声道PCM，最长60秒、1,920,000字节，现有 `client_max_body_size 2m` 足够。仓库 Nginx 模板增加仅作用于 `/api/stt` 的精确 location，`proxy_read_timeout 100s`，保留原代理身份头；上线应将该段合入现有HTTPS server，不覆盖证书、ACME续期或其他location。Node开发入口只为该接口放宽上传上限，后端也流式限制大小。上游按实时节奏发送，长录音录完后仍需等待听写上传。
+
+配额按UTC每个整点重置，匿名3次/小时、登录10次/小时、全局100次/小时；失败调用计数，未配置或输入无效不计数。不保存录音或识别文本。站长配置完成后须亲自按 [语音验收步骤](stt-verification.md) 说一句话，核对结果追加、可编辑、无自动提交。
+
 ### 拍照识景点
 
 在 `/etc/yujianxingji.env` 填入 `XF_VISION_APPID`、`XF_VISION_APIKEY`、`XF_VISION_APISECRET`（图片理解服务所在应用的三件套，从控制台该应用的服务页复制）。接口固定为 `wss://spark-api.cn-huabei-1.xf-yun.com/v2.1/image`，走 HMAC-SHA256 签名；`XF_VISION_DOMAIN` 可选，默认 `imagev3`（高级版），应用只开通基础版时填 `general`。该组凭据与海报 `XF_TTI_*` 分开配置、不要混用；已有星火文字模型权限不等于图片理解权限。示例文件只有空值，真实凭据只留在权限600的服务端配置中，不发到聊天或写入源码。

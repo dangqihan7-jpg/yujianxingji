@@ -62,7 +62,7 @@ function aiPlanningHeroHTML(){
       <h1 id="ai-planning-title">一句话，让 AI 为你规划河南周末游</h1>
       <p class="ai-hero-subtitle"><strong>5 个 AI 智能体协同</strong><span>需求理解 → 地点推荐 → 日程编排 → 交通核算 → 冲突校验</span></p>
       <form id="ai-hero-form" aria-label="用一句话开始 AI 规划">
-        <div class="ai-hero-input-wrap"><label class="ai-hero-input-label" for="ai-hero-input">说说你的周末想法</label><textarea id="ai-hero-input" name="travel-request" rows="2" maxlength="600" placeholder="${esc(AI_HERO_EXAMPLES[aiHeroPlaceholderIndex])}" aria-describedby="ai-hero-status">${esc(aiHeroDraft)}</textarea></div>
+        <div class="ai-hero-input-wrap"><label class="ai-hero-input-label" for="ai-hero-input">说说你的周末想法</label><textarea id="ai-hero-input" name="travel-request" rows="2" maxlength="600" placeholder="${esc(AI_HERO_EXAMPLES[aiHeroPlaceholderIndex])}" aria-describedby="ai-hero-status">${esc(aiHeroDraft)}</textarea>${typeof sttHeroControlsHTML==='function'?sttHeroControlsHTML():''}</div>
         <div class="ai-hero-form-footer"><p id="ai-hero-status" class="ai-hero-hint" role="status">${esc(aiHeroBusy?'正在识别你的旅行需求…':aiHeroAvailability())}</p><button id="ai-hero-submit" class="primary" type="submit" ${aiHeroBusy?'disabled':''}>${aiHeroBusy?'正在识别需求…':'让 AI 规划'}<span aria-hidden="true">↗</span></button></div>
       </form>
     </div>
@@ -100,9 +100,11 @@ function updateAIHeroSubmit(){
   if(form)form.setAttribute?.('aria-busy',String(aiHeroBusy));
   if(button){button.disabled=aiHeroBusy;button.innerHTML=(aiHeroBusy?'正在识别需求…':'让 AI 规划')+'<span aria-hidden="true">↗</span>'}
   if(status)status.textContent=aiHeroBusy?'正在识别你的旅行需求…':aiHeroAvailability();
+  if(typeof refreshSTTHero==='function')refreshSTTHero();
 }
 async function submitAIHero(event){
   event?.preventDefault?.();
+  if(typeof cancelSTTHero==='function')cancelSTTHero();
   const input=aiHeroElement('ai-hero-input');if(!input)return;
   captureAIHeroDraft();const text=aiHeroDraft.trim();
   if(aiHeroBusy||(typeof briefBusy!=='undefined'&&briefBusy))return;
@@ -121,6 +123,7 @@ function bindAIPlanningHero(){
   input.onfocus=scheduleAIHeroPlaceholder;input.onblur=scheduleAIHeroPlaceholder;
   // Enter remains a normal textarea newline, including Chinese IME composition.
   updateAIHeroSubmit();scheduleAIHeroPlaceholder();
+  if(typeof bindSTTHero==='function')bindSTTHero();
   const focus=aiHeroFocus;aiHeroFocus=null;
   if(focus&&!aiHeroBusy&&!document.hidden&&activeView==='gallery'&&!document.querySelector?.('dialog[open]')){
     input.focus?.({preventScroll:true});

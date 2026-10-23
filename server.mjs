@@ -600,6 +600,7 @@ if(url.pathname==='/api/validate'&&request.method==='POST')return json(validateD
 if(url.pathname==='/api/poster')return await posterEndpoint(request,env);
 if(url.pathname==='/api/vision')return await visionEndpoint(request,env);
 if(url.pathname==='/api/ask')return await askEndpoint(request,env);
+if(url.pathname==='/api/stt')return await sttEndpoint(request,env);
 if(url.pathname==='/api/flow-stats')return await flowStatsEndpoint(request,env);
 if(url.pathname==='/api/route'&&request.method==='POST'){const body=await readBody(request);if(!Array.isArray(body.locations)||body.locations.length<2||body.locations.length>9||!body.locations.every(coordinates))fail('步行路线需要 2–9 个有效坐标');const legs=[];for(let i=1;i<body.locations.length;i++){const d=await upstream('/v3/direction/walking',{origin:body.locations[i-1].join(','),destination:body.locations[i].join(',')},env);const p=d.route?.paths?.[0];if(!p)fail('部分地点之间没有可用的步行路线',502);const path=(p.steps||[]).flatMap(s=>String(s.polyline||'').split(';').map(x=>x.split(',').map(Number))).filter(coordinates);legs.push({distance:Number(p.distance),duration:Number(p.duration),path})}return json({source:'amap',mode:'walking',legs})}
 if(url.pathname.startsWith('/api/'))fail('接口不存在或方法不支持',404);

@@ -144,6 +144,7 @@ function previewFeaturedRoute(id){
 }
 function renderGallery(){
   if(typeof captureAIHeroDraft==='function')captureAIHeroDraft();
+  if(typeof cancelSTTHero==='function')cancelSTTHero();
   const pendingText=$('#brieftext')?.value||'';
   const r=PRESETS.find(p=>p.id===featuredRouteId)||PRESETS[0];
   const hero=heroPlaces[heroPhotoIndex];
@@ -204,6 +205,7 @@ function revealPlannerMap(){
 }
 function setView(view){
   if(!['gallery','planner','overview','decision'].includes(view))return;
+  if(typeof cancelSTTHero==='function')cancelSTTHero();
   if(view!=='planner')map?.setStatus?.({resizeEnable:false});
   activeView=view;document.body&&(document.body.dataset.view=view);
   document.querySelectorAll('.view-nav [data-view]').forEach(b=>{b.setAttribute?.('aria-current',b.dataset.view===view?'page':'false')});
