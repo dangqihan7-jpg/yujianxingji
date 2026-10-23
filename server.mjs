@@ -147,14 +147,18 @@ export function rulePlan(d){
 export function validatePlan(stops,draft){if(!Array.isArray(stops)||stops.length!==draft.stops.length)fail('AI 返回的地点不完整',502);const ids=new Set(draft.stops.map(s=>s.place.id)),seen=new Set();for(const s of stops){if(!s||!ids.has(s.id)||seen.has(s.id)||!Number.isInteger(s.day)||s.day<1||s.day>draft.days)fail('AI 返回了重复、未知地点或无效日期',502);if(draft.stops.find(x=>x.place.id===s.id)?.lockedDay&&draft.stops.find(x=>x.place.id===s.id).lockedDay!==s.day)fail('模型改变了已固定的日期；草稿未被修改',502);seen.add(s.id)}return stops.map(s=>({id:s.id,day:s.day}))}
 async function readBody(request){const raw=await request.text();if(raw.length>100000)fail('请求内容过大',413);try{return JSON.parse(raw)}catch{fail('JSON 格式不正确')}}
 function modelConfigured(env){return !!(env.LLM_API_KEY&&env.LLM_BASE_URL&&env.LLM_MODEL)}
+// Shared Spark wire format. Q&A reuses the planner's credentials/model and
+// request options; only its output budget and plain-text mode differ.
+function sparkChatPayload(env,messages,{plainText=false,maxTokens=null}={}){
+ const host=new URL(env.LLM_BASE_URL).hostname,maas=host==='maas-api.cn-huabei-1.xf-yun.com',spark=host==='spark-api-open.xf-yun.com';
+ const budget=maxTokens??Math.min(8192,Math.max(1024,Number(env.LLM_MAX_TOKENS)||4096));
+ return {model:env.LLM_MODEL,temperature:0.2,stream:false,max_tokens:budget,...(maas&&env.LLM_MODEL==='spark-x2.5-1.7b'?{thinking:{type:'disabled'}}:{}),...(!maas&&!plainText?{response_format:{type:'json_object'}}:{}),...(spark?{tools:[{type:'web_search',web_search:{enable:false}}]}:{}),messages};
+}
 async function modelJSON(env,messages,signal,onAttempt){
  let base;try{base=new URL(env.LLM_BASE_URL);if(base.protocol!=='https:'||base.username||base.password)throw Error()}catch{fail('模型服务地址配置不正确',503)}
  base.pathname=base.pathname.replace(/\/$/,'')+'/chat/completions';const spark=base.hostname==='spark-api-open.xf-yun.com',maas=base.hostname==='maas-api.cn-huabei-1.xf-yun.com';
- const maxTokens=Math.min(8192,Math.max(1024,Number(env.LLM_MAX_TOKENS)||4096));
- // This lightweight model can exhaust the response window on reasoning before returning JSON.
- const fastMaaS=maas&&env.LLM_MODEL==='spark-x2.5-1.7b';
  signal?.throwIfAborted();onAttempt?.();
- let response;try{response=await fetch(base,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+env.LLM_API_KEY},signal:signal?AbortSignal.any([signal,AbortSignal.timeout(25000)]):AbortSignal.timeout(25000),body:JSON.stringify({model:env.LLM_MODEL,temperature:0.2,stream:false,max_tokens:maxTokens,...(fastMaaS?{thinking:{type:'disabled'}}:{}),...(!maas?{response_format:{type:'json_object'}}:{}),...(spark?{tools:[{type:'web_search',web_search:{enable:false}}]}:{}),messages})})}catch{fail(signal?.aborted?'智能体超过总等待时间或请求已取消':'模型连接失败或超过25秒等待时间',502)}
+ let response;try{response=await fetch(base,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+env.LLM_API_KEY},signal:signal?AbortSignal.any([signal,AbortSignal.timeout(25000)]):AbortSignal.timeout(25000),body:JSON.stringify(sparkChatPayload(env,messages))})}catch{fail(signal?.aborted?'智能体超过总等待时间或请求已取消':'模型连接失败或超过25秒等待时间',502)}
  if(!response.ok)fail('模型服务返回 HTTP '+response.status+'，请检查授权、额度或服务状态',502);
  let result,parsed;try{result=await response.json();if(!result||result.error||(result.code!=null&&result.code!==0))throw Error();const content=result.choices?.[0]?.message?.content;if(typeof content!=='string')throw Error();parsed=JSON.parse(content.replace(/^\s*```(?:json)?\s*/,'').replace(/\s*```\s*$/,''));if(!parsed||typeof parsed!=='object'||Array.isArray(parsed))throw Error()}catch{fail('模型返回格式无效',502)}return {parsed,provider:maas?'讯飞星火 X2.5':spark?'讯飞星火':String(env.LLM_MODEL).slice(0,80)};
 }

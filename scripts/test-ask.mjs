@@ -56,6 +56,29 @@ await check('normal two-day question uses one direct X2.5 call and public, compl
  const user=payload.messages[1].content;for(const text of ['第一天有几个景点','龙门石窟','白马寺','洛邑古城','洛阳'])assert(user.includes(text));assert.match(user,/scenicCount["\s:：]*2/,'景点数必须由程序根据当前分日行程计算');
  const rows=usage(sql);assert.equal(rows.length,2);assert(rows.every(row=>row.calls===1&&row.usage_key.includes(':ask:')));assert(!JSON.stringify(rows).includes('192.0.2.1'));
 });
+await check('planning and Q&A share Spark wire options, with private context stripped and absent budget explicit',async()=>{
+ const {DB}=database(),input=body('第二天会不会太赶？');input.trip.budget=800;input.trip.mode='driving';input.trip.start='09:00';
+ upstream=()=>resultResponse('第二天只安排洛邑古城，停留120分钟，站内步行情况行程里没有这项。可按体力调整，不会自动改动你的行程。');
+ const text=await success(await post(envOf(DB),input));assert(text.includes('洛邑古城'));assert(Array.from(text).length<=300);
+ const payload=JSON.parse(calls[0].options.body),context=JSON.parse(payload.messages[1].content).trip;
+ assert.equal(payload.temperature,0.2);assert.equal(payload.max_tokens,1000);assert.equal(payload.max_completion_tokens,undefined);assert.equal(payload.response_format,undefined);
+ assert.equal(context.budget,800);assert.equal(context.mode,'driving');assert.equal(context.start,'09:00');assert.equal(context.facts[0].visitMinutes,270);assert.equal(context.facts[0].travelMinutes,45);
+ assert.match(payload.messages[0].content,/300字/);assert.match(payload.messages[0].content,/行程里没有这项/);assert.match(payload.messages[0].content,/未核实、供参考/);
+ input.trip.budget=undefined;input.trip.schedule[0].stops[1].travelMinutes=null;
+ await success(await post(envOf(DB),input));const missing=JSON.parse(JSON.parse(calls[1].options.body).messages[1].content).trip;assert.equal(missing.budget,null);assert.equal(missing.facts[0].travelMinutes,null);
+});
+await check('other configured X2.5 variants retain planner thinking behavior',async()=>{
+ const {DB}=database();await success(await post({...envOf(DB),LLM_MODEL:'spark-x2.5'},body('第二天会不会太赶？')));
+ const payload=JSON.parse(calls[0].options.body);assert.equal(payload.model,'spark-x2.5');assert.equal(payload.thinking,undefined);
+});
+await check('timeout during upstream fetch returns friendly 502 and counts one attempt',async()=>{
+ const {sql,DB}=database();upstream=()=>{throw new DOMException('mock upstream timeout','TimeoutError')};
+ await jsonError(await post(envOf(DB),body('第二天会不会太赶？')),502,/问答.*暂时不可用/);assert.equal(calls.length,1);assert(usage(sql).every(row=>row.calls===1));
+});
+await check('long model prose and policy fallback remain within 300 Unicode characters',async()=>{
+ const {DB}=database();upstream=()=>resultResponse('建议按当前行程安排游览并根据体力休息'.repeat(70)+'。');
+ const text=await success(await post(envOf(DB),body('第二天会不会太赶？')));assert(Array.from(text).length<=300);
+});
 await check('request is read-only and strips account, secret and saved-draft metadata before prompting',async()=>{
  const {sql,DB}=database(),token=seedUser(sql),saved=JSON.stringify({days:2,start:'09:00',stops:[],privateNote:'DRAFT_PRIVATE_SENTINEL'});
  sql.prepare('INSERT INTO travel_drafts VALUES (?,?,?)').run('ask-user',saved,123);sql.prepare('INSERT INTO shares VALUES (?,?,?,?)').run('oldshare',JSON.stringify(trip()),1,9999999999999);
