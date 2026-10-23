@@ -314,9 +314,9 @@ async function intentEndpoint(request,env){
  if(raw.engine==='rules')return json({source:'rules',...parseIntentRules(input,CATALOG),note:rulesNote});
  try{return json(await perceiveIntent(input,request,env))}catch(e){return fallbackResponse({source:'rules',...parseIntentRules(input,CATALOG),note:rulesNote},e.message)}
 }
-// ---------- 智能体直接规划：感知→决策→校验→交付 ----------
-// 感知复用 perceiveIntent；决策（城市、天数、选点、取舍）由模型或规则智能体做出；
-// 校验复用 rulePlan 分日与 auditDecision 审计；每条决策都给出依据。
+// ---------- 5 个智能体：需求理解 → 地点推荐 → 日程编排 → 交通核算 → 冲突校验 ----------
+// 需求理解复用 perceiveIntent；地点推荐与日程编排由模型或明确标注的规则完成；
+// 交通核算保留未知项，冲突校验结合 auditDecision；每条决策都给出依据。
 function validateAgentResult(parsed,fields){
  if(!parsed||typeof parsed!=='object'||Array.isArray(parsed))throw Error('模型返回格式无效');
  const selections=Array.isArray(parsed.selections)?parsed.selections:[];
@@ -542,7 +542,7 @@ async function fourAgentPlan({context,forceRules,inputText,request,env,run}){
   :{days:fields.days,start:'09:00',mode:fields.mode,maxHours:fields.maxHours,restMinutes:fields.restMinutes,city:fields.city,presetId:null,stops:finalStops,decision:validateDecisionState({intent:fields},finalStops)};
  const body={source,provider,intent:fields,defaulted:withDefaults.defaulted,agents,stops:stops.map(s=>({id:s.id,day:s.day,duration:s.duration})),rationale,unresolved,audit,traffic,
   draft,agent:{status:aiCount?'completed':'fallback',version:2,steps:agents.map(agentStep),modelCalls:run.modelCalls,toolCalls:0,mapCalls:0,limits:AGENT_LIMITS},
-  note:(aiCount?'多智能体协作完成规划，AI 与规则的执行来源见各步骤；':'本次由规则完成需求理解、选点、编排、交通状态与冲突检查；')+'确认后才会应用，费用仍需核算'};
+  note:(aiCount?'多智能体协作完成规划，AI 与规则的执行来源见各步骤；':'本次规则候选按需求理解 → 地点推荐 → 日程编排 → 交通核算 → 冲突校验流程生成；')+'确认后才会应用，费用仍需核算'};
  if(fallbackReason)body.fallback={reason:String(fallbackReason).slice(0,250)};
  return body;
 }

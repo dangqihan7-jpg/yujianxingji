@@ -94,9 +94,9 @@ export function auditDecision(draft,traffic=[]){
  const conflicts=missingRequired.length+excludedPresent.length+(modeConflict?1:0)+daily.reduce((n,d)=>n+d.conflicts.length,0)+(budget.status==='conflict'?1:0),pending=daily.reduce((n,d)=>n+d.pending.length,0)+(budget.status==='pending'?1:0);
  return {daily,budget,conflicts,pending,missingRequired,excludedPresent,modeConflict,locked:draft.stops.filter(s=>s.lockedDay).length,status:conflicts?'conflict':pending?'pending':'checked'};
 }
-// ---------- 智能体直接规划：感知→决策→校验→交付 ----------
-// 与“条件提取→人工确认→候选→人工确认”不同：智能体替用户做出全部行程决策
-// （城市、天数、每天时长、休息、出行方式、选点、分日、取舍），用户只做最终拍板。
+// ---------- 5 个智能体的规则辅助：需求理解 → 地点推荐 → 日程编排 → 交通核算 → 冲突校验 ----------
+// 本节提供需求理解与地点推荐的规则辅助，供上层五阶段流水线调用。
+// 日程编排、交通核算与冲突校验由调用方完成；这些辅助函数不单独代表完整智能体执行。
 // 每个默认和选择都记录依据 rationale；无法确定的写入 unresolved，不编造。
 const AGENT_MODE_LABELS={driving:'驾车/打车',walking:'步行',transit:'公共交通'};
 const AGENT_INTEREST_LABELS={culture:'文化',nature:'自然山水',food:'美食'};
@@ -143,7 +143,7 @@ export function agentSelectRules(rawIntent,catalog){
  const durationOf=p=>Number.isInteger(p.duration)&&p.duration>=15&&p.duration<=720?p.duration:90;
  return {fields,defaulted,selections:picks.map(p=>({id:p.id,duration:durationOf(p)})),rationale};
 }
-// 规则智能体：完整的一次 感知→决策（分日复用 rulePlan 由调用方完成）→交付。
+// 规则辅助入口：需求理解与地点推荐；日程编排复用 rulePlan，交通核算与冲突校验由上层流水线完成。
 export function agentPlanRules(text,catalog){
  const input=String(text==null?'':text).normalize('NFKC').trim();
  if(!input||input.length>600)throw Error('请用 1–600 字描述旅行需求');
