@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import vm from 'node:vm';
+import {HTML} from '../worker/index.js';
 
 const source=readFileSync(new URL('../stt.js',import.meta.url),'utf8');
 const hero=readFileSync(new URL('../ai-hero.js',import.meta.url),'utf8');
@@ -9,7 +10,7 @@ async function settle(){for(let i=0;i<12;i++)await Promise.resolve()}
 let checks=0;
 async function test(name,fn){await fn();checks++;console.log('✓ STT UI '+name)}
 function fixture({secure=true,supported=true,rate=48000,worklet=false,resumeMode='running'}={}){
-  const nodes=new Map(),timers=new Map(),events=new Map(),requests=[],media=[],contexts=[],worklets=[],urls=[],revoked=[];let next=0,observer;
+  const nodes=new Map(),timers=new Map(),events=new Map(),requests=[],media=[],contexts=[],worklets=[],urls=[],revoked=[];let next=0,observer,clock=0;
   class Element{
     constructor(id){this.id=id;this.value='';this.maxLength=600;this.dataset={};this.attributes={};this.disabled=false;this.isConnected=true;this.hidden=false;this.textContent='';this.label={textContent:''};this.inputEvents=0}
     setAttribute(key,value){this.attributes[key]=value}
@@ -17,7 +18,7 @@ function fixture({secure=true,supported=true,rate=48000,worklet=false,resumeMode
     dispatchEvent(event){if(event.type==='input'){this.inputEvents++;this.oninput?.(event)}return true}
     focus(){}
   }
-  for(const id of ['ai-hero-input','ai-hero-form','ai-hero-submit','ai-hero-status','stt-mic','stt-status','stt-result-wrap','stt-result'])nodes.set(id,new Element(id));
+  for(const id of ['ai-hero-input','ai-hero-form','ai-hero-submit','ai-hero-status','stt-mic','stt-cancel','stt-timer','stt-elapsed','stt-status','stt-result-wrap','stt-result'])nodes.set(id,new Element(id));
   nodes.get('stt-result-wrap').hidden=true;
   function audioNode(){return {connections:[],disconnected:0,connect(to){this.connections.push(to)},disconnect(){this.disconnected++}}}
   class Context{
@@ -34,11 +35,11 @@ function fixture({secure=true,supported=true,rate=48000,worklet=false,resumeMode
   const document={hidden:false,body:{},getElementById:id=>nodes.get(id)||null,querySelector:selector=>selector==='dialog[open]'?null:nodes.get(selector.slice(1))||null,addEventListener(type,fn){events.set(type,fn)}};
   const context={console,Float32Array,Uint8Array,DataView,ArrayBuffer,Event:class{constructor(type,options){this.type=type;this.bubbles=options?.bubbles}},AbortController,Blob,document,navigator:{mediaDevices:{getUserMedia(options){assert.equal(options.video,false);assert.equal(options.audio.channelCount,1);const item=deferred();media.push(item);return item.promise}}},isSecureContext:secure,AudioContext:supported?Context:undefined,AudioWorkletNode:worklet?Worklet:undefined,
     URL:{createObjectURL(blob){urls.push(blob);return 'blob:test-'+urls.length},revokeObjectURL:url=>revoked.push(url)},activeView:'gallery',aiHeroBusy:false,briefBusy:false,
-    setTimeout(fn,delay){const id=++next;timers.set(id,{fn,delay});return id},clearTimeout:id=>timers.delete(id),addEventListener(type,fn){events.set(type,fn)},MutationObserver:class{constructor(fn){observer=fn}observe(){}},
+    performance:{now:()=>clock},setTimeout(fn,delay){const id=++next;timers.set(id,{fn,delay});return id},clearTimeout:id=>timers.delete(id),addEventListener(type,fn){events.set(type,fn)},MutationObserver:class{constructor(fn){observer=fn}observe(){}},
     fetch:async(url,options)=>{requests.push({url,options});return {ok:true,json:async()=>({text:'洛阳两天，预算八百元'})}}};
   vm.createContext(context);vm.runInContext(source,context);context.bindSTTHero();
   const stream=()=>{const track={stopped:0,stop(){this.stopped++}};return {track,getTracks:()=>[track]}};
-  return {context,nodes,timers,events,requests,media,contexts,worklets,urls,revoked,stream,run:code=>vm.runInContext(code,context),get:id=>nodes.get(id),observe:()=>observer?.(),async start(){const pending=context.startSTTHero();const value=stream();media.at(-1).resolve(value);await pending;return value},emit(samples=new Float32Array(rate/10).fill(.25)){const ctx=contexts.at(-1);if(worklet)worklets.at(-1).port.onmessage?.({data:samples});else ctx.processor.onaudioprocess?.({inputBuffer:{getChannelData:()=>samples}})},replaceInput(){nodes.get('ai-hero-input').isConnected=false;nodes.set('ai-hero-input',new Element('ai-hero-input'));this.observe()}};
+  return {advance:ms=>{clock+=ms},fireTimer(delay){const item=[...timers.entries()].find(([,timer])=>timer.delay===delay);assert(item,'Expected timer '+delay);timers.delete(item[0]);item[1].fn()},context,nodes,timers,events,requests,media,contexts,worklets,urls,revoked,stream,run:code=>vm.runInContext(code,context),get:id=>nodes.get(id),observe:()=>observer?.(),async start(){const pending=context.startSTTHero();const value=stream();media.at(-1).resolve(value);await pending;return value},emit(samples=new Float32Array(rate/10).fill(.25)){const ctx=contexts.at(-1);if(worklet)worklets.at(-1).port.onmessage?.({data:samples});else ctx.processor.onaudioprocess?.({inputBuffer:{getChannelData:()=>samples}})},replaceInput(){nodes.get('ai-hero-input').isConnected=false;nodes.set('ai-hero-input',new Element('ai-hero-input'));this.observe()}};
 }
 
 await test('renders a non-submit microphone and never requests permission on load',()=>{
@@ -58,7 +59,7 @@ await test('no microphone device does not affect manual input',async()=>{
 });
 await test('rejected or still-suspended AudioContext does not falsely enter recording',async()=>{
   for(const resumeMode of ['reject','suspended']){
-    const f=fixture({resumeMode}),stream=await f.start();assert.equal(stream.track.stopped,1);assert.equal(f.contexts[0].closed,1);assert.equal(f.contexts[0].processor,undefined);assert.equal(f.get('stt-mic').dataset.state,'idle');assert.match(f.get('stt-status').textContent,/无法录音/);assert.equal(f.requests.length,0);
+    const f=fixture({resumeMode}),stream=await f.start();assert.equal(stream.track.stopped,1);assert.equal(f.contexts[0].closed,1);assert.equal(f.contexts[0].processor,undefined);assert.equal(f.get('stt-mic').dataset.state,'error');assert.match(f.get('stt-status').textContent,/无法录音/);assert.equal(f.requests.length,0);
   }
 });
 await test('AudioContext resume has a 10-second startup deadline and can be cancelled',async()=>{
@@ -109,7 +110,7 @@ await test('overflow preserves both existing text and the complete transcript wi
 await test('pagehide, hidden tab, rerender, and view change all stop capture immediately',async()=>{
   for(const mode of ['pagehide','hidden','rerender','view','planning']){
     const f=fixture(),stream=await f.start();f.emit();
-    if(mode==='pagehide')f.events.get('pagehide')();
+    if(mode==='pagehide')f.events.get('pagehide')(new Event('pagehide'));
     else if(mode==='hidden'){f.context.document.hidden=true;f.events.get('visibilitychange')()}
     else if(mode==='rerender')f.replaceInput();
     else if(mode==='view'){f.context.activeView='planner';f.observe()}
@@ -129,7 +130,7 @@ await test('navigation aborts in-flight upload; a late response cannot alter any
 });
 await test('network error, friendly backend errors, and empty recognition preserve the editable draft',async()=>{
   for(const kind of ['network','503','429','empty']){
-    const f=fixture();f.get('ai-hero-input').value='保留我的文字';f.context.fetch=async()=>{if(kind==='network')throw Error('网络暂时不可用');return {ok:kind==='empty',json:async()=>kind==='empty'?{text:''}:{error:kind==='429'?'本小时语音识别次数已用完':'语音识别服务尚未配置'}}};await f.start();f.emit();await f.context.stopSTTHero();assert.equal(f.get('ai-hero-input').value,'保留我的文字');assert.equal(f.get('stt-mic').dataset.state,'idle');assert.match(f.get('stt-status').textContent,kind==='network'?/网络/:kind==='empty'?/没听清/:kind==='429'?/本小时/:/尚未配置/);
+    const f=fixture();f.get('ai-hero-input').value='保留我的文字';f.context.fetch=async()=>{if(kind==='network')throw Error('网络暂时不可用');return {ok:kind==='empty',status:kind==='empty'?200:Number(kind),json:async()=>kind==='empty'?{text:''}:{error:kind==='429'?'本小时语音识别次数已用完':'语音识别服务尚未配置'}}};await f.start();f.emit();await f.context.stopSTTHero();assert.equal(f.get('ai-hero-input').value,'保留我的文字');assert.equal(f.get('stt-mic').dataset.state,'error');assert.match(f.get('stt-status').textContent,kind==='network'?/网络/:kind==='empty'?/没听清/:kind==='429'?/本小时/:/尚未配置/);
   }
 });
 await test('100-second upload deadline aborts fetch and gives a Chinese retry message',async()=>{
@@ -139,13 +140,77 @@ await test('100-second upload deadline aborts fetch and gives a Chinese retry me
     f.context.fetch=async(url,options)=>{f.requests.push({url,options});return new Promise((resolve,reject)=>{options.signal.addEventListener('abort',()=>reject(Object.assign(Error('cancelled'),{name:'AbortError'})),{once:true})})};
     f.get('ai-hero-input').value='保留原文';await f.start();f.emit();const pending=f.context.stopSTTHero();
     if(native){assert.equal(timeoutMs,100000);deadline.dispatchEvent(new Event('abort'))}else [...f.timers.values()].find(timer=>timer.delay===100000).fn();
-    await pending;assert(f.requests[0].options.signal.aborted);assert.match(f.get('stt-status').textContent,/识别超时/);assert.equal(f.get('stt-mic').dataset.state,'idle');assert.equal(f.get('ai-hero-input').value,'保留原文');assert.equal(f.timers.size,0);
+    await pending;assert(f.requests[0].options.signal.aborted);assert.match(f.get('stt-status').textContent,/识别超时/);assert.equal(f.get('stt-mic').dataset.state,'error');assert.equal(f.get('ai-hero-input').value,'保留原文');assert.equal(f.timers.size,0);
   }
 });
 await test('existing Hero entry cancels speech before planning, keeps optional APIs safe, and remains editable',async()=>{
   const f=fixture();f.context.esc=value=>String(value??'');f.context.cfg={aiConfigured:false};f.context.authUser=null;f.context.saveBooting=false;f.context.matchMedia=()=>({matches:false,addEventListener(){}});f.context.openBrief=async text=>{f.planningText=text};
   vm.runInContext(hero,f.context);f.context.bindAIPlanningHero();assert(f.context.aiPlanningHeroHTML().includes('id="stt-mic"'));
   const stream=await f.start();f.emit();f.get('ai-hero-input').value='用户手写的计划';await f.context.submitAIHero({preventDefault(){}});assert.equal(stream.track.stopped,1);assert.equal(f.planningText,'用户手写的计划');assert.equal(f.requests.length,0,'Submitting a typed draft cancels recording instead of uploading or applying speech');
+});
+
+await test('recording clock uses real elapsed time without repeating live-region announcements',async()=>{
+  const f=fixture();await f.start();const status=f.get('stt-status').textContent;assert.equal(f.get('stt-timer').hidden,false);assert.equal(f.get('stt-elapsed').textContent,'00:00 / 01:00');
+  f.advance(3400);f.fireTimer(1000);assert.equal(f.get('stt-elapsed').textContent,'00:03 / 01:00');assert.equal(f.get('stt-status').textContent,status);
+  f.context.cancelSTTHero();assert.equal(f.get('stt-timer').hidden,true);assert.equal(f.timers.size,0);
+  const html=f.context.sttHeroControlsHTML();assert.match(html,/id="stt-timer"[^>]*aria-live="off"/);assert(!html.includes('预计'));
+});
+await test('captured sample duration also bounds the clock when UI scheduling lags',async()=>{
+  const f=fixture({rate:16000});await f.start();f.emit(new Float32Array(32000));f.fireTimer(1000);assert.equal(f.get('stt-elapsed').textContent,'00:02 / 01:00');f.context.cancelSTTHero();assert.equal(f.timers.size,0);
+});
+await test('explicit cancel is available during permission request, recording, and recognition',async()=>{
+  for(const phase of ['requesting','recording','recognizing']){
+    const f=fixture(),upstream=deferred();f.context.fetch=async(url,options)=>{f.requests.push({url,options});return upstream.promise};f.get('ai-hero-input').value='保留手写需求';
+    let pending,stream;
+    if(phase==='requesting')pending=f.context.startSTTHero();
+    else{stream=await f.start();f.emit();if(phase==='recognizing')pending=f.context.stopSTTHero()}
+    assert.equal(f.get('stt-cancel').hidden,false);f.get('stt-cancel').onclick();assert.equal(f.get('stt-cancel').hidden,true);assert.equal(f.timers.size,0);assert.equal(f.get('stt-mic').dataset.state,'idle');
+    if(phase==='requesting'){stream=f.stream();f.media[0].resolve(stream);await pending}
+    if(phase==='recognizing'){assert(f.requests[0].options.signal.aborted);upstream.resolve({ok:true,json:async()=>({text:'取消后不能填入'})});await pending}
+    assert.equal(stream.track.stopped,1);assert.equal(f.contexts[0].closed,1);assert.equal(f.get('ai-hero-input').value,'保留手写需求');assert.equal(f.get('ai-hero-input').inputEvents,0);
+  }
+});
+await test('late cancelled recognition cannot replace a newer recording session or its clock',async()=>{
+  const f=fixture(),upstream=deferred();f.context.fetch=async(url,options)=>{f.requests.push({url,options});return upstream.promise};f.get('ai-hero-input').value='郑州出发';await f.start();f.emit();const pending=f.context.stopSTTHero();f.get('stt-cancel').onclick();const stream=await f.start();f.emit();f.advance(2100);f.fireTimer(1000);
+  const clock=f.get('stt-elapsed').textContent,status=f.get('stt-status').textContent;upstream.resolve({ok:true,json:async()=>({text:'旧会话的结果'})});await pending;
+  assert.equal(f.get('ai-hero-input').value,'郑州出发');assert.equal(f.get('stt-mic').dataset.state,'recording');assert.equal(f.get('stt-timer').hidden,false);assert.equal(f.get('stt-cancel').hidden,false);assert.equal(f.get('stt-elapsed').textContent,clock);assert.equal(f.get('stt-status').textContent,status);assert.equal(stream.track.stopped,0);assert.equal(f.contexts[1].closed,0);
+  f.get('stt-cancel').onclick();assert.equal(stream.track.stopped,1);assert.equal(f.timers.size,0);
+});
+await test('pagehide event cannot be stored as a status message',async()=>{
+  const f=fixture();await f.start();f.events.get('pagehide')(new Event('pagehide'));f.context.refreshSTTHero();assert.equal(f.run('typeof sttDisplay.message'),'string');assert(!/object|Event/.test(f.get('stt-status').textContent));assert.equal(f.timers.size,0);
+});
+await test('retry records fresh audio and cannot silently resend the failed recording',async()=>{
+  const f=fixture();f.context.fetch=async(url,options)=>{f.requests.push({url,options});return {ok:false,status:502,json:async()=>({error:'语音识别暂时不可用'})}};await f.start();f.emit();await f.context.stopSTTHero();assert.equal(f.requests.length,1);assert.equal(f.get('stt-mic').label.textContent,'重新录音');
+  const pending=f.get('stt-mic').onclick();assert.equal(f.media.length,2);assert.equal(f.requests.length,1);f.media[1].resolve(f.stream());await pending;assert.equal(f.run('sttSession.samples'),0);assert.equal(f.requests.length,1);f.get('stt-cancel').onclick();assert.equal(f.timers.size,0);
+});
+await test('503 and 429 give distinct actionable notices and preserve typed input through refresh',async()=>{
+  for(const status of [503,429]){
+    const f=fixture();f.get('ai-hero-input').value='郑州出发两天';f.context.fetch=async()=>({ok:false,status,json:async()=>({error:status===503?'语音识别服务尚未配置':'本小时语音识别次数已用完'})});await f.start();f.emit();await f.context.stopSTTHero();
+    const notice=f.get('stt-status').textContent;assert.match(notice,status===503?/联系站长/:/本小时.*稍后/);assert.match(notice,/继续输入文字/);f.context.refreshSTTHero();f.observe();assert.equal(f.get('stt-status').textContent,notice);assert.equal(f.get('ai-hero-input').value,'郑州出发两天');assert.equal(f.timers.size,0);
+  }
+});
+await test('success notices survive Hero refresh and upload does not promise a fabricated ETA',async()=>{
+  const f=fixture(),upstream=deferred();f.context.fetch=()=>upstream.promise;await f.start();f.emit();const pending=f.context.stopSTTHero();assert.match(f.get('stt-status').textContent,/录音已结束.*上传.*可取消/);assert.equal(f.get('stt-timer').hidden,true);assert(!/预计|百分|%/.test(f.get('stt-status').textContent));upstream.resolve({ok:true,json:async()=>({text:'郑州出发 2 天，预算八百，想看古都😀'})});await pending;
+  const notice=f.get('stt-status').textContent;f.context.refreshSTTHero();assert.equal(f.get('stt-status').textContent,notice);assert.equal(f.get('ai-hero-input').value,'郑州出发 2 天，预算八百，想看古都😀');assert.equal(f.get('ai-hero-input').inputEvents,1);assert.equal(f.timers.size,0);assert(!source.includes('�'));
+});
+
+await test('actual assembled script initializes all shared state before first secure-browser microphone binding',async()=>{
+  // A realistic secure browser is essential: without AudioContext, the unavailable
+  // branch short-circuits the busy check and hides temporal-dead-zone failures.
+  const nodes=new Map(),requests=[];let permissions=0;
+  const get=selector=>{
+    if(selector==='dialog[open]')return [...nodes.values()].find(node=>node.open)||null;
+    if(!nodes.has(selector))nodes.set(selector,{value:selector==='#days'?'2':selector==='#city'?'河南':selector==='#start'?'09:00':selector==='#travelmode'?'driving':selector==='#maxhours'?'8':selector==='#restmins'?'30':'',maxLength:600,innerHTML:'',textContent:'',style:{},dataset:{},hidden:false,open:false,isConnected:true,label:{textContent:''},classList:{add(){},toggle(){}},querySelector(){return this.label},querySelectorAll:()=>[],addEventListener(){},setAttribute(){},focus(){},showModal(){this.open=true},close(){this.open=false}});
+    return nodes.get(selector);
+  };
+  const context={console,Map,Set,URL,Blob,Date,AbortController,isSecureContext:true,AudioContext:class{},navigator:{mediaDevices:{getUserMedia(){permissions++;return new Promise(()=>{})}}},document:{body:{dataset:{view:'gallery'},contains:()=>true},getElementById:id=>get('#'+id),querySelector:get,querySelectorAll:()=>[],addEventListener(){},createElement:()=>({click(){}}),head:{append(){}}},setTimeout:()=>0,clearTimeout(){},fetch:async(path,options)=>{requests.push({path,options});return {ok:true,json:async()=>({})}}};context.window=context;
+  vm.createContext(context);
+  const actualScript=HTML.split('<script>')[1].split('</script>')[0].replace(/\ninit\(\);\s*$/,'');
+  assert.doesNotThrow(()=>vm.runInContext(actualScript,context),'Safe HTTPS browsers must not hit briefBusy before initialization');
+  assert(get('#gallery').innerHTML.includes('id="stt-mic"'));assert.equal(vm.runInContext('briefBusy',context),false);assert.equal(get('#stt-mic').disabled,false);assert.equal(typeof get('#stt-mic').onclick,'function');assert.equal(typeof get('#stt-cancel').onclick,'function');assert.equal(permissions,0,'Initial binding must never request microphone permission');
+  get('#ai-hero-input').value='手动输入不受影响';get('#ai-hero-input').oninput();assert.equal(get('#ai-hero-input').value,'手动输入不受影响');assert.equal(requests.length,0);
+  vm.runInContext('briefBusy=true;refreshSTTHero()',context);assert.equal(get('#stt-mic').disabled,true,'The genuine planning-busy gate remains in place');
+  vm.runInContext('briefBusy=false;refreshSTTHero()',context);assert.equal(get('#stt-mic').disabled,false);
 });
 
 const css=readFileSync(new URL('../stt.css',import.meta.url),'utf8');

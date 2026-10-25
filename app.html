@@ -100,5 +100,7 @@ if(navigator.modelContext&&typeof navigator.modelContext.registerTool==='functio
 /*DECISION_CODE*/
 /*TRAVEL_MOTION_CODE*/
 /*ASK_CODE*/
+// Render after every module has initialized its shared state (including briefBusy).
+renderGallery();renderOverview();renderHeaderCount();
 init();
 </script></body></html>

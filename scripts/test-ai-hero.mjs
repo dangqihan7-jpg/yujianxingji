@@ -28,7 +28,7 @@ function fixture({reduced=false}={}){
  assert.equal((html.match(/class="ai-hero-agent"/g)||[]).length,5);
  for(const role of ['需求理解','地点推荐','日程编排','交通核算','冲突校验'])assert(html.includes(role));
  assert(html.includes('type="submit"'));assert(html.includes('maxlength="600"'));assert(html.includes('规则规划'));
- f.context.authUser={id:1};assert(f.context.aiPlanningHeroHTML().includes('AI 已连接'));
+ f.context.authUser={id:1};assert(f.context.aiPlanningHeroHTML().includes('AI 服务已配置'));
  f.context.cfg.aiConfigured=false;assert(f.context.aiPlanningHeroHTML().includes('当前使用规则规划'));
  assert(!html.includes('AI 正在思考'),'Idle decoration cannot claim an active model request');
 }

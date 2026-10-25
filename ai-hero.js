@@ -20,7 +20,7 @@ function aiHeroAvailability(){
   if(typeof cfg==='undefined'||typeof cfg.aiConfigured!=='boolean')return '先确认条件，再查看智能体候选行程';
   if(!cfg.aiConfigured)return '当前使用规则规划 · 结果需你确认';
   if(cfg.authMode==='standalone'&&!authUser&&!cfg.publicAiDemo)return '访客可用规则规划 · 登录后使用 AI';
-  return 'AI 已连接 · 确认条件后开始协同';
+  return 'AI 服务已配置 · 确认条件后开始协同';
 }
 // Choose only a real catalogue photograph. This is a cover crop, never a new
 // generated picture; the original photograph and its licence remain reachable.
