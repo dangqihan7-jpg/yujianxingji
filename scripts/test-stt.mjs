@@ -29,7 +29,16 @@ const usage=sql=>sql.prepare('SELECT usage_key,calls FROM model_usage ORDER BY u
 async function ok(response,text='郑州周末两天'){assert.equal(response.status,200,await response.clone().text());assert.deepEqual(await response.json(),{text})}
 async function error(response,status,pattern){assert.equal(response.status,status,await response.clone().text());const body=await response.json();assert.match(body.error,pattern);assert(!JSON.stringify(body).includes(config.XF_ASR_APIKEY));assert(!JSON.stringify(body).includes(config.XF_ASR_APISECRET));return body}
 async function check(name,fn){calls=[];onOpen=true;onFrame=normal;await fn();checks++;console.log('STT: '+name)}
-async function settle(){for(let i=0;i<12;i++)await new Promise(resolve=>setImmediate(resolve))}
+async function waitFor(condition,label){
+ // HMAC signing uses asynchronous Web Crypto. Observe the mock's actual state
+ // rather than assuming a fixed number of event-loop turns is sufficient.
+ const deadline=original.performance.now()+5000;
+ while(!condition()){
+  assert(original.performance.now()<deadline,'Timed out waiting for '+label);
+  // Use the original clock and timer: clocked() intentionally replaces both.
+  await new Promise(resolve=>original.setTimeout(resolve,1));
+ }
+}
 async function clocked(fn){
  const timers=new Map();let now=0;
  Object.defineProperty(globalThis,'performance',{configurable:true,writable:true,value:{now:()=>now}});
@@ -70,11 +79,17 @@ await check('upstream errors, malformed/incomplete results and premature VAD sta
  const {DB}=database();onFrame=(s,p)=>{if(p.data.status===0)s.deliver(frame('只识别了前面'))};await error(await post(envOf(DB),new Uint8Array(2560)),502,/提前结束|分段录音/);
 });
 await check('handshake and whole-session deadlines return 502 and release listeners',async()=>{
- for(const delay of [8000,85000])await clocked(async timers=>{const {DB}=database();onOpen=delay!==8000;onFrame=()=>{};const pending=post(envOf(DB));await settle();const timer=[...timers.values()].find(t=>t.delay===delay);assert(timer);timer.callback();await error(await pending,502,/超时/);assert.equal(calls[0].readyState,3);assert.equal(timers.size,0)});
+ for(const delay of [8000,85000])await clocked(async timers=>{
+  const {DB}=database();calls=[];onOpen=delay!==8000;onFrame=()=>{};const pending=post(envOf(DB));
+  await waitFor(()=>calls.length===1&&[...timers.values()].some(timer=>timer.delay===delay)&&(delay===8000?calls[0].readyState===0:calls[0].readyState===1&&calls[0].frames.length>0),delay===8000?'mock WebSocket handshake deadline':'connected mock WebSocket and session deadline');
+  const timer=[...timers.values()].find(t=>t.delay===delay);assert(timer);timer.callback();await error(await pending,502,/超时/);assert.equal(calls[0].readyState,3);assert.equal(timers.size,0);
+ });
 });
 await check('cancelled requests close the upstream and cannot return late transcripts',async()=>{
  const {sql,DB}=database(),controller=new AbortController();controller.abort();await error(await post(envOf(DB),pcm,{},controller.signal),408,/取消/);assert.equal(calls.length,0);assert.deepEqual(usage(sql),[]);
- const next=database(),active=new AbortController();onFrame=()=>{};const pending=post(envOf(next.DB),pcm,{},active.signal);await settle();active.abort();await error(await pending,408,/取消/);assert.equal(calls[0].readyState,3);
+ const next=database(),active=new AbortController();onFrame=()=>{};const pending=post(envOf(next.DB),pcm,{},active.signal);
+ await waitFor(()=>calls.length===1&&calls[0].readyState===1&&calls[0].frames.length>0,'connected mock WebSocket with an audio frame before cancellation');
+ assert.equal(calls[0].frames[0].data.status,0);active.abort();await error(await pending,408,/取消/);assert.equal(calls[0].readyState,3);assert([...calls[0].listeners.values()].every(listeners=>listeners.size===0));
 });
 await check('anonymous cap is 3 per UTC hour and the fourth never calls upstream',async()=>{
  const {sql,DB}=database();for(let i=0;i<3;i++)await ok(await post(envOf(DB)));const before=usage(sql);await error(await post(envOf(DB)),429,/本小时语音识别次数/);assert.equal(calls.length,3);assert.deepEqual(usage(sql),before);assert(before.every(row=>row.usage_key.startsWith(new Date().toISOString().slice(0,13)+':stt:')));
