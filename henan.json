@@ -562,7 +562,13 @@
       "aliases": [
         "只有河南",
         "戏剧幻城"
-      ]
+      ],
+      "image": "/assets/hn-only-henan.jpg?v=541b7d7d1f78",
+      "photoReference": "https://bkimg.cdn.bcebos.com/pic/6a600c338744ebf81a4c61ffdbadc02a6059242d09ed",
+      "credit": "设计河南-《只有河南·戏剧幻城》麦熟城开，巨作上演_百科TA说 · 来源未核 CC 授权，公开使用前请核对",
+      "photoCaption": "郑州·只有河南·戏剧幻城实景照片",
+      "photoCheckedAt": "2026-10-25",
+      "photoSource": "drive-v2"
     },
     {
       "id": "hn-longmen",
@@ -743,7 +749,13 @@
       "description": "从府衙文化与主题展陈了解开封历史。适合与市区其他文化景点组合，演艺与开放安排请另行核实。",
       "theme": "府衙文化",
       "duration": 120,
-      "reference": "https://www.henan.gov.cn/2020/07-24/1745005.html"
+      "reference": "https://www.henan.gov.cn/2020/07-24/1745005.html",
+      "image": "/assets/hn-kaifeng-fu.jpg?v=018ff0126e76",
+      "photoReference": "https://img.pconline.com.cn/images/upload/upc/tx/photoblog/1912/25/c5/185914927_1577272965963.jpg",
+      "credit": "【开封府摄影图片】国内摄影_太平洋电脑网摄影部落 · 来源未核 CC 授权，公开使用前请核对",
+      "photoCaption": "开封·开封府实景照片",
+      "photoCheckedAt": "2026-10-25",
+      "photoSource": "drive-v2"
     },
     {
       "id": "hn-ironpagoda",
@@ -807,7 +819,13 @@
       "description": "体验太极拳文化与村落空间。文化体验项目需要另行咨询，不把演示行程中的停留时间视为预约。",
       "theme": "太极文化",
       "duration": 120,
-      "reference": "https://hct.henan.gov.cn/2022/08-19/2564130.html"
+      "reference": "https://hct.henan.gov.cn/2022/08-19/2564130.html",
+      "image": "/assets/hn-chenjiagou.jpg?v=dae3f15f7a05",
+      "photoReference": "http://www.sztjq.com/uploadfile/201301/21/1549366305.JPG",
+      "credit": "陈家沟太极拳出演【2013年河南在深青年新年联欢会】-深圳太极网 · 来源未核 CC 授权，公开使用前请核对",
+      "photoCaption": "焦作·陈家沟实景照片",
+      "photoCheckedAt": "2026-10-25",
+      "photoSource": "drive-v2"
     },
     {
       "id": "hn-yinxu",
@@ -908,7 +926,13 @@
       "aliases": [
         "地坑院",
         "三门峡地坑院"
-      ]
+      ],
+      "image": "/assets/hn-dikeng.jpg?v=0b2b2abd5282",
+      "photoReference": "http://img.mp.itc.cn/upload/20160928/8a73ed5260e541f2a38119fa81ab09c5_th.jpg",
+      "credit": "陕州地坑院：中国特有的四大古民居建筑之一 · 来源未核 CC 授权，公开使用前请核对",
+      "photoCaption": "三门峡·陕州地坑院实景照片",
+      "photoCheckedAt": "2026-10-25",
+      "photoSource": "drive-v2"
     },
     {
       "id": "hn-guoguo",
@@ -941,7 +965,13 @@
       "reference": "https://hct.henan.gov.cn/2023/05-20/2746303.html",
       "aliases": [
         "三门峡天鹅湖"
-      ]
+      ],
+      "image": "/assets/hn-swanlake.jpg?v=2af91826e5c3",
+      "photoReference": "https://img.pconline.com.cn/images/upload/upc/tx/photoblog/1511/28/c0/15819765_1448642434260.jpg",
+      "credit": "在路上】唯美天鹅湖摄影图片】新疆伊犁生态摄影_太平洋电脑网摄影部落 · 来源未核 CC 授权，公开使用前请核对",
+      "photoCaption": "三门峡·天鹅湖国家城市湿地公园实景照片",
+      "photoCheckedAt": "2026-10-25",
+      "photoSource": "drive-v2"
     },
     {
       "id": "hn-wansui",
@@ -1029,7 +1059,13 @@
       "reference": "https://www.enjoyland.cn/ScenicSpots-1.html",
       "locationReference": "https://amap.com/place/B0FFKYGE2W",
       "visitTip": "先按孩子年龄和身高选择项目，留出休息、用餐和排队时间。这里是动物王国，不代表冰雪世界或整个度假区通票。",
-      "weekendPick": true
+      "weekendPick": true,
+      "image": "/assets/hn-yinji.jpg?v=9dc42c300fae",
+      "photoReference": "https://qimgs.qunarzz.com/piao_qsight_provider_piao_qsight_web/1lo3q12000bizgmug5745.jpg_710x360_cdbe2a68.jpg",
+      "credit": "郑州银基动物王国门票,郑州银基动物王国门票预订,郑州银基动物王国门票价格,去哪儿网门票 · 来源未核 CC 授权，公开使用前请核对",
+      "photoCaption": "郑州·银基动物王国实景照片",
+      "photoCheckedAt": "2026-10-25",
+      "photoSource": "drive-v2"
     },
     {
       "id": "hn-movie-town",
@@ -1055,7 +1091,13 @@
       "duration": 240,
       "reference": "https://hct.henan.gov.cn/2025/09-24/3229991.html",
       "visitTip": "先确认当天演出和夜场安排，再决定到达时间；片区位置仅用于展示，交通核算前请查询并确认高德入口。",
-      "weekendPick": true
+      "weekendPick": true,
+      "image": "/assets/hn-movie-town.jpg?v=f649770a32ed",
+      "photoReference": "http://jintangjiang.oss-cn-beijing.aliyuncs.com/images/2901e91153154db3b7dec06bb8c47a933678b4bc.jpg",
+      "credit": "建业·云境 · 来源未核 CC 授权，公开使用前请核对",
+      "photoCaption": "郑州·建业电影小镇实景照片",
+      "photoCheckedAt": "2026-10-25",
+      "photoSource": "drive-v2"
     },
     {
       "id": "hn-fangte",
@@ -1081,7 +1123,13 @@
       "district": "中牟县",
       "address": "郑州市中牟县 · 郑汴物流大道与人文路交叉口",
       "locationReference": "https://www.amap.com/place/B017316M60",
-      "locationNote": "参考高德景区或片区点位，具体交通入口需确认。"
+      "locationNote": "参考高德景区或片区点位，具体交通入口需确认。",
+      "image": "/assets/hn-fangte.jpg?v=9dc0ab2555e1",
+      "photoReference": "https://parkm.fangte.com/uploads/image/20250629/202506291751165495162.jpg",
+      "credit": "郑州方特欢乐世界 · 来源未核 CC 授权，公开使用前请核对",
+      "photoCaption": "郑州·郑州方特欢乐世界实景照片",
+      "photoCheckedAt": "2026-10-25",
+      "photoSource": "drive-v2"
     },
     {
       "id": "hn-yingtian",
@@ -1175,7 +1223,13 @@
       "locationNote": "参考高德景区或片区点位，具体交通入口需确认。",
       "planningNotes": [
         "鸡冠洞的往返交通、景区内部交通与天气需另行确认。"
-      ]
+      ],
+      "image": "/assets/hn-jiguandong.jpg?v=c1f75d18c8b2",
+      "photoReference": "https://x0.ifengimg.com/ucms/2024_30/903FD518D4822AA813F0A592DCED086C662FE64C_size2082_w4000_h3000.jpg",
+      "credit": "在栾川鸡冠洞豫见18度的夏天凤凰网河南_凤凰网 · 来源未核 CC 授权，公开使用前请核对",
+      "photoCaption": "洛阳·鸡冠洞实景照片",
+      "photoCheckedAt": "2026-10-25",
+      "photoSource": "drive-v2"
     },
     {
       "id": "hn-chongdugou",
@@ -1204,7 +1258,13 @@
       "locationNote": "参考高德景区或片区点位，具体交通入口需确认。",
       "planningNotes": [
         "重渡沟的往返交通、景区内部交通与天气需另行确认。"
-      ]
+      ],
+      "image": "/assets/hn-chongdugou.jpg?v=b9246e2fe6ad",
+      "photoReference": "https://imgs.qunarzz.com/sight/p0/1501/43/4305bb5c7e8b6740.water.jpg_710x360_7196dd09.jpg",
+      "credit": "重渡沟风景区门票,重渡沟风景区门票预订,重渡沟风景区门票价格,去哪儿网门票 · 来源未核 CC 授权，公开使用前请核对",
+      "photoCaption": "洛阳·重渡沟实景照片",
+      "photoCheckedAt": "2026-10-25",
+      "photoSource": "drive-v2"
     },
     {
       "id": "hn-xiangguo",
@@ -1339,7 +1399,13 @@
       "locationNote": "参考高德景区或片区点位，具体交通入口需确认。",
       "planningNotes": [
         "青天河的往返交通、景区内部交通与天气需另行确认。"
-      ]
+      ],
+      "image": "/assets/hn-qingtian.jpg?v=6b55283014e5",
+      "photoReference": "http://dimg04.c-ctrip.com/images/t1/vacations/210000/209905/d4b9f4587c2d4c3f9ffdf43decbe208d.jpg",
+      "credit": "青天河红叶,云台山,青天河玻璃栈道_大山谷图库 · 来源未核 CC 授权，公开使用前请核对",
+      "photoCaption": "焦作·青天河实景照片",
+      "photoCheckedAt": "2026-10-25",
+      "photoSource": "drive-v2"
     },
     {
       "id": "hn-shennong",
@@ -1368,7 +1434,13 @@
       "locationNote": "参考高德景区或片区点位，具体交通入口需确认。",
       "planningNotes": [
         "神农山的往返交通、景区内部交通与天气需另行确认。"
-      ]
+      ],
+      "image": "/assets/hn-shennong.jpg?v=88398b61ed2c",
+      "photoReference": "https://img.pconline.com.cn/images/upload/upc/tx/photoblog/1403/19/c0/32228882_1395191910404.jpg",
+      "credit": "【徒步神农山摄影图片】风光摄影_太平洋电脑网摄影部落 · 来源未核 CC 授权，公开使用前请核对",
+      "photoCaption": "焦作·神农山实景照片",
+      "photoCheckedAt": "2026-10-25",
+      "photoSource": "drive-v2"
     },
     {
       "id": "hn-dananpo",
@@ -1394,7 +1466,13 @@
       "district": "修武县",
       "address": "焦作市修武县 · 大南村",
       "locationReference": "https://www.amap.com/place/B0G0LCJXLL",
-      "locationNote": "村落或古城片区展示，参考附近公共机构点位，具体参观入口需确认。"
+      "locationNote": "村落或古城片区展示，参考附近公共机构点位，具体参观入口需确认。",
+      "image": "/assets/hn-dananpo.jpg?v=f6fbc9708971",
+      "photoReference": "https://betterchina.caa.edu.cn/upload/images/2023/3/e5eb85633a180945.jpg",
+      "credit": "美丽中国研究院 - 文献库 - 大南坡计划 · 来源未核 CC 授权，公开使用前请核对",
+      "photoCaption": "焦作·大南坡村实景照片",
+      "photoCheckedAt": "2026-10-25",
+      "photoSource": "drive-v2"
     },
     {
       "id": "hn-taihang-canyon",
@@ -1487,7 +1565,13 @@
       "district": "灵宝市",
       "address": "三门峡市灵宝市 · 函谷关古文化旅游区",
       "locationReference": "https://www.amap.com/place/B018E005O3",
-      "locationNote": "参考高德景区或片区点位，具体交通入口需确认。"
+      "locationNote": "参考高德景区或片区点位，具体交通入口需确认。",
+      "image": "/assets/hn-hangu.jpg?v=aee76e18ede5",
+      "photoReference": "https://youimg1.c-ctrip.com/target/10010w000000ki3fiA95A.jpg",
+      "credit": "函谷关景区导游图,函谷关景区_大山谷图库 · 来源未核 CC 授权，公开使用前请核对",
+      "photoCaption": "三门峡·函谷关历史文化旅游区实景照片",
+      "photoCheckedAt": "2026-10-25",
+      "photoSource": "drive-v2"
     },
     {
       "id": "hn-miaodigou",
@@ -1514,7 +1598,13 @@
       "district": "湖滨区",
       "address": "三门峡市湖滨区 · 召公西路与迎宾大道交叉口东北200米",
       "locationReference": "https://www.amap.com/place/B0HGNGKXH0",
-      "locationNote": "参考高德景区或片区点位，具体交通入口需确认。"
+      "locationNote": "参考高德景区或片区点位，具体交通入口需确认。",
+      "image": "/assets/hn-miaodigou.jpg?v=e1643e78ceaf",
+      "photoReference": "https://img5.myhsw.cn/2025-09-21/VrVsTFz10oWbfNfn.jpg",
+      "credit": "何以中国 黄河安澜丨邂逅庙底沟 看灿烂文明因何“花开中国” - 河南新闻 - 新乡网新闻中心 · 来源未核 CC 授权，公开使用前请核对",
+      "photoCaption": "三门峡·庙底沟博物馆实景照片",
+      "photoCheckedAt": "2026-10-25",
+      "photoSource": "drive-v2"
     },
     {
       "id": "hn-yuxi-canyon",
@@ -1545,7 +1635,13 @@
       "availabilityNote": "核对时高德点位标注暂停开放，请先向运营方确认。",
       "planningNotes": [
         "豫西大峡谷的开放状态尚未确认，已排除出自动选点；确认开放后再安排。"
-      ]
+      ],
+      "image": "/assets/hn-yuxi-canyon.jpg?v=7522ef405698",
+      "photoReference": "http://www.yxdxg.com/Uploads/image/20210623/1029366913.jpg",
+      "credit": "豫西大峡谷水量充足、天天漂流，让你的夏天狂放任性！ - 精彩活动 - - 豫西大峡谷 · 来源未核 CC 授权，公开使用前请核对",
+      "photoCaption": "三门峡·豫西大峡谷实景照片",
+      "photoCheckedAt": "2026-10-25",
+      "photoSource": "drive-v2"
     },
     {
       "id": "hn-yaoshan",
@@ -1604,7 +1700,13 @@
       "locationNote": "参考高德景区或片区点位，具体交通入口需确认。",
       "planningNotes": [
         "二郎山的往返交通、景区内部交通与天气需另行确认。"
-      ]
+      ],
+      "image": "/assets/hn-erlangshan.jpg?v=aa8c3aa33890",
+      "photoReference": "https://img.pconline.com.cn/images/upload/upc/tx/itbbs/1403/16/c11/32136053_1394946219177.jpg",
+      "credit": "【二郎山摄影图片】纪实摄影_太平洋电脑网摄影部落 · 来源未核 CC 授权，公开使用前请核对",
+      "photoCaption": "平顶山·二郎山实景照片",
+      "photoCheckedAt": "2026-10-25",
+      "photoSource": "drive-v2"
     },
     {
       "id": "hn-fengxue",
@@ -1668,7 +1770,13 @@
       "district": "新华区",
       "address": "平顶山市新华区 · 长安大道1号",
       "locationReference": "https://www.amap.com/place/B0FFITSEUS",
-      "locationNote": "参考高德景区或片区点位，具体交通入口需确认。"
+      "locationNote": "参考高德景区或片区点位，具体交通入口需确认。",
+      "image": "/assets/hn-baigui.jpg?v=90cc4d5453b6",
+      "photoReference": "https://media2.hndt.com/data_01/1/1/2022/10/20/897a3472a55cc89ccf140fae3f4ac4c6.jpg",
+      "credit": "看！平顶山白龟湖畔万余亩水稻熟了-中华网河南 · 来源未核 CC 授权，公开使用前请核对",
+      "photoCaption": "平顶山·白龟湖国家城市湿地公园实景照片",
+      "photoCheckedAt": "2026-10-25",
+      "photoSource": "drive-v2"
     },
     {
       "id": "hn-junxian",
@@ -1774,7 +1882,13 @@
       "locationNote": "参考高德景区或片区点位，具体交通入口需确认。",
       "planningNotes": [
         "云梦山的往返交通、景区内部交通与天气需另行确认。"
-      ]
+      ],
+      "image": "/assets/hn-yunmeng.jpg?v=5729cfb298e0",
+      "photoReference": "https://youimg1.c-ctrip.com/target/100n0j000000a7aey0A0E.jpg",
+      "credit": "2026云梦山风景区游玩攻略,鹤壁市淇县的云梦山风景区，...【去哪儿攻略】 · 来源未核 CC 授权，公开使用前请核对",
+      "photoCaption": "鹤壁·云梦山实景照片",
+      "photoCheckedAt": "2026-10-25",
+      "photoSource": "drive-v2"
     },
     {
       "id": "hn-guling",
@@ -1804,7 +1918,13 @@
       "locationNote": "参考高德景区或片区点位，具体交通入口需确认。",
       "planningNotes": [
         "古灵山的往返交通、景区内部交通与天气需另行确认。"
-      ]
+      ],
+      "image": "/assets/hn-guling.jpg?v=05457b1000c8",
+      "photoReference": "http://youimg1.c-ctrip.com/target/100c0j000000a98ja7B03.jpg",
+      "credit": "蠡县古灵山的由来,保定蠡县古灵山传说,鹤壁古灵山风景区_大山谷图库 · 来源未核 CC 授权，公开使用前请核对",
+      "photoCaption": "鹤壁·古灵山实景照片",
+      "photoCheckedAt": "2026-10-25",
+      "photoSource": "drive-v2"
     },
     {
       "id": "hn-baoquan",
@@ -1875,7 +1995,13 @@
       "locationNote": "参考高德景区或片区点位，具体交通入口需确认。",
       "planningNotes": [
         "八里沟的往返交通、景区内部交通与天气需另行确认。"
-      ]
+      ],
+      "image": "/assets/hn-baligou.jpg?v=bd133fd0b6d1",
+      "photoReference": "https://img.pconline.com.cn/images/upload/upc/tx/photoblog/1810/24/c5/115827782_1540359468063.jpg",
+      "credit": "【新乡八里沟摄影图片】风光摄影_太平洋电脑网摄影部落 · 来源未核 CC 授权，公开使用前请核对",
+      "photoCaption": "新乡·八里沟实景照片",
+      "photoCheckedAt": "2026-10-25",
+      "photoSource": "drive-v2"
     },
     {
       "id": "hn-wanxianshan",
@@ -2047,7 +2173,13 @@
       "district": "华龙区",
       "address": "濮阳市华龙区 · 东北庄",
       "locationReference": "https://www.amap.com/place/B0FFIXQDQ0",
-      "locationNote": "参考高德景区或片区点位，具体交通入口需确认。"
+      "locationNote": "参考高德景区或片区点位，具体交通入口需确认。",
+      "image": "/assets/hn-dongbeizhuang.jpg?v=7ab8c354b7ef",
+      "photoReference": "https://youimg1.c-ctrip.com/target/100l0z000000mij732542.jpg",
+      "credit": "2026濮阳东北庄野生动物园游玩攻略,很好玩，表演馆很精彩 ，投食... 【去哪儿攻略】 · 来源未核 CC 授权，公开使用前请核对",
+      "photoCaption": "濮阳·东北庄杂技文化旅游区实景照片",
+      "photoCheckedAt": "2026-10-25",
+      "photoSource": "drive-v2"
     },
     {
       "id": "hn-puyang-longhu",
@@ -2101,7 +2233,13 @@
       "district": "魏都区",
       "address": "许昌市魏都区 · 东大街道春秋广场南大街",
       "locationReference": "https://www.amap.com/place/B0FFM10M80",
-      "locationNote": "参考高德景区或片区点位，具体交通入口需确认。"
+      "locationNote": "参考高德景区或片区点位，具体交通入口需确认。",
+      "image": "/assets/hn-caowei.jpg?v=65879ac5832f",
+      "photoReference": "http://www.21xc.com/pic/201904/11/326908b7-22de-4276-acfe-d05b4f2c1f4cb31f53c4-f344-40cf-8dd2-42042cb7c2b4.jpg",
+      "credit": "曹魏古城南城门声光表演秀 · 来源未核 CC 授权，公开使用前请核对",
+      "photoCaption": "许昌·曹魏古城实景照片",
+      "photoCheckedAt": "2026-10-25",
+      "photoSource": "drive-v2"
     },
     {
       "id": "hn-chunqiu",
@@ -2278,7 +2416,13 @@
       "district": "郾城区",
       "address": "漯河市郾城区 · 沙北路附近",
       "locationReference": "https://www.amap.com/place/B0FFF8P9WO",
-      "locationNote": "参考高德景区或片区点位，具体交通入口需确认。"
+      "locationNote": "参考高德景区或片区点位，具体交通入口需确认。",
+      "image": "/assets/hn-shali.jpg?v=8dec9626b788",
+      "photoReference": "https://img.pconline.com.cn/images/upload/upc/tx/photoblog/1310/28/c4/28068301_1382964450300.jpg",
+      "credit": "【越夜越精彩，——沙澧河摄影图片】风光摄影_太平洋电脑网摄影部落 · 来源未核 CC 授权，公开使用前请核对",
+      "photoCaption": "漯河·沙澧河风景区实景照片",
+      "photoCheckedAt": "2026-10-25",
+      "photoSource": "drive-v2"
     },
     {
       "id": "hn-xushen",
@@ -2305,7 +2449,13 @@
       "district": "召陵区",
       "address": "漯河市召陵区 · 龙江路与中山路交叉口东800米路北",
       "locationReference": "https://www.amap.com/place/B018B0M9TX",
-      "locationNote": "参考高德景区或片区点位，具体交通入口需确认。"
+      "locationNote": "参考高德景区或片区点位，具体交通入口需确认。",
+      "image": "/assets/hn-xushen.jpg?v=b1b32fcf5887",
+      "photoReference": "https://xswh.lhvtc.edu.cn/__local/3/67/10/464915635A7F29BB34035B49CA4_528CAF14_233799.jpg",
+      "credit": "教师教育学院师生亮相丙午年（2026）许慎文化月开幕式-漯河职业技术学院教师教育学院（公共教学部） · 来源未核 CC 授权，公开使用前请核对",
+      "photoCaption": "漯河·许慎文化园实景照片",
+      "photoCheckedAt": "2026-10-25",
+      "photoSource": "drive-v2"
     },
     {
       "id": "hn-birdpark",
@@ -2335,7 +2485,13 @@
       "locationNote": "参考高德景区或片区点位，具体交通入口需确认。",
       "planningNotes": [
         "神州鸟园的往返交通、景区内部交通与天气需另行确认。"
-      ]
+      ],
+      "image": "/assets/hn-birdpark.jpg?v=2158cfa11ae7",
+      "photoReference": "https://lyx.lhvtc.edu.cn/__local/E/36/82/2ACB059A29A4864775876CD6411_67B9FB92_27B7B1.jpg",
+      "credit": "文化旅游学院赴神州鸟园洽谈校企合作 共绘党建联建新蓝图-漯河职业技术学院文化旅游学院 · 来源未核 CC 授权，公开使用前请核对",
+      "photoCaption": "漯河·神州鸟园实景照片",
+      "photoCheckedAt": "2026-10-25",
+      "photoSource": "drive-v2"
     },
     {
       "id": "hn-xiaoshang",
@@ -2501,7 +2657,13 @@
       "district": "内乡县",
       "address": "南阳市内乡县 · 县衙东路88号",
       "locationReference": "https://www.amap.com/place/B017901L2N",
-      "locationNote": "参考高德景区或片区点位，具体交通入口需确认。"
+      "locationNote": "参考高德景区或片区点位，具体交通入口需确认。",
+      "image": "/assets/hn-neixiang.jpg?v=d84ff8c990a1",
+      "photoReference": "http://img.pconline.com.cn/images/upload/upc/tx/photoblog/1801/21/c2/73182439_1516504703967.jpg",
+      "credit": "【内乡县衙摄影图片】纪实摄影_sunrainpla_太平洋电脑网摄影部落 · 来源未核 CC 授权，公开使用前请核对",
+      "photoCaption": "南阳·内乡县衙博物馆实景照片",
+      "photoCheckedAt": "2026-10-25",
+      "photoSource": "drive-v2"
     },
     {
       "id": "hn-laojieling",
@@ -2530,7 +2692,13 @@
       "locationNote": "参考高德景区或片区点位，具体交通入口需确认。",
       "planningNotes": [
         "老界岭的往返交通、景区内部交通与天气需另行确认。"
-      ]
+      ],
+      "image": "/assets/hn-laojieling.jpg?v=3e8e5ce50dbe",
+      "photoReference": "http://youimg1.c-ctrip.com/target/100f050000000qg2i6C67.jpg",
+      "credit": "老界岭景区,遗迹,老君山_大山谷图库 · 来源未核 CC 授权，公开使用前请核对",
+      "photoCaption": "南阳·老界岭实景照片",
+      "photoCheckedAt": "2026-10-25",
+      "photoSource": "drive-v2"
     },
     {
       "id": "hn-dinosaur",
@@ -2558,7 +2726,13 @@
       "district": "西峡县",
       "address": "南阳市西峡县 · 丹水镇三里庙村",
       "locationReference": "https://www.amap.com/place/B0G3VXEC4B",
-      "locationNote": "参考高德景区或片区点位，具体交通入口需确认。"
+      "locationNote": "参考高德景区或片区点位，具体交通入口需确认。",
+      "image": "/assets/hn-dinosaur.jpg?v=7dbfdf1848c7",
+      "photoReference": "https://youimg1.c-ctrip.com/target/100p0p000000feezp61BB.jpg",
+      "credit": "2019西峡恐龙遗迹园_旅游攻略_门票_地址_游记点评,西峡旅游景点推荐 - 去哪儿攻略社区 · 来源未核 CC 授权，公开使用前请核对",
+      "photoCaption": "南阳·西峡恐龙遗迹园实景照片",
+      "photoCheckedAt": "2026-10-25",
+      "photoSource": "drive-v2"
     },
     {
       "id": "hn-shangqiu-city",
@@ -2728,7 +2902,13 @@
       "locationNote": "参考高德景区或片区点位，具体交通入口需确认。",
       "planningNotes": [
         "鸡公山的往返交通、景区内部交通与天气需另行确认。"
-      ]
+      ],
+      "image": "/assets/hn-jigongshan.jpg?v=793261d2d153",
+      "photoReference": "http://img.pconline.com.cn/images/upload/upc/tx/photoblog/1312/06/c3/29361358_29361358_1386304290593.jpg",
+      "credit": "【大山包----鸡公山夕阳摄影图片】云南风光摄影_老牛吧_太平洋电脑网摄影部落 · 来源未核 CC 授权，公开使用前请核对",
+      "photoCaption": "信阳·鸡公山实景照片",
+      "photoCheckedAt": "2026-10-25",
+      "photoSource": "drive-v2"
     },
     {
       "id": "hn-nanwan",
@@ -2796,7 +2976,13 @@
       "district": "平桥区",
       "address": "信阳市平桥区 · 郝堂村",
       "locationReference": "https://www.amap.com/place/B0FFGKHI36",
-      "locationNote": "参考高德景区或片区点位，具体交通入口需确认。"
+      "locationNote": "参考高德景区或片区点位，具体交通入口需确认。",
+      "image": "/assets/hn-haotang.jpg?v=13554f4c1c2d",
+      "photoReference": "http://v.xinhua-news.com/store_attachment/xcbattachfile/dspdata/2020/04/03/XxjnmcC007020_20200403_NDMFN0A007.jpg",
+      "credit": "郝堂村的图片,景点,郝堂村的景点图片_大山谷图库 · 来源未核 CC 授权，公开使用前请核对",
+      "photoCaption": "信阳·郝堂村实景照片",
+      "photoCheckedAt": "2026-10-25",
+      "photoSource": "drive-v2"
     },
     {
       "id": "hn-wenxin",
@@ -2917,7 +3103,13 @@
       "district": "鹿邑县",
       "address": "周口市鹿邑县 · 太清宫镇紫气大道",
       "locationReference": "https://www.amap.com/place/B0HBKXUDFP",
-      "locationNote": "参考高德景区或片区点位，具体交通入口需确认。"
+      "locationNote": "参考高德景区或片区点位，具体交通入口需确认。",
+      "image": "/assets/hn-laozi.jpg?v=8aef21714b2c",
+      "photoReference": "http://www.zhld.com/data/2018-08/20/b259de57-dfd5-4d30-b795-334e7c222b0b.jpg",
+      "credit": "鹿邑抢抓“创新”“复建”机遇 加速提升“老子故里”影响力-中华龙都网-周口日报社主办 河南省重点新闻网站 · 来源未核 CC 授权，公开使用前请核对",
+      "photoCaption": "周口·老子故里旅游区实景照片",
+      "photoCheckedAt": "2026-10-25",
+      "photoSource": "drive-v2"
     },
     {
       "id": "hn-zhoukou-zoo",
@@ -2943,7 +3135,13 @@
       "district": "西华县",
       "address": "周口市西华县 · 213省道李营小学幼儿园西北870米",
       "locationReference": "https://www.amap.com/place/B0FFKW8K90",
-      "locationNote": "参考高德景区或片区点位，具体交通入口需确认。"
+      "locationNote": "参考高德景区或片区点位，具体交通入口需确认。",
+      "image": "/assets/hn-zhoukou-zoo.jpg?v=25bb318da568",
+      "photoReference": "http://www.zhld.com/data/2022-08/10/9fa8a5ec-36ae-47d6-a159-c50671e4435d.jpg",
+      "credit": "穿越历史光影 感知时代印记 周口历史风情暨老摄影家作品展开展-中华龙都网-周口报业传媒集团主办 河南省重点新闻网站 · 来源未核 CC 授权，公开使用前请核对",
+      "photoCaption": "周口·周口野生动物世界实景照片",
+      "photoCheckedAt": "2026-10-25",
+      "photoSource": "drive-v2"
     },
     {
       "id": "hn-zhoukou-guandi",
@@ -3006,7 +3204,13 @@
       "district": "淮阳区",
       "address": "周口市淮阳区 · 大同街25号",
       "locationReference": "https://www.amap.com/place/B0FFID6LMM",
-      "locationNote": "参考高德景区或片区点位，具体交通入口需确认。"
+      "locationNote": "参考高德景区或片区点位，具体交通入口需确认。",
+      "image": "/assets/hn-huaiyang-longhu.jpg?v=6932e1bba7bf",
+      "photoReference": "https://5b0988e595225.cdn.sohucs.com/images/20180709/b45a249045f3404dbfcb3ef7a11b9d85.jpeg",
+      "credit": "淮阳龙湖景区,淮阳龙湖风景区(第2页)_大山谷图库 · 来源未核 CC 授权，公开使用前请核对",
+      "photoCaption": "周口·淮阳龙湖实景照片",
+      "photoCheckedAt": "2026-10-25",
+      "photoSource": "drive-v2"
     },
     {
       "id": "hn-chayashan",
@@ -3063,7 +3267,13 @@
       "district": "驿城区",
       "address": "驻马店市驿城区 · 天中山大道与玉兰路交叉口向西500米",
       "locationReference": "https://www.amap.com/place/B0FFIYJH4L",
-      "locationNote": "参考高德景区或片区点位，具体交通入口需确认。"
+      "locationNote": "参考高德景区或片区点位，具体交通入口需确认。",
+      "image": "/assets/hn-royal-post.jpg?v=195b90df8a68",
+      "photoReference": "https://m6.zmdnews.cn/app/pic/2024-01/25/184474_e6f37751-0dd3-466e-bee1-c56bcb4fc780_batchwm.jpg",
+      "credit": "来皇家驿站，看民俗表演，住精品民宿，穿汉服，体验国学文化-驻马店网——驻马店新闻网——驻马店唯一重点综合新闻网站 · 来源未核 CC 授权，公开使用前请核对",
+      "photoCaption": "驻马店·皇家驿站实景照片",
+      "photoCheckedAt": "2026-10-25",
+      "photoSource": "drive-v2"
     },
     {
       "id": "hn-laoleshan",
@@ -3092,7 +3302,13 @@
       "locationNote": "参考高德景区或片区点位，具体交通入口需确认。",
       "planningNotes": [
         "老乐山的往返交通、景区内部交通与天气需另行确认。"
-      ]
+      ],
+      "image": "/assets/hn-laoleshan.jpg?v=85ccdea7d0ab",
+      "photoReference": "http://youimg1.c-ctrip.com/target/100c0d0000006ta3f1B26.jpg",
+      "credit": "老乐山景点介绍,岈山景区介绍,美丽的老乐山_大山谷图库 · 来源未核 CC 授权，公开使用前请核对",
+      "photoCaption": "驻马店·老乐山实景照片",
+      "photoCheckedAt": "2026-10-25",
+      "photoSource": "drive-v2"
     },
     {
       "id": "hn-nanhai",
@@ -3118,7 +3334,13 @@
       "district": "汝南县",
       "address": "驻马店市汝南县 · 南海大道",
       "locationReference": "https://www.amap.com/place/B018C017HM",
-      "locationNote": "参考高德景区或片区点位，具体交通入口需确认。"
+      "locationNote": "参考高德景区或片区点位，具体交通入口需确认。",
+      "image": "/assets/hn-nanhai.jpg?v=557fcf8da707",
+      "photoReference": "http://youimg1.c-ctrip.com/target/fd/tg/g3/M06/5B/E8/CggYGVaIwCqADaK3AC0wSMyroHY087.jpg",
+      "credit": "【携程攻略】南海禅寺门票,汝南南海禅寺攻略/地址/图片/门票价格 · 来源未核 CC 授权，公开使用前请核对",
+      "photoCaption": "驻马店·南海禅寺实景照片",
+      "photoCheckedAt": "2026-10-25",
+      "photoSource": "drive-v2"
     },
     {
       "id": "hn-wangwu",
