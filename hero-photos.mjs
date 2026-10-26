@@ -14,6 +14,14 @@ function heroPhotoYear(place){
 function heroLocalImage(image){
   return typeof image==='string'&&(/^\/assets\/[^/?#]+\.jpe?g(?:\?[^#]*)?$/i.test(image)||/^data:image\/jpeg;base64,[A-Za-z0-9+/]+={0,2}$/.test(image));
 }
+function heroPublicLink(value){
+  return typeof value==='string'&&/^https:\/\/[a-z0-9](?:[a-z0-9.-]*[a-z0-9])?(?::[0-9]{1,5})?(?:[/?#][^\s<>\\]*)?$/i.test(value);
+}
+// Public galleries require both provenance and a licence link. This checks
+// metadata completeness, not whether a site's ownership claim is authentic.
+export function heroPhotoHasPublicMetadata(place){
+  return Boolean(place&&typeof place.id==='string'&&place.id&&typeof place.photoSource==='string'&&place.photoSource.trim()&&!/(?:\bai\b|人工智能|生成|合成)/i.test(place.photoSource)&&heroLocalImage(place.image)&&heroPublicLink(place.photoReference)&&heroPublicLink(place.licenseUrl)&&!/来源未核\s*CC\s*授权/i.test(place.credit||''));
+}
 function heroInterleaveCities(places){
   const cities=new Map();
   for(const place of [...places].sort((a,b)=>heroStableCompare(String(a.id),String(b.id)))){
@@ -26,7 +34,7 @@ function heroInterleaveCities(places){
 export function selectDailyHeroPhotos(catalog,now=Date.now(),limit=10){
   const day=heroDayIndex(now),count=Math.floor(Number(limit));if(!Number.isFinite(count)||count<1||!Array.isArray(catalog))return [];
   const year=new Date(day*HERO_DAY_MS).getUTCFullYear();
-  const sorted=catalog.filter(place=>place&&typeof place.id==='string'&&place.id&&typeof place.photoSource==='string'&&place.photoSource.trim()&&!/(?:\bai\b|人工智能|生成|合成)/i.test(place.photoSource)&&heroLocalImage(place.image)).sort((a,b)=>heroStableCompare(a.id,b.id)||heroStableCompare(a.image,b.image));
+  const sorted=catalog.filter(heroPhotoHasPublicMetadata).sort((a,b)=>heroStableCompare(a.id,b.id)||heroStableCompare(a.image,b.image));
   const candidates=sorted.map(place=>({place,year:heroPhotoYear(place),image:place.image.startsWith('/assets/')?place.image.split('?')[0]:place.image}));
   const firstYear=Math.min(year,1970,...candidates.map(item=>item.year).filter(value=>Number.isInteger(value)&&value>0));
   let previous=new Set(),pool=[];

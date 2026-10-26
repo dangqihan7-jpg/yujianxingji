@@ -1,20 +1,25 @@
 import assert from 'node:assert/strict';
 import {readFile,access} from 'node:fs/promises';
-import {heroDayIndex,heroDateString,selectDailyHeroPhotos} from '../hero-photos.mjs';
+import {heroDayIndex,heroDateString,heroPhotoHasPublicMetadata,selectDailyHeroPhotos} from '../hero-photos.mjs';
 
 const root=new URL('../',import.meta.url);
 const catalog=JSON.parse(await readFile(new URL('henan.json',root),'utf8')).places;
 const now=Date.parse('2026-10-16T04:00:00Z'),day=86400000;
 const ids=places=>places.map(place=>place.id);
 const imageKey=place=>place.image.split('?')[0];
-const available=catalog.filter(place=>place.image&&place.photoSource);
+const available=catalog.filter(place=>place.image&&place.photoSource&&place.photoReference&&place.licenseUrl);
 assert(available.length>=25,'Exercise rotation against at least 25 existing audited photographs');
 for(const place of available){
  assert.match(place.image,/^\/assets\/[^/]+\.jpe?g(?:\?|$)/i);
  await access(new URL(place.image.split('?')[0].split('/').at(-1),root));
  assert.match(place.photoReference,/^https:\/\//,'Existing candidates retain an actual source page');
  assert.match(place.licenseUrl,/^https:\/\//,'Existing candidates retain their public licence link');
+ assert(heroPhotoHasPublicMetadata(place),'Existing gallery photos retain complete public metadata');
 }
+const unverified=catalog.filter(place=>place.image&&!place.licenseUrl);
+assert(unverified.length>0,'Exercise supplied covers whose licences are still unverified');
+for(const place of unverified)assert(!heroPhotoHasPublicMetadata(place),place.id+' stays outside public photo galleries without inventing a licence');
+assert.deepEqual(selectDailyHeroPhotos(unverified,now),[],'Unverified covers alone cannot become a daily real-photo gallery');
 
 // Use explicit instants around China midnight; these must not depend on the
 // operating system timezone or the date on which the test suite is executed.
@@ -81,12 +86,23 @@ const valid=recent[0],invalid=[
  {...valid,id:'unsafe',image:'/assets/../private.env'},
  {...valid,id:'missing-image',image:null},
  {...valid,id:'no-source',photoSource:''},
+ {...valid,id:'missing-reference',photoReference:''},
+ {...valid,id:'unsafe-reference',photoReference:'javascript:alert(1)'},
+ {...valid,id:'http-reference',photoReference:'http://example.org/original'},
+ {...valid,id:'credential-reference',photoReference:'https://name:secret@example.org/original'},
+ {...valid,id:'missing-licence',licenseUrl:undefined},
+ {...valid,id:'unsafe-licence',licenseUrl:'javascript:alert(1)'},
+ {...valid,id:'relative-licence',licenseUrl:'//creativecommons.org/licenses/by/4.0/'},
+ {...valid,id:'http-licence',licenseUrl:'http://creativecommons.org/licenses/by/4.0/'},
+ {...valid,id:'credential-licence',licenseUrl:'https://name:secret@example.org/licence'},
+ {...valid,id:'backslash-licence',licenseUrl:'https://example.org\\@untrusted.invalid/licence'},
+ {...valid,id:'explicitly-unverified',credit:'来源未核 CC 授权，公开使用前请核对'},
  {...valid,id:'ai-photo',photoSource:'AI-generated'},
  {...valid,id:'generated-photo',photoSource:'AI 生成'},
  {...valid,id:'future-photo',photoYear:2027,photoTakenAt:'2027-01-01'},
  {...valid,id:''}
 ];
-assert.deepEqual(ids(selectDailyHeroPhotos([valid,...invalid],now)),[valid.id],'Only catalogue local photographs with honest source/date metadata qualify');
+assert.deepEqual(ids(selectDailyHeroPhotos([valid,...invalid],now)),[valid.id],'Only local photographs with public provenance/licence links and honest date metadata qualify');
 const duplicate={...valid,id:'duplicate-photo',image:valid.image.split('?')[0]+'?v=another-cache-key'};
 const duplicateResult=selectDailyHeroPhotos([valid,duplicate,...recent.slice(1,12)],now,30);
 assert.equal(new Set(duplicateResult.map(imageKey)).size,duplicateResult.length,'Different cache strings do not make one photograph into two');

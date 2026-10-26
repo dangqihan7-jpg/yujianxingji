@@ -41,7 +41,9 @@ context.document.hidden=true;run('scheduleHeroRotation()');assert.equal(rotation
 run("activeView='planner';scheduleHeroRotation()");assert.equal(rotationTimers().length,0);run("activeView='gallery';heroVisible=false;scheduleHeroRotation()");assert.equal(rotationTimers().length,0);run('heroVisible=true;scheduleHeroRotation()');assert.equal(rotationTimers().length,1);
 get('#gallery').onclick({target:{closest:s=>s==='[data-hero-toggle]'?{}:null}});assert.equal(run('heroAutoplay'),false);assert.equal(rotationTimers().length,0);
 context.setTimeout=()=>0;context.clearTimeout=()=>{};context.document.querySelector=get;run('selectHeroPhoto(0)');
-const albumDraft=run('JSON.stringify(compactDraft())'),albumTotal=String(CATALOG.filter(p=>p.image).length).padStart(2,'0');
+const publicPhotos=CATALOG.filter(p=>p.image&&p.photoSource&&/^https:\/\//.test(p.photoReference||'')&&/^https:\/\//.test(p.licenseUrl||''));
+const albumDraft=run('JSON.stringify(compactDraft())'),albumTotal=String(publicPhotos.length).padStart(2,'0');
+assert.deepEqual(new Set(Array.from(run('albumPlaces.map(p=>p.id)'))),new Set(publicPhotos.map(p=>p.id)),'The complete public album keeps only covers with provenance and licence metadata');
 get('#gallery').onclick({target:{closest:s=>s==='[data-open-album]'?{dataset:{photoPlace:'hn-longmen'}}:null}});
 assert.equal(get('#photoalbum').open,true);assert.equal(get('#album-title').textContent,'龙门石窟');
 assert.equal(get('#album-count').textContent,'02 / '+albumTotal);assert.equal(get('#album-date').textContent,'拍摄于 2025-05-04');
@@ -73,6 +75,23 @@ assert.equal(get('#album-title').textContent,'龙门石窟');assert.equal(albumP
 run("openPhotoAlbum('hn-luoyi')");get('#photoalbum').onclick({target:{closest:s=>s==='[data-album-place]'?{}:null}});
 assert.equal(get('#photoalbum').open,false);assert.equal(get('#detail').open,true);assert.equal(get('#detailtitle').textContent,'洛邑古城');
 assert.equal(run('JSON.stringify(compactDraft())'),albumDraft,'Opening place details from the album must not add stops');get('#detail').close();
+{
+ const unverified=CATALOG.filter(p=>p.image&&!p.licenseUrl);assert(unverified.length>0,'Exercise supplied covers with no verified licence');
+ const before=run('JSON.stringify(compactDraft())');
+ for(const place of unverified){
+  assert(!run('albumPlaces.some(p=>p.id==='+JSON.stringify(place.id)+')'),'Unverified cover is not promoted into the public album');
+  assert(run('photoMediaHTML(CATALOG.find(p=>p.id==='+JSON.stringify(place.id)+'))').includes(place.image),'Its existing destination card still uses the supplied cover');
+ }
+ const place=unverified.find(p=>p.id==='hn-yinji')||unverified[0];
+ get('#gallery').onclick({target:{closest:s=>s==='[data-open-album]'?{dataset:{photoPlace:place.id}}:null}});
+ assert.equal(get('#photoalbum').open,false,'An unverified cover cannot open the public album');
+ assert.equal(get('#detail').open,true,'Its photo-information control falls back to place details');assert.equal(get('#detailtitle').textContent,place.name);
+ assert(get('#detailbody').innerHTML.includes('来源未核 CC 授权'),'Details retain the actual unverified-licence notice');
+ assert(get('#detailbody').innerHTML.includes(place.image),'The supplied image remains visible in the place details');
+ assert.equal(run('JSON.stringify(compactDraft())'),before,'The photo-information fallback is read-only');get('#detail').close();
+ run("openPhotoAlbum('hn-longmen')");assert.equal(get('#photoalbum').open,true);
+ run('openPhotoAlbum('+JSON.stringify(place.id)+')');assert.equal(get('#photoalbum').open,false,'The fallback closes an already-open public album');assert.equal(get('#detail').open,true);get('#detail').close();
+}
 const hydrating=run('JSON.stringify(compactDraft())');get('#gallery').onclick({target:{closest:s=>s==='[data-atlas-city]'?{dataset:{atlasCity:'洛阳'}}:null}});
 get('#overview').onclick({target:{closest:s=>s==='[data-folio-place]'?{dataset:{folioPlace:CATALOG[0].id}}:null}});
 assert.equal(run('JSON.stringify(compactDraft())'),hydrating,'Gallery and overview must not edit the draft while saved state is loading');
@@ -114,10 +133,23 @@ function photoCatalogueFixture(catalog,instant=fixtureInstant){
  return {get,clock,timers,document:context.document,run:expression=>vm.runInContext(expression,context),hero:()=>get('#gallery').innerHTML.split('<div class="gallery-inner">')[0],dispatchDocument:type=>{for(const callback of documentEvents.get(type)||[])callback({type})},dispatchWindow:type=>{for(const callback of windowEvents.get(type)||[])callback({type})},fireTimer:id=>{const timer=timers.get(id);assert(timer,'The requested timer must still be scheduled');timers.delete(id);clock.now=timer.due;timer.callback()}};
 }
 const configuredHeroIds=['hn-qingming','hn-longmen','hn-luoyi','hn-henan-museum','hn-laojunshan'];
+{
+ const valid=publicPhotos[0],excluded=[
+  {...valid,id:'unlicensed-cover',licenseUrl:undefined,credit:'来源未核 CC 授权，公开使用前请核对'},
+  {...valid,id:'unsafe-licence-cover',licenseUrl:'javascript:alert(1)'},
+  {...valid,id:'missing-source-cover',photoReference:''},
+  {...valid,id:'unsafe-source-cover',photoReference:'https://name:secret@example.org/original'},
+  {...valid,id:'unverified-with-links',credit:'来源未核 CC 授权，公开使用前请核对'},
+  {...valid,id:'generated-cover',photoSource:'AI-generated'}
+ ],fixture=photoCatalogueFixture([valid,...excluded]);
+ assert.deepEqual(Array.from(fixture.run('albumPlaces.map(p=>p.id)')),[valid.id],'The public album rejects missing/unsafe source and licence metadata and explicitly unverified or generated covers');
+ assert.deepEqual(Array.from(fixture.run('heroPhotos.map(p=>p.id)')),[valid.id],'Daily selection and the public album share the same metadata gate');
+ for(const place of excluded.filter(p=>p.photoSource!=='AI-generated'))assert(fixture.run('photoMediaHTML(CATALOG.find(p=>p.id==='+JSON.stringify(place.id)+'))').includes(place.image),'Missing public-gallery metadata cannot remove the supplied cover from its destination card');
+}
 assert.deepEqual(Array.from(run('heroPlaces.map(place=>place.id)')),expectedHero.map(place=>place.id),'The compiled browser uses the same deterministic daily selector');
 assert.deepEqual(Array.from(run('albumPlaces.slice(0,5).map(place=>place.id)')),configuredHeroIds,'The complete album retains its stable editorial order');
 {
- const catalog=CATALOG.map(place=>configuredHeroIds.includes(place.id)?{...place,image:null}:place),fixture=photoCatalogueFixture(catalog),remaining=catalog.filter(place=>place.image);
+ const catalog=CATALOG.map(place=>configuredHeroIds.includes(place.id)?{...place,image:null}:place),fixture=photoCatalogueFixture(catalog),remaining=catalog.filter(place=>place.image&&place.photoSource&&/^https:\/\//.test(place.photoReference||'')&&/^https:\/\//.test(place.licenseUrl||''));
  const fallbackHero=selectDailyHeroPhotos(remaining,fixtureInstant);
  assert.deepEqual(Array.from(fixture.run('heroPlaces.map(place=>place.id)')),fallbackHero.map(place=>place.id),'If former editorial covers are removed, select a daily group from other actual photographs');
  assert.equal(fixture.run('albumPlaces.length'),remaining.length);assert.equal(new Set(Array.from(fixture.run('albumPlaces.map(place=>place.id)'))).size,remaining.length,'Fallback photos are not counted twice in the album');
