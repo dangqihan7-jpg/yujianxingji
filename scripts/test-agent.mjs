@@ -21,7 +21,7 @@ const inferred=agentSelectRules({city:null,days:2,mode:'driving',maxHours:8,rest
 assert.equal(inferred.fields.city,'洛阳');assert(inferred.defaulted.some(s=>s.includes('根据必去地点推断')));
 // 无可选地点时诚实报错，不编造
 assert.throws(()=>agentSelectRules({city:'洛阳',days:2,mode:'driving',maxHours:8,restMinutes:30,budget:null,avoidCrossCity:null,interests:[],requiredIds:[],excludedIds:CATALOG.filter(p=>p.city==='洛阳').map(p=>p.id),excludedModes:[]},CATALOG));
-// 完整规则智能体：感知→决策→交付
+// 规则辅助入口：需求理解与地点推荐；日程编排、交通核算与冲突校验由上层流水线完成。
 const plan=agentPlanRules('洛阳两天，人均预算200，必去龙门石窟',CATALOG);
 assert.equal(plan.source,'agent-rules');assert.equal(plan.intent.city,'洛阳');assert.equal(plan.intent.budget,200);
 assert(plan.selections.some(s=>s.id==='hn-longmen'));
@@ -61,7 +61,7 @@ const seed={operation:'select',city:'洛阳',days:2,start:'09:00',mode:'driving'
  assert(!b.stops.some(s=>s.id==='hn-whitehorse'),'excluded place honored');
  assert(b.draft.stops.every(s=>s.place&&s.place.id),'draft stops carry place objects');
 }
-// 有模型：五个智能体协作；冲突时校验智能体做取舍
+// 有模型：5 个智能体协作；冲突时由冲突校验智能体做取舍。
 const modelEnv={LLM_API_KEY:'synthetic-agent-token',LLM_BASE_URL:'https://maas-api.cn-huabei-1.xf-yun.com/v1',LLM_MODEL:'spark-x2.5',AMAP_WEB_SERVICE_KEY:'synthetic-map-key'};
 const luoyang5=CATALOG.filter(p=>p.city==='洛阳').slice(0,5).map(p=>p.id);
 const luoyangAllowed=luoyang5.filter(id=>id!=='hn-whitehorse');
@@ -98,7 +98,7 @@ try{
  assert(b.defaulted.some(s=>s.includes('智能体决定')));
  assert.equal(b.agent.modelCalls,5,'perceive+decide+schedule+traffic+audit = 5 model calls');
  assert(b.draft&&b.draft.stops.length===b.stops.length);
- // operation 入口：已确认条件 + 模型做 2/3/4 号智能体
+ // operation 入口：需求理解复用已确认条件；地点推荐 → 日程编排 → 交通核算 → 冲突校验按实际 source 执行（本例交通核算回退规则）。
  globalThis.fetch=mockAgent({audit:{cuts:[],note:'无'}});
  const r2=await post('/api/agent',seed,modelEnv);
  assert.equal(r2.status,200);const b2=await r2.json();
@@ -114,7 +114,7 @@ try{
   assert.equal(confirmedAI.agents[0].source,'confirmed');assert(confirmedAI.agents.slice(1).every(a=>a.source==='ai'));
   assert.equal(confirmedAI.source,'agent-ai','confirmed conditions must not turn an otherwise fully AI execution into mixed');assert.equal(confirmedAI.agent.modelCalls,4);
  }finally{for(const id of luoyangAllowed)delete CATALOG.find(p=>p.id===id).routing}
- // 编排智能体返回非法分日 → 该步骤回退规则，整体为混合，其余智能体不受影响
+ // 日程编排智能体返回非法分日 → 该步骤回退规则，整体为混合，其余智能体不受影响
  globalThis.fetch=mockAgent({schedule:{dayPlan:[{id:luoyang5[0],day:1}]},audit:{cuts:[],note:'无'}});
  const mixed=await post('/api/agent',{text:'洛阳两天，必去龙门石窟'},modelEnv);
  assert.equal(mixed.status,200);const mb=await mixed.json();
@@ -123,7 +123,7 @@ try{
  assert.equal(mb.agents.find(a=>a.name==='地点推荐').source,'ai');
  assert.equal(mb.stops.length,4,'rules scheduler must cover all selections');
  assert(mb.fallback&&mb.fallback.reason,'fallback reason must be reported');
- // 推荐智能体返回非法地点（编造 ID）→ 回退规则推荐并说明原因，必去仍保留
+ // 地点推荐智能体返回非法地点（编造 ID）→ 回退规则推荐并说明原因，必去仍保留
  globalThis.fetch=mockAgent({recommend:{selections:[{id:'invented-place',duration:60}],rationale:[],unresolved:[]},audit:{cuts:[],note:'无'}});
  const bad=await post('/api/agent',{text:'洛阳两天，必去龙门石窟'},modelEnv);
  assert.equal(bad.status,200);const bb=await bad.json();
@@ -147,7 +147,7 @@ try{
  assert.equal(tr2.status,200);const tb2=await tr2.json();
  assert.equal(tb2.agents.find(a=>a.name==='交通核算').source,'rules');
  assert(tb2.stops.length>0);
- // 匿名用户：感知配额拒绝 → 规则智能体兜底，功能可用
+ // 匿名用户：需求理解配额拒绝 → 规则候选兜底，五智能体阶段与来源仍如实记录，功能可用。
  globalThis.fetch=async()=>{throw Error('Anonymous calls must not spend model credits')};
  const anon=await post('/api/agent',{text:'开封两天'},modelEnv,false);
  assert.equal(anon.status,200);const an=await anon.json();
