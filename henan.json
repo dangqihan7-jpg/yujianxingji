@@ -686,7 +686,13 @@
       "theme": "街巷烟火",
       "duration": 60,
       "reference": "https://hct.henan.gov.cn/2025/06-04/3165501.html",
-      "visitTip": "这是一处美食街区，先选择具体餐馆，再确认营业时间与餐饮预算。"
+      "visitTip": "这是一处美食街区，先选择具体餐馆，再确认营业时间与餐饮预算。",
+      "image": "/assets/hn-xigong.jpg?v=e163e115acaf",
+      "photoReference": "https://drive.google.com/file/d/1dmte-2w5EpUSaT6ZTjQoW2nmEQBnhboO/view?usp=drivesdk",
+      "credit": "河南景区精选（一景区一张） · 演示用图",
+      "photoCaption": "洛阳·西工小街实景照片",
+      "photoSource": "drive-精选",
+      "photoCheckedAt": "2026-10-28"
     },
     {
       "id": "hn-longting",
@@ -947,7 +953,13 @@
       "description": "以考古遗存和文物展陈了解虢国文化。适合与黄河文化主题行程组合，开放与预约信息请提前确认。",
       "theme": "文博寻踪",
       "duration": 120,
-      "reference": "https://hct.henan.gov.cn/2023/07-01/2771007.html"
+      "reference": "https://hct.henan.gov.cn/2023/07-01/2771007.html",
+      "image": "/assets/hn-guoguo.jpg?v=fbda7ead2aa0",
+      "photoReference": "https://drive.google.com/file/d/1QasiIjek2sFfOQi0yOP0mS53xWGnKRql/view?usp=drivesdk",
+      "credit": "河南景区精选（一景区一张） · 演示用图",
+      "photoCaption": "三门峡·虢国博物馆实景照片",
+      "photoSource": "drive-精选",
+      "photoCheckedAt": "2026-10-28"
     },
     {
       "id": "hn-swanlake",
@@ -965,7 +977,13 @@
       "reference": "https://hct.henan.gov.cn/2023/05-20/2746303.html",
       "aliases": [
         "三门峡天鹅湖"
-      ]
+      ],
+      "image": "/assets/hn-swanlake.jpg?v=c234a4bb5e20",
+      "photoReference": "https://drive.google.com/file/d/1lkRM7cpSFz08drUHabRgjugfihh-kswV/view?usp=drivesdk",
+      "credit": "河南景区精选（一景区一张） · 演示用图",
+      "photoCaption": "三门峡·天鹅湖国家城市湿地公园实景照片",
+      "photoSource": "drive-精选",
+      "photoCheckedAt": "2026-10-28"
     },
     {
       "id": "hn-wansui",
@@ -992,7 +1010,13 @@
       "reference": "https://hct.henan.gov.cn/2025/09-24/3229991.html",
       "locationReference": "https://www.amap.com/place/B0FFH1RM9R",
       "visitTip": "先查看景区当日节目表，再安排入园和返程；演出场次、入场规则及票价以官方公告为准。展示定位在西侧片区，实际前往的入口需要在高德确认。",
-      "weekendPick": true
+      "weekendPick": true,
+      "image": "/assets/hn-wansui.jpg?v=0d96642df599",
+      "photoReference": "https://drive.google.com/file/d/17mO9FaHb9BXU5p6a_LvkYkQHVFhlkh1x/view?usp=drivesdk",
+      "credit": "河南景区精选（一景区一张） · 演示用图",
+      "photoCaption": "开封·万岁山武侠城实景照片",
+      "photoSource": "drive-精选",
+      "photoCheckedAt": "2026-10-28"
     },
     {
       "id": "hn-laojunshan",
@@ -1085,7 +1109,13 @@
       "duration": 240,
       "reference": "https://hct.henan.gov.cn/2025/09-24/3229991.html",
       "visitTip": "先确认当天演出和夜场安排，再决定到达时间；片区位置仅用于展示，交通核算前请查询并确认高德入口。",
-      "weekendPick": true
+      "weekendPick": true,
+      "image": "/assets/hn-movie-town.jpg?v=0bd077628f92",
+      "photoReference": "https://drive.google.com/file/d/1YnvZWE50eTyGSOwEQ9yycHmvPfRBnCkJ/view?usp=drivesdk",
+      "credit": "河南景区精选（一景区一张） · 演示用图",
+      "photoCaption": "郑州·建业电影小镇实景照片",
+      "photoSource": "drive-精选",
+      "photoCheckedAt": "2026-10-28"
     },
     {
       "id": "hn-fangte",
@@ -1182,7 +1212,13 @@
       "district": "老城区",
       "address": "洛阳市老城区 · 唐宫路毛线市场对面(应天门地铁站C2口步行200米)",
       "locationReference": "https://www.amap.com/place/B0HKOHI3AW",
-      "locationNote": "参考高德景区或片区点位，具体交通入口需确认。"
+      "locationNote": "参考高德景区或片区点位，具体交通入口需确认。",
+      "image": "/assets/hn-mingtang.jpg?v=fee1ec84858c",
+      "photoReference": "https://drive.google.com/file/d/155a0kFiH9H7--6pFtQqSBTPfz-XfJM0L/view?usp=drivesdk",
+      "credit": "河南景区精选（一景区一张） · 演示用图",
+      "photoCaption": "洛阳·隋唐洛阳城明堂天堂景区实景照片",
+      "photoSource": "drive-精选",
+      "photoCheckedAt": "2026-10-28"
     },
     {
       "id": "hn-jiguandong",
@@ -1211,7 +1247,13 @@
       "locationNote": "参考高德景区或片区点位，具体交通入口需确认。",
       "planningNotes": [
         "鸡冠洞的往返交通、景区内部交通与天气需另行确认。"
-      ]
+      ],
+      "image": "/assets/hn-jiguandong.jpg?v=f3b4d1ff94ab",
+      "photoReference": "https://drive.google.com/file/d/1Nj8xVfK-MdP5GWPmCRDpP8mvh80MB8R-/view?usp=drivesdk",
+      "credit": "河南景区精选（一景区一张） · 演示用图",
+      "photoCaption": "洛阳·鸡冠洞实景照片",
+      "photoSource": "drive-精选",
+      "photoCheckedAt": "2026-10-28"
     },
     {
       "id": "hn-chongdugou",
@@ -1352,7 +1394,13 @@
       "district": "鼓楼区",
       "address": "开封市鼓楼区 · 鼓楼街",
       "locationReference": "https://www.amap.com/place/B017A0N05A",
-      "locationNote": "参考高德景区或片区点位，具体交通入口需确认。"
+      "locationNote": "参考高德景区或片区点位，具体交通入口需确认。",
+      "image": "/assets/hn-gulou.jpg?v=6252ce376434",
+      "photoReference": "https://drive.google.com/file/d/1tTxpgfEsBzCAZtboBnDu94YkAS70J6HN/view?usp=drivesdk",
+      "credit": "河南景区精选（一景区一张） · 演示用图",
+      "photoCaption": "开封·鼓楼夜市实景照片",
+      "photoSource": "drive-精选",
+      "photoCheckedAt": "2026-10-28"
     },
     {
       "id": "hn-qingtian",
@@ -1483,7 +1531,13 @@
       "locationNote": "参考高德景区或片区点位，具体交通入口需确认。",
       "planningNotes": [
         "太行大峡谷的往返交通、景区内部交通与天气需另行确认。"
-      ]
+      ],
+      "image": "/assets/hn-taihang-canyon.jpg?v=41efbbd238d4",
+      "photoReference": "https://drive.google.com/file/d/1TSG8oBmx8MOhQk08W-O2G4ODllG3YBby/view?usp=drivesdk",
+      "credit": "河南景区精选（一景区一张） · 演示用图",
+      "photoCaption": "安阳·太行大峡谷实景照片",
+      "photoSource": "drive-精选",
+      "photoCheckedAt": "2026-10-28"
     },
     {
       "id": "hn-yuefei",
@@ -2121,7 +2175,13 @@
       "district": "华龙区",
       "address": "濮阳市华龙区 · 皇甫路街道黄河路西段(近绿色庄园)",
       "locationReference": "https://www.amap.com/place/B0HBK4PK1F",
-      "locationNote": "参考高德景区或片区点位，具体交通入口需确认。"
+      "locationNote": "参考高德景区或片区点位，具体交通入口需确认。",
+      "image": "/assets/hn-pushang.jpg?v=d9d1b95cbfa1",
+      "photoReference": "https://drive.google.com/file/d/12VTQp6QiLTPjAexL0YHpdTg717qqkd-T/view?usp=drivesdk",
+      "credit": "河南景区精选（一景区一张） · 演示用图",
+      "photoCaption": "濮阳·濮上园实景照片",
+      "photoSource": "drive-精选",
+      "photoCheckedAt": "2026-10-28"
     },
     {
       "id": "hn-dongbeizhuang",
@@ -2209,7 +2269,13 @@
       "district": "魏都区",
       "address": "许昌市魏都区 · 东大街道春秋广场南大街",
       "locationReference": "https://www.amap.com/place/B0FFM10M80",
-      "locationNote": "参考高德景区或片区点位，具体交通入口需确认。"
+      "locationNote": "参考高德景区或片区点位，具体交通入口需确认。",
+      "image": "/assets/hn-caowei.jpg?v=1ba031474a44",
+      "photoReference": "https://drive.google.com/file/d/1Twk6v6FeN4WlxXFfDJPmEC_kEnwXw3Ty/view?usp=drivesdk",
+      "credit": "河南景区精选（一景区一张） · 演示用图",
+      "photoCaption": "许昌·曹魏古城实景照片",
+      "photoSource": "drive-精选",
+      "photoCheckedAt": "2026-10-28"
     },
     {
       "id": "hn-chunqiu",
@@ -2525,7 +2591,13 @@
       "district": "源汇区",
       "address": "漯河市源汇区 · 柳江西路与五台山南路交汇处附近",
       "locationReference": "https://www.amap.com/place/B0G2B9D38B",
-      "locationNote": "参考高德景区或片区点位，具体交通入口需确认。"
+      "locationNote": "参考高德景区或片区点位，具体交通入口需确认。",
+      "image": "/assets/hn-luowan.jpg?v=2efb6ca682fb",
+      "photoReference": "https://drive.google.com/file/d/1tJlI6apyeSIprEnrX_uG3E-Mb1xwCB7L/view?usp=drivesdk",
+      "credit": "河南景区精选（一景区一张） · 演示用图",
+      "photoCaption": "漯河·漯湾古镇实景照片",
+      "photoSource": "drive-精选",
+      "photoCheckedAt": "2026-10-28"
     },
     {
       "id": "hn-wolong",
@@ -2979,7 +3051,13 @@
       "district": "浉河区",
       "address": "信阳市浉河区 · 浉河港镇白龙潭村",
       "locationReference": "https://www.amap.com/place/B0FFIXQDPB",
-      "locationNote": "参考高德景区或片区点位，具体交通入口需确认。"
+      "locationNote": "参考高德景区或片区点位，具体交通入口需确认。",
+      "image": "/assets/hn-wenxin.jpg?v=b701216319ea",
+      "photoReference": "https://drive.google.com/file/d/1cmvwXr0A5XV6aXlcuLMXmipT2pXyDoU9/view?usp=drivesdk",
+      "credit": "河南景区精选（一景区一张） · 演示用图",
+      "photoCaption": "信阳·文新茶村实景照片",
+      "photoSource": "drive-精选",
+      "photoCheckedAt": "2026-10-28"
     },
     {
       "id": "hn-xingxiuchuan",
@@ -3009,7 +3087,13 @@
       "locationNote": "参考高德景区或片区点位，具体交通入口需确认。",
       "planningNotes": [
         "星宿川沙滩营地的往返交通、景区内部交通与天气需另行确认。"
-      ]
+      ],
+      "image": "/assets/hn-xingxiuchuan.jpg?v=8a40ef4f17ff",
+      "photoReference": "https://drive.google.com/file/d/1gw2cPQ3c6A9UQviMdagloqesS5PaZR4m/view?usp=drivesdk",
+      "credit": "河南景区精选（一景区一张） · 演示用图",
+      "photoCaption": "信阳·星宿川沙滩营地实景照片",
+      "photoSource": "drive-精选",
+      "photoCheckedAt": "2026-10-28"
     },
     {
       "id": "hn-taihao",
@@ -3203,7 +3287,13 @@
       "locationNote": "参考高德景区或片区点位，具体交通入口需确认。",
       "planningNotes": [
         "嵖岈山的往返交通、景区内部交通与天气需另行确认。"
-      ]
+      ],
+      "image": "/assets/hn-chayashan.jpg?v=af0cf2847e34",
+      "photoReference": "https://drive.google.com/file/d/14TgQEkANlf7XeF8eWguPVzcB3jdsRrpA/view?usp=drivesdk",
+      "credit": "河南景区精选（一景区一张） · 演示用图",
+      "photoCaption": "驻马店·嵖岈山实景照片",
+      "photoSource": "drive-精选",
+      "photoCheckedAt": "2026-10-28"
     },
     {
       "id": "hn-royal-post",
@@ -3266,7 +3356,13 @@
       "locationNote": "参考高德景区或片区点位，具体交通入口需确认。",
       "planningNotes": [
         "老乐山的往返交通、景区内部交通与天气需另行确认。"
-      ]
+      ],
+      "image": "/assets/hn-laoleshan.jpg?v=53f72c291e24",
+      "photoReference": "https://drive.google.com/file/d/1_fIP8w06dk12iXPnrjvrtfjasCsUqv7a/view?usp=drivesdk",
+      "credit": "河南景区精选（一景区一张） · 演示用图",
+      "photoCaption": "驻马店·老乐山实景照片",
+      "photoSource": "drive-精选",
+      "photoCheckedAt": "2026-10-28"
     },
     {
       "id": "hn-nanhai",
@@ -3369,7 +3465,13 @@
       "locationNote": "参考高德景区或片区点位，具体交通入口需确认。",
       "planningNotes": [
         "五龙口的往返交通、景区内部交通与天气需另行确认。"
-      ]
+      ],
+      "image": "/assets/hn-wulongkou.jpg?v=25a1147239f7",
+      "photoReference": "https://drive.google.com/file/d/1QkRbT6xigvnppp4PnadbeoP7Ls9cU_TF/view?usp=drivesdk",
+      "credit": "河南景区精选（一景区一张） · 演示用图",
+      "photoCaption": "济源·五龙口实景照片",
+      "photoSource": "drive-精选",
+      "photoCheckedAt": "2026-10-28"
     },
     {
       "id": "hn-huanghe-three",
@@ -3398,7 +3500,13 @@
       "locationNote": "参考高德景区或片区点位，具体交通入口需确认。",
       "planningNotes": [
         "黄河三峡的往返交通、景区内部交通与天气需另行确认。"
-      ]
+      ],
+      "image": "/assets/hn-huanghe-three.jpg?v=1204a6e94957",
+      "photoReference": "https://drive.google.com/file/d/1I-K81RTVMsE7Ul1tPBzDTq8bfn1VRt-W/view?usp=drivesdk",
+      "credit": "河南景区精选（一景区一张） · 演示用图",
+      "photoCaption": "济源·黄河三峡实景照片",
+      "photoSource": "drive-精选",
+      "photoCheckedAt": "2026-10-28"
     },
     {
       "id": "hn-jidu",
