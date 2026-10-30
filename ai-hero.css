@@ -51,7 +51,7 @@
 .ai-hero-vision:focus-visible { outline: 3px solid #abffe8; outline-offset: 3px; }
 .ai-hero-kicker { display: flex; align-items: center; gap: 9px; color: #a7f8df; font-family: var(--mono, monospace); font-size: 11px; font-weight: 500; line-height: 1.5; letter-spacing: .2em; }
 .ai-hero-kicker > span { flex: none; width: 7px; height: 7px; border-radius: 50%; background: var(--ai-cover-accent); box-shadow: 0 0 15px #00d4aa80; }
-#ai-planning-title { max-width: 890px; margin: 0; color: #f4fbff; font-family: inherit; font-size: clamp(36px, 4.7vw, 66px); font-weight: 750; line-height: 1.18; letter-spacing: -.035em; text-wrap: balance; overflow-wrap: anywhere; text-shadow: 0 2px 24px #06111d55; }
+#ai-planning-title { max-width: 890px; margin: 0; color: #f4fbff; font-family: inherit; font-size: clamp(36px, 4.7vw, 66px); font-weight: 600; line-height: 1.18; letter-spacing: 0; text-wrap: balance; overflow-wrap: anywhere; text-shadow: 0 2px 24px #06111d55; }
 .ai-hero-subtitle { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 16px; margin: 18px 0 0; color: #c0d0dc; font-size: 12px; line-height: 1.8; letter-spacing: .025em; }
 .ai-hero-subtitle strong { color: #b1ffe7; font-size: 13px; font-weight: 550; }
 .ai-hero-subtitle > span { overflow-wrap: anywhere; }
@@ -105,7 +105,7 @@ body[data-view="gallery"] .ai-hero-input-wrap::before { animation-play-state: ru
   .ai-hero-eyebrow { gap: 8px; margin-bottom: 16px; }
   .ai-hero-eyebrow .ai-hero-kicker { font-size: 8px; letter-spacing: .12em; }
   .ai-hero-vision { gap: 5px; padding: 8px 10px; font-size: 11px; }
-  #ai-planning-title { font-size: clamp(29px, 8.4vw, 38px); font-weight: 750; line-height: 1.2; letter-spacing: -.03em; }
+  #ai-planning-title { font-size: clamp(29px, 8.4vw, 38px); font-weight: 600; line-height: 1.2; letter-spacing: 0; }
   .ai-hero-subtitle { display: block; margin-top: 12px; font-size: 10px; line-height: 1.7; }
   .ai-hero-subtitle strong { display: block; font-size: 12px; }
   .ai-hero-subtitle > span { display: block; margin-top: 4px; }
@@ -116,12 +116,12 @@ body[data-view="gallery"] .ai-hero-input-wrap::before { animation-play-state: ru
   .ai-hero-form-footer { gap: 9px; margin-top: 10px; }
   .ai-hero-hint { flex: 1; font-size: 10px; line-height: 1.6; }
   #ai-hero-submit { gap: 10px; min-width: 126px; min-height: 46px; padding: 11px 12px; font-size: 13px; }
-  .ai-hero-agents { grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 5px; }
-  .ai-hero-agent { display: block; padding: 10px 5px; text-align: center; border-radius: 10px; }
-  .ai-hero-agent-icon { width: 25px; height: 25px; margin: 0 auto 7px; border-radius: 7px; }
+  .ai-hero-agents { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 6px; scroll-snap-type: x mandatory; }
+  .ai-hero-agent { flex: 0 0 150px; display: block; padding: 12px 10px; text-align: left; border-radius: 10px; scroll-snap-align: start; }
+  .ai-hero-agent-icon { width: 25px; height: 25px; margin: 0 0 7px; border-radius: 7px; }
   .ai-hero-agent-icon svg { width: 15px; height: 15px; }
-  .ai-hero-agent-copy strong { font-size: 11px; line-height: 1.5; white-space: nowrap; }
-  .ai-hero-agent-copy > span { margin-top: 4px; font-size: 10px; line-height: 1.55; }
+  .ai-hero-agent-copy strong { font-size: 12px; line-height: 1.5; white-space: normal; }
+  .ai-hero-agent-copy > span { margin-top: 4px; font-size: 11px; line-height: 1.6; }
   .ai-hero-photo-credit { justify-content: flex-start; gap: 0 8px; font-size: 9px; }
   .ai-hero-photo-date { flex: 1; }
   .ai-hero-photo-credit a { font-size: 10px; }
@@ -136,11 +136,14 @@ body[data-view="gallery"] .ai-hero-input-wrap::before { animation-play-state: ru
   .ai-hero-input-wrap { padding-top: 8px; padding-bottom: 8px; }
   #ai-hero-input { min-height: 50px; }
   #ai-hero-submit { min-height: 44px; padding-top: 10px; padding-bottom: 10px; }
-  .ai-hero-agent { padding-top: 7px; padding-bottom: 7px; }
+  .ai-hero-agent { padding-top: 10px; padding-bottom: 10px; }
   .ai-hero-agent-icon { margin-bottom: 4px; }
-  .ai-hero-agent-copy > span { font-size: 9px; }
+  .ai-hero-agent-copy > span { font-size: 11px; }
 }
 @media (prefers-reduced-motion: reduce) {
   .ai-hero-input-wrap::before { animation: none; opacity: .25; }
   .ai-hero-input-wrap::after { transition: none; }
 }
+
+/* A批：深底 Hero 内选中用薄荷底 + 深字，保证暗底可读 */
+.ai-planning-hero ::selection { background: #00d4aa; color: #0a1628; }

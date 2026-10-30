@@ -13,7 +13,7 @@ body {min-height:100svh}
 [hidden] {display:none!important}
 button {touch-action:manipulation}
 button,input,select,textarea {font-family:inherit}
-button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,summary:focus-visible {outline:3px solid #bb694d;outline-offset:4px}
+button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,summary:focus-visible {outline:3px solid #147784;outline-offset:4px}
 button.primary,.feature-cta {background:var(--blue);color:#fff;box-shadow:none}
 button.primary:hover,.feature-cta:hover {background:#873225}
 input,select,textarea {border-color:#dcded3;background:#fffefb;color:var(--ink)}
