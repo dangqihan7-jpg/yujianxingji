@@ -60,7 +60,7 @@
 .ai-hero-vision:focus-visible { outline: 3px solid #abffe8; outline-offset: 3px; }
 .ai-hero-kicker { display: flex; align-items: center; gap: 9px; color: #a7f8df; font-family: var(--mono, monospace); font-size: 11px; font-weight: 500; line-height: 1.5; letter-spacing: .2em; }
 .ai-hero-kicker > span { flex: none; width: 7px; height: 7px; border-radius: 50%; background: var(--ai-cover-accent); box-shadow: 0 0 15px #00d4aa80; }
-#ai-planning-title { max-width: 660px; margin: 0; color: #f4fbff; font-family: inherit; font-size: clamp(36px, 4.5vw, 64px); font-weight: 600; line-height: 1.23; letter-spacing: -.025em; text-wrap: balance; overflow-wrap: anywhere; text-shadow: 0 2px 24px #06111d55; }
+#ai-planning-title { max-width: 660px; margin: 0; color: #f4fbff; font-family: inherit; font-size: clamp(36px, 4.5vw, 64px); font-weight: 600; line-height: 1.23; letter-spacing: 0; text-wrap: balance; overflow-wrap: anywhere; text-shadow: 0 2px 24px #06111d55; }
 .ai-hero-subtitle { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 16px; margin: 18px 0 0; color: #c0d0dc; font-size: 12px; line-height: 1.8; letter-spacing: .025em; }
 .ai-hero-subtitle strong { color: #b1ffe7; font-size: 13px; font-weight: 550; }
 .ai-hero-subtitle > span { overflow-wrap: anywhere; }
