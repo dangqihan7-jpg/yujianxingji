@@ -55,3 +55,5 @@ PPT、策划书、视频和测试/部署文档位于 `materials`，部分比赛�
 首页语音输入由 `stt.js/stt.css` 与 Hero 生命周期 hooks 实现，`POST /api/stt` 接收最长60秒的16kHz/16bit/单声道原始PCM（二进制，不是WAV或JSON）。`stt-service.mjs` 通过讯飞 `iat-api.xfyun.cn/v2/iat` HMAC WebSocket 分片听写，使用独立 `XF_ASR_APPID/APIKEY/APISECRET`，不能下发前端。小时配额为UTC整点匿名3/登录10/全局100，复用 `model_usage` 的 `stt:` scope。结果只追加文字，不提交规划；切页/隐藏/重绘清理麦克风与请求。Nginx `/api/stt` 精确路由需要100秒读取超时，保留原HTTPS与其他接口配置。实际真人识别是否通过以 `docs/stt-verification.md` 为准，不把mock说成真实麦克风验收。
 
 语音输入体验维护还需阅读 `docs/stt-ux.md`：录音真实计时、取消、重新录音和状态消息应与会话生命周期一致；不得添加假识别进度或自动重传旧音频。
+
+对话式局部修改使用独立 `POST /api/revise`，一次只调整用户选定的一天。`revise-service.mjs` 复用现有 Spark `LLM_*` 与规划额度，程序保护其他日期、锁定地点、必去和保留地点，并计算差异；失败不返回伪装成 AI 的规则修改。`revise.js` / `revise.css` 在候选预览后明确确认，复用原校验、撤销、应用及保存流程。原 `/api/ask` 继续只读；本功能不增加第六个智能体，不把单次局部建议称作完整五阶段执行。修改日期、要求或原草稿后，旧候选必须失效；应用时重新核对费用与交通。详见 `docs/trip-revision.md`。

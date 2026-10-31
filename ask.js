@@ -27,13 +27,14 @@ function askTripSnapshot(){
   return snapshot;
 }
 function askSnapshotFingerprint(){try{return JSON.stringify(askTripSnapshot())}catch{return null}}
-function askDialogHTML(){return `<header class="ask-head"><div><span class="ask-eyebrow">AI TRIP ASSISTANT</span><h2 id="ask-title">问问我的行程</h2></div><button id="ask-close" type="button" aria-label="关闭行程问答">✕</button></header>
+function askDialogHTML(){return `<header class="ask-head"><div><span class="ask-eyebrow">AI TRIP ASSISTANT</span><h2 id="ask-title">问问我的行程</h2></div><div class="ask-head-actions"><button id="ask-revise" type="button">调整行程</button><button id="ask-close" type="button" aria-label="关闭行程问答">✕</button></div></header>
   <p id="ask-context" class="ask-context">只读取提问时的行程，不会修改安排。</p><section id="ask-history" class="ask-history" aria-label="本次会话问答"><p id="ask-empty" class="ask-empty">关于选了哪些地点、分日安排或交通，你可以直接问。<span>仅回答当前行程相关问题；不确定的信息会说明。</span></p></section>
   <p id="ask-status" class="ask-status" role="status" aria-live="polite"></p><form id="ask-form" class="ask-form"><label for="ask-question">关于这份行程，你想了解什么？</label><div class="ask-compose"><textarea id="ask-question" rows="2" maxlength="600" placeholder="龙门石窟需要提前预约吗？" enterkeyhint="send"></textarea><button id="ask-send" class="primary" type="submit">发送 <span aria-hidden="true">↗</span></button></div><p class="ask-input-note">Enter 发送 · Shift + Enter 换行 · 最多 600 字</p></form><p id="ask-reference" class="ask-reference">${ASK_REFERENCE}</p>`}
 function ensureAskDialog(){
   let dialog=askElement('ask-dialog');if(dialog)return dialog;
   dialog=document.createElement('dialog');dialog.id='ask-dialog';dialog.className='ask-dialog';dialog.setAttribute('aria-labelledby','ask-title');dialog.setAttribute('aria-describedby','ask-context ask-reference');dialog.innerHTML=askDialogHTML();document.body.append(dialog);
   askElement('ask-close').onclick=closeAsk;
+  const revise=askElement('ask-revise');revise.hidden=typeof openRevise!=='function';revise.onclick=()=>{if(typeof openRevise==='function'){closeAsk();openRevise()}};
   askElement('ask-form').onsubmit=submitAskQuestion;
   const input=askElement('ask-question');
   input.addEventListener('focus',refreshAskPlaceholder);input.addEventListener('blur',refreshAskPlaceholder);input.addEventListener('input',refreshAskUI);

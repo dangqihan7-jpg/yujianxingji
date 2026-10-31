@@ -1,0 +1,54 @@
+.revise-dialog[hidden], .revise-dialog [hidden] { display: none !important; }
+dialog.revise-dialog { width: min(760px, calc(100% - 32px)); max-width: 100%; max-height: calc(100dvh - 32px); padding: 0; border: 1px solid #4dd8ff40; border-radius: 20px; color: #e9f4fa; background: var(--space, #0b1220); overflow: auto; box-shadow: 0 24px 80px #0009; }
+dialog.revise-dialog[open] { animation: revise-enter .3s cubic-bezier(.2,.7,.2,1) both; }
+.revise-dialog::backdrop { background: #020a16b3; backdrop-filter: blur(5px); }
+.revise-dialog *, .revise-entry { box-sizing: border-box; }
+.revise-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 20px 24px; border-bottom: 1px solid #4dd8ff28; }
+.revise-eyebrow { font: 11px/1.5 var(--mono, monospace); letter-spacing: .14em; color: var(--neon, #4dd8ff); }
+.revise-dialog h2 { margin: 6px 0 0; color: #e9f4fa; font-family: inherit; font-size: 24px; font-weight: 700; line-height: 1.4; }
+.revise-dialog h3, .revise-dialog h4 { color: #e9f4fa; margin: 12px 0; }
+.revise-dialog #revise-close { min-width: 44px; min-height: 44px; flex: none; border-radius: 50%; padding: 0; }
+.revise-body { padding: 0 24px 24px; }
+.revise-dialog .revise-note { color: #9bb5c5; font-size: 12px; line-height: 1.8; overflow-wrap: anywhere; }
+.revise-dialog fieldset { min-width: 0; padding: 0; border: 0; margin: 0; }
+.revise-dialog label { display: block; color: #d6e8ef; font-size: 14px; margin: 12px 0 8px; }
+.revise-dialog select, .revise-dialog textarea { width: 100%; min-width: 0; min-height: 48px; font-size: 16px; font-family: inherit; line-height: 1.7; color: #e9f4fa; background: #102438; padding: 10px 12px; border: 1px solid #4dd8ff50; border-radius: 10px; }
+.revise-dialog textarea { resize: vertical; min-height: 112px; max-height: 240px; }
+.revise-dialog textarea:focus, .revise-dialog select:focus { border-color: var(--neon, #4dd8ff); outline: 2px solid #4dd8ff35; outline-offset: 2px; }
+.revise-dialog button, .revise-entry, .ask-dialog #ask-revise { min-height: 44px; min-width: 44px; font-family: inherit; font-size: 14px; line-height: 1.5; border: 1px solid #4dd8ff50; border-radius: 10px; color: #d6f4fb; background: #183649; padding: 10px 14px; cursor: pointer; }
+.revise-dialog button.primary { color: #03231e; background: #00d4aa; border-color: #00d4aa; }
+.revise-dialog button:disabled { opacity: .5; cursor: default; }
+.revise-dialog button:focus-visible, .revise-entry:focus-visible { outline: 3px solid var(--neon, #4dd8ff); outline-offset: 3px; }
+.revise-keep { padding: 8px 12px; margin-top: 16px; background: #10243880; border-radius: 12px; }
+.revise-keep > p { font-size: 12px; color: #9bb5c5; margin: 6px 0; }
+.revise-keep .revise-keep-item { display: flex; align-items: center; gap: 12px; min-height: 48px; margin: 2px 0; cursor: pointer; }
+.revise-keep-item input { flex: none; width: 20px; height: 20px; font-size: 16px; accent-color: #00d4aa; }
+.revise-keep-item small { display: block; color: #9bb5c5; font-size: 11px; line-height: 1.8; }
+.revise-status { font-size: 13px; min-height: 24px; line-height: 1.8; color: #a9c6d6; overflow-wrap: anywhere; }
+.revise-status[data-state="loading"], .revise-status[data-state="success"] { color: #87e9d1; }
+.revise-status[data-state="error"] { color: #ffc6b7; }
+.revise-comparison { display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1fr); gap: 14px; }
+.revise-comparison > section { min-width: 0; padding: 12px 16px; border: 1px solid #4dd8ff30; border-radius: 12px; background: #102438; }
+.revise-comparison > section:last-child { border-color: #00d4aa70; }
+.revise-comparison ol { padding-left: 20px; margin: 12px 0; }
+.revise-comparison li { margin: 10px 0; overflow-wrap: anywhere; line-height: 1.6; font-size: 14px; }
+.revise-comparison li small { display: block; color: #9bb5c5; }
+.revise-comparison p { color: #a8dddc; font-size: 12px; line-height: 1.8; }
+.revise-changes, .revise-model-note { font-size: 13px; line-height: 1.9; overflow-wrap: anywhere; color: #c7dfeb; }
+.revise-confirm { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 20px; }
+.revise-confirm .primary { flex: 1; }
+.trip-footer > .revise-entry { width: 100%; margin-top: 10px; }
+.ask-head-actions { display: flex; align-items: center; gap: 8px; flex: none; }
+.ask-dialog #ask-revise { padding: 8px; font-size: 12px; }
+@keyframes revise-enter { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
+@media (max-width: 767px) {
+ dialog.revise-dialog { width: calc(100% - 16px); max-height: calc(100dvh - 16px); border-radius: 16px; }
+ .revise-head { padding: 16px; }
+ .revise-dialog h2 { font-size: 21px; }
+ .revise-body { padding: 0 16px max(20px, env(safe-area-inset-bottom)); }
+ .revise-comparison { grid-template-columns: minmax(0,1fr); }
+ .revise-confirm { flex-direction: column; }
+ .revise-dialog select, .revise-dialog textarea, .revise-dialog input { font-size: 16px; }
+ .ask-dialog .ask-head { flex-wrap: wrap; }
+}
+@media (prefers-reduced-motion: reduce) { dialog.revise-dialog[open] { animation: none; } }
