@@ -3,7 +3,8 @@ dialog.revise-dialog { width: min(760px, calc(100% - 32px)); max-width: 100%; ma
 dialog.revise-dialog[open] { animation: revise-enter .3s cubic-bezier(.2,.7,.2,1) both; }
 .revise-dialog::backdrop { background: #020a16b3; backdrop-filter: blur(5px); }
 .revise-dialog *, .revise-entry { box-sizing: border-box; }
-.revise-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 20px 24px; border-bottom: 1px solid #4dd8ff28; }
+.revise-head { display: flex; justify-content: space-between; align-items: center; flex-wrap: nowrap; gap: 12px; height: auto; min-height: 86px; padding: 20px 24px; border-bottom: 1px solid #4dd8ff28; background: var(--space, #0b1220); position: sticky; top: 0; z-index: 2; }
+#revise-preview { scroll-margin-top: 110px; }
 .revise-eyebrow { font: 11px/1.5 var(--mono, monospace); letter-spacing: .14em; color: var(--neon, #4dd8ff); }
 .revise-dialog h2 { margin: 6px 0 0; color: #e9f4fa; font-family: inherit; font-size: 24px; font-weight: 700; line-height: 1.4; }
 .revise-dialog h3, .revise-dialog h4 { color: #e9f4fa; margin: 12px 0; }
