@@ -1948,13 +1948,7 @@
       "locationNote": "参考高德景区或片区点位，具体交通入口需确认。",
       "planningNotes": [
         "古灵山的往返交通、景区内部交通与天气需另行确认。"
-      ],
-      "image": "/assets/hn-guling.jpg?v=0178f6f51770",
-      "photoReference": "https://youimg1.c-ctrip.com/target/100u0j000000a73kp3581.jpg",
-      "credit": "淇县古灵山地图,淇县古灵山,河南淇县古灵山_大山谷图库 · 来源未核 CC 授权，公开使用前请核对",
-      "photoCaption": "鹤壁·古灵山实景照片",
-      "photoCheckedAt": "2026-10-26",
-      "photoSource": "drive-v2"
+      ]
     },
     {
       "id": "hn-baoquan",
@@ -3903,7 +3897,8 @@
       "theme": "杂技文化与城市湖岸",
       "cities": [
         "濮阳"
-      ]
+      ],
+      "image": "/assets/hn-qicheng.jpg?v=014f04e3a198"
     },
     {
       "id": "xuchang-weekend",
@@ -3977,7 +3972,8 @@
       "theme": "滨河慢游与文字研学",
       "cities": [
         "漯河"
-      ]
+      ],
+      "image": "/assets/hn-xushen.jpg?v=b1b32fcf5887"
     },
     {
       "id": "sanmenxia-weekend",
@@ -4008,7 +4004,8 @@
       "theme": "黄河、彩陶与地坑院",
       "cities": [
         "三门峡"
-      ]
+      ],
+      "image": "/assets/hn-miaodigou.jpg?v=e1643e78ceaf"
     },
     {
       "id": "nanyang-weekend",
@@ -4156,7 +4153,8 @@
       "theme": "奇石山野与驿站夜游",
       "cities": [
         "驻马店"
-      ]
+      ],
+      "image": "/assets/hn-chayashan.jpg?v=af0cf2847e34"
     },
     {
       "id": "jiyuan-weekend",
