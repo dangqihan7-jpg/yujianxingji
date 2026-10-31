@@ -58,15 +58,19 @@ function aiPlanningHeroHTML(){
   return `<section id="ai-planning-hero" class="ai-planning-hero" aria-labelledby="ai-planning-title">
     <div id="ai-hero-backdrop" class="ai-hero-backdrop" aria-hidden="true" data-place="${esc(aiHeroScenery()?.id||'placeholder')}">${aiHeroBackdropHTML()}</div>
     <div class="ai-hero-content">
+      <div class="ai-hero-intro">
       <div class="ai-hero-eyebrow"><p class="ai-hero-kicker"><span aria-hidden="true"></span>AI WEEKEND PLANNER</p><button id="ai-hero-vision" class="ai-hero-vision" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 6 9.5 3h5L16 6h4v14H4V6h4Z"/><circle cx="12" cy="12" r="3.5"/></svg>拍照识景点</button></div>
       <h1 id="ai-planning-title">一句话，让 AI 为你规划河南周末游</h1>
+      <p class="ai-hero-lead">去山野透口气，或走进一座古城。<br>从一个想法开始，把周末过成喜欢的样子。</p>
       <p class="ai-hero-subtitle"><strong>5 个 AI 智能体协同</strong><span>需求理解 → 地点推荐 → 日程编排 → 交通核算 → 冲突校验</span></p>
+      </div>
       <form id="ai-hero-form" aria-label="用一句话开始 AI 规划">
+        <div class="ai-hero-compose-heading"><span class="ai-hero-compose-symbol" aria-hidden="true">✦</span><div><p>从这里，出发</p><span>写下时间、预算和你想去的地方</span></div><span class="ai-hero-compose-label" aria-hidden="true">YOUR WEEKEND</span></div>
         <div class="ai-hero-input-wrap"><label class="ai-hero-input-label" for="ai-hero-input">说说你的周末想法</label><textarea id="ai-hero-input" name="travel-request" rows="2" maxlength="600" placeholder="${esc(AI_HERO_EXAMPLES[aiHeroPlaceholderIndex])}" aria-describedby="ai-hero-status">${esc(aiHeroDraft)}</textarea>${typeof sttHeroControlsHTML==='function'?sttHeroControlsHTML():''}</div>
         <div class="ai-hero-form-footer"><p id="ai-hero-status" class="ai-hero-hint" role="status">${esc(aiHeroBusy?'正在识别你的旅行需求…':aiHeroAvailability())}</p><button id="ai-hero-submit" class="primary" type="submit" ${aiHeroBusy?'disabled':''}>${aiHeroBusy?'正在识别需求…':'让 AI 规划'}<span aria-hidden="true">↗</span></button></div>
       </form>
     </div>
-    <ol class="ai-hero-agents" aria-label="5 个智能体的能力">${AI_HERO_AGENTS.map((agent,index)=>`<li class="ai-hero-agent" data-ai-agent="${index+1}"><span class="ai-hero-agent-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">${agent.icon}</svg></span><div class="ai-hero-agent-copy"><strong>${esc(agent.name)}</strong><span>${esc(agent.description)}</span></div></li>`).join('')}</ol>
+    <ol class="ai-hero-agents" aria-label="5 个智能体的能力">${AI_HERO_AGENTS.map((agent,index)=>`<li class="ai-hero-agent" data-ai-agent="${index+1}"><span class="ai-hero-agent-number" aria-hidden="true">0${index+1}</span><span class="ai-hero-agent-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">${agent.icon}</svg></span><div class="ai-hero-agent-copy"><strong>${esc(agent.name)}</strong><span>${esc(agent.description)}</span></div></li>`).join('')}</ol>
     <div id="ai-hero-photo-credit" class="ai-hero-photo-credit" aria-label="背景实景照片信息">${aiHeroCreditHTML()}</div>
   </section>`;
 }

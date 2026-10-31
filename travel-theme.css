@@ -374,6 +374,82 @@ summary:focus-visible {
 .try-plan, .gallery-sources { color: #a0d8cd; }
 .try-plan:hover, .gallery-sources:hover { color: #b5ffeb; }
 
+/* Editorial gallery: generous image spreads and numbered, readable sections.
+   Scoped below the AI entry; the planner, map and itinerary retain their layout. */
+#gallery .gallery-inner { max-width: 1480px; }
+#gallery .editorial-heading { align-items: flex-start; gap: 24px 48px; margin-bottom: 32px; }
+#gallery .editorial-heading > div { min-width: 0; flex: 1; }
+#gallery .editorial-heading h2 { max-width: 21ch; font-size: clamp(28px, 3vw, 42px); line-height: 1.35; font-weight: 650; letter-spacing: -.02em; text-wrap: balance; }
+#gallery .editorial-heading > p { flex: 0 1 30ch; margin-top: 28px; line-height: 1.9; }
+#gallery .editorial-heading .section-kicker { margin-bottom: 12px; font-size: 10px; }
+#gallery .weekend-picks { padding-block: 72px 44px; }
+#gallery .picks-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; counter-reset: weekend-pick; }
+#gallery .weekend-pick { counter-increment: weekend-pick; min-height: 460px; border-radius: 18px; }
+#gallery .weekend-pick::before { content: counter(weekend-pick, decimal-leading-zero); position: absolute; top: 18px; right: 18px; z-index: 2; display: grid; place-items: center; width: 36px; height: 36px; border: 1px solid #c1eddf45; border-radius: 50%; color: #edf9f5; background: #082439bd; font: 11px var(--mono); pointer-events: none; }
+#gallery .weekend-pick .pick-media { border-radius: inherit; }
+#gallery .weekend-pick .pick-copy { padding: 120px 28px 22px; }
+#gallery .pick-copy > h3 { font-size: clamp(27px, 2.8vw, 38px); font-weight: 650; line-height: 1.3; margin-bottom: 14px; }
+#gallery .pick-copy > p:not(.section-kicker):not(.pick-photo-note) { max-width: 49ch; font-size: 13px; line-height: 1.9; }
+#gallery .pick-copy > .section-kicker { letter-spacing: .08em; }
+#gallery .pick-actions { gap: 10px; }
+#gallery .pick-actions button { min-height: 44px; padding-inline: 18px; }
+#gallery .pick-city { top: 18px; left: 24px; }
+#gallery .picks-note { margin-top: 20px; line-height: 1.9; }
+#gallery .province-atlas { padding-block: 48px; }
+#gallery .atlas-region-tabs { gap: 8px; }
+#gallery .atlas-region-tabs button { min-height: 44px; }
+#gallery .city-atlas { gap: 10px; }
+#gallery .city-atlas button { border-radius: 10px; }
+#gallery .atlas-city-detail { margin-top: 24px; border-radius: 18px; }
+#gallery .atlas-highlights { gap: 16px; }
+#gallery .atlas-highlights > button { border-radius: 12px; min-height: 280px; }
+#gallery .guide-steps { gap: 24px; }
+#gallery .guide-steps li > span { font-size: 30px; font-weight: 400; }
+#gallery .guide-steps h3 { margin-bottom: 10px; }
+#gallery .theme-routes { padding-block: 48px 56px; }
+#gallery .theme-routes .gallery-grid { gap: 32px; }
+#gallery .feature-media { border-radius: 18px; }
+#gallery .feature-content h3 { font-size: clamp(28px, 3vw, 42px); font-weight: 650; letter-spacing: -.02em; }
+#gallery .route-sidebar { gap: 26px; }
+#gallery .side-copy strong { line-height: 1.5; }
+
+@media (min-width: 1101px) {
+  #gallery .picks-grid { grid-template-columns: repeat(12, minmax(0, 1fr)); }
+  #gallery .weekend-pick { grid-column: span 5; }
+  #gallery .weekend-pick:nth-child(1),
+  #gallery .weekend-pick:nth-child(4) { grid-column: span 7; }
+  #gallery .weekend-pick:nth-child(-n+2) { min-height: 510px; }
+}
+
+@media (max-width: 767px) {
+  #gallery .gallery-inner { padding-inline: 20px; }
+  #gallery .editorial-heading { display: block; margin-bottom: 24px; }
+  #gallery .editorial-heading h2 { max-width: none; font-size: clamp(27px, 7.1vw, 32px); line-height: 1.4; }
+  #gallery .editorial-heading > p { margin-top: 12px; font-size: 13px; line-height: 1.8; }
+  #gallery .editorial-heading .section-kicker { font-size: 9px; letter-spacing: .14em; }
+  #gallery .weekend-picks { padding-block: 40px 28px; }
+  #gallery .picks-grid { grid-template-columns: minmax(0, 1fr); gap: 20px; }
+  #gallery .weekend-pick { min-height: 430px; border-radius: 14px; }
+  #gallery .weekend-pick::before { top: 16px; right: 16px; }
+  #gallery .weekend-pick .pick-copy { padding: 105px 20px 20px; }
+  #gallery .pick-copy > h3 { font-size: 29px; }
+  #gallery .pick-city { top: 17px; left: 20px; }
+  #gallery .pick-actions button { padding-inline: 16px; }
+  #gallery .province-atlas { padding-block: 32px; }
+  #gallery .atlas-city-detail { margin-top: 20px; border-radius: 14px; }
+  #gallery .atlas-highlights > button { min-height: 245px; }
+  #gallery .guide-steps { gap: 22px; }
+  #gallery .guide-steps h3 { margin-bottom: 6px; }
+  #gallery .theme-routes { padding-block: 34px 40px; }
+  #gallery .theme-routes .gallery-grid { gap: 28px; }
+  #gallery .route-sidebar { grid-template-columns: minmax(0, 1fr); gap: 26px; }
+  #gallery .side-route { min-width: 0; }
+  #gallery .side-media { aspect-ratio: 16 / 9; }
+  #gallery .side-copy strong { font-size: 24px; }
+  #gallery .side-copy small, #gallery .side-copy > span { font-size: 12px; }
+  #gallery .feature-media { border-radius: 14px; }
+}
+
 /* The map itself keeps its provider's authentic tiles; surrounding controls use glass. */
 .explore, .trip { background: #0e2135; border-color: #2c465a; border-radius: 14px; scrollbar-color: #365a6c transparent; }
 .workspace { min-width: 0; }

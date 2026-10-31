@@ -24,7 +24,12 @@ vm.runInContext(HTML.split('<script>')[1].split('</script>')[0].replace(/\ninit\
 assert(get('#gallery').innerHTML.includes('data-start-route="luoyang"'));assert(get('#gallery').innerHTML.includes('data-feature-route="classic"'));
 assert(get('#gallery').innerHTML.includes('data-open-sources'),'Mobile gallery must retain sources access');
 assert(get('#gallery').innerHTML.includes('data-pick-plan="hn-wansui"'));assert(get('#gallery').innerHTML.includes('data-pick-detail="hn-laojunshan"'));
-assert(get('#gallery').innerHTML.includes('实景照片待补充'),'Unverified destination photos must not be disguised as real images');
+// 精选区已全部有图；改用仍缺图的周口野生动物世界核对真实占位渲染。
+const missingPhotoPlace=CATALOG.find(place=>place.id==='hn-zhoukou-zoo');
+assert(missingPhotoPlace&&!missingPhotoPlace.image,'The placeholder probe must use a real destination without a photograph');
+const missingPhotoMarkup=run("photoMediaHTML(CATALOG.find(place=>place.id==='hn-zhoukou-zoo'))");
+assert(missingPhotoMarkup.includes('实景待补 · 照片占位'),'Missing destination photos must be labelled as placeholders');
+assert(!/<img\b/i.test(missingPhotoMarkup),'Missing destination photos must not be disguised as real images');
 const carouselDraft=run('JSON.stringify(compactDraft())');get('#brieftext').value='两天时间，想看山水';
 const expectedHero=selectDailyHeroPhotos(CATALOG,fixtureInstant);
 assert.equal(expectedHero.length,10,'The homepage has ten actual daily photographs when the library supports it');
