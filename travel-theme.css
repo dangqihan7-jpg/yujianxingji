@@ -680,8 +680,9 @@ dialog::backdrop { background: #03101bc9; backdrop-filter: blur(8px); -webkit-ba
   .editorial-heading { gap: 16px; }
   .editorial-heading h2 { font-size: clamp(26px, 7vw, 34px); }
   .editorial-heading > p { font-size: 12px; line-height: 1.8; }
-  .journey-hero { height: 540px; min-height: 540px; }
-  .journey-hero .hero-content { padding: 85px 22px 205px; }
+  /* Keep cover statistics above the carousel controls when mobile text wraps. */
+  .journey-hero { height: auto; min-height: 540px; max-height: none; justify-content: flex-start; }
+  .journey-hero .hero-content { padding: 85px 22px 24px; flex-shrink: 0; }
   .journey-hero .hero-content h2 { font-size: 38px; line-height: 1.2; }
   .journey-hero .hero-content h2 span { font-size: 18px; margin-top: 12px; line-height: 1.65; }
   .journey-hero .hero-eyebrow { font-size: 9px; margin-bottom: 14px; }
@@ -689,7 +690,7 @@ dialog::backdrop { background: #03101bc9; backdrop-filter: blur(8px); -webkit-ba
   .journey-hero .hero-actions { gap: 8px; margin-top: 18px; }
   .journey-hero .hero-actions button { padding: 10px 13px; font-size: 12px; gap: 13px; }
   .journey-hero .hero-actions .hero-city-entry { padding-inline: 0; }
-  .journey-hero .hero-bottom { left: 18px; right: 18px; bottom: 16px; gap: 9px; }
+  .journey-hero .hero-bottom { position: relative; left: auto; right: auto; bottom: auto; width: calc(100% - 36px); margin: 0 18px 16px; gap: 9px; flex-shrink: 0; }
   .journey-hero .hero-photo-meta { padding: 8px 9px; gap: 8px; border-radius: 9px; }
   .journey-hero .hero-photo-meta .hero-photo-info #hero-photo-source { font-size: 12px; min-height: 44px; }
   .journey-hero .hero-photo-info #hero-photo-date { font-size: 10px; }
