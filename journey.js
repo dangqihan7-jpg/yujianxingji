@@ -1,5 +1,6 @@
 let decisionState=validateDecisionState(),activeStudy=null,lastPlanningSource='manual';
 let lastRenderedDraft=null;let currentPresetId='classic',saveBooting=true,saveRevision=0,lastSaved='',saveTimer,saveInFlight=false,saveBlocked=false,restoreFailed=false;
+let restorePromise=null,restoreInitialized=false,restoreContinueAllowed=false;
 const undoStack=[],trafficCache=new Map();let trafficExpiryTimer=null;
 function ensureDayCount(days){const fixed=trip.filter(s=>s.lockedDay>days);if(fixed.length)throw Error('无法缩短为 '+days+' 天：'+fixed.map(s=>s.place.name+' 已固定在第 '+s.lockedDay+' 天').join('、')+'。请先取消固定日期或手动调整。')}
 function scheduleTrafficExpiry(){if(trafficExpiryTimer!=null)clearTimeout(trafficExpiryTimer);const next=[...trafficCache.values()].map(t=>t.queriedAt+1800000-Date.now()).filter(v=>v>0);if(next.length)trafficExpiryTimer=setTimeout(()=>{renderTrip();renderMap();scheduleTrafficExpiry()},Math.min(...next)+30)}let draftOperation=0,matchOperation=0,trafficOperation=0,trafficBusy=false;let matchCandidates=[],matchingId=null,matchSelected=null,focusSeq=0;
@@ -24,7 +25,7 @@ async function flushSave(){
   finally{saveInFlight=false;if(!saveBlocked&&JSON.stringify(compactDraft())!==lastSaved)scheduleSave()}
 }
 function presetState(){document.querySelectorAll('[data-preset]').forEach(b=>{b.classList.toggle('active',b.dataset.preset===currentPresetId);b.setAttribute?.('aria-pressed',String(b.dataset.preset===currentPresetId))});const preset=PRESETS.find(r=>r.id===currentPresetId);$('#presetnote').textContent=preset?.title||'自选行程';$('#routehinttext').textContent=preset?(preset.story+' '+preset.note):'确认每一站的位置，并为交通、预约和休息留出时间。'}
-async function applyDraft(raw,validated=null){const op=++draftOperation,d=validated||await api('/api/validate',raw);if(op!==draftOperation)return false;const nextDecision=validateDecisionState(raw.decision||{},d.stops);trip=d.stops;decisionState=nextDecision;$('#days').value=String(d.days);$('#start').value=d.start;$('#city').value=DECISION_CITIES.includes(raw.city)?raw.city:'河南';$('#travelmode').value=['walking','driving','transit'].includes(raw.mode)?raw.mode:'driving';$('#maxhours').value=String([6,8,10].includes(raw.maxHours)?raw.maxHours:8);$('#restmins').value=String([0,30,60].includes(raw.restMinutes)?raw.restMinutes:30);currentPresetId=PRESETS.some(r=>r.id===raw.presetId)?raw.presetId:null;day=1;$('#query').value='';setFilter('all');lastAdvice=null;presetState();renderAll();await search();return true}
+async function applyDraft(raw,validated=null,{searchAfter=true}={}){const op=++draftOperation,d=validated||await api('/api/validate',raw);if(op!==draftOperation)return false;const nextDecision=validateDecisionState(raw.decision||{},d.stops);trip=d.stops;decisionState=nextDecision;$('#days').value=String(d.days);$('#start').value=d.start;$('#city').value=DECISION_CITIES.includes(raw.city)?raw.city:'河南';$('#travelmode').value=['walking','driving','transit'].includes(raw.mode)?raw.mode:'driving';$('#maxhours').value=String([6,8,10].includes(raw.maxHours)?raw.maxHours:8);$('#restmins').value=String([0,30,60].includes(raw.restMinutes)?raw.restMinutes:30);currentPresetId=PRESETS.some(r=>r.id===raw.presetId)?raw.presetId:null;day=1;$('#query').value='';setFilter('all');lastAdvice=null;presetState();renderAll();if(searchAfter)await search();return true}
 function exactLocation(p){return p.routing?.location||(p.source==='amap'?p.location:null)}
 function mapLocation(p){return exactLocation(p)||p.location}
 function dayStops(){return trip.filter(s=>s.day===day)}
@@ -263,12 +264,68 @@ $('#file').onchange=async e=>{const file=e.target.files[0];if(!file)return;try{i
 document.addEventListener?.('visibilitychange',()=>{if(document.visibilityState==='hidden')flushSave();else{renderTrip();renderMap();scheduleTrafficExpiry()}});
 globalThis.addEventListener?.('pagehide',()=>{if(!saveBooting&&!saveBlocked&&cfg.persistenceConfigured&&JSON.stringify(compactDraft())!==lastSaved&&!saveInFlight)fetch('/api/draft',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({draft:compactDraft(),revision:saveRevision}),keepalive:true}).catch(()=>{})});
 function setHydrating(active){for(const selector of ['#decision','#presets','#cityform','.filters','#searchform','#places','#trip','#days','#start','#travelmode','#maxhours','#restmins','#clear','#undo','#plan','#restorepreset','#import','#export','#poster','#share','#trafficreview','#route','#map']){const node=$(selector);if(node)node.inert=active;}}
-async function init(){
-  saveBooting=true;setHydrating(true);$('#saveretry').disabled=true;restoreFailed=false;saveBlocked=false;
-  renderPhotoCredits();renderPresets();loadPreset('luoyang',true);
-  try{cfg=await api('/api/config');await refreshAuth();renderGallery();$('#draftinfo').textContent=cfg.persistenceConfigured?'行程自动保存到当前账号；也可以导出文件留存。':'离线展示不连接账号保存，请导出行程留存。';connectMap();if(cfg.persistenceConfigured){const stored=await api('/api/draft');if(stored.draft){const validated=await api('/api/validate',stored.draft);await applyDraft(stored.draft,validated);saveRevision=stored.revision;lastSaved=JSON.stringify(compactDraft());saveStatus('已恢复上次保存的行程')}else{saveRevision=0;saveStatus('自动保存已开启')}
-  try{const pending=sessionStorage.getItem('yujianxingji.pendingDraft');sessionStorage.removeItem('yujianxingji.pendingDraft');if(pending){const raw=JSON.parse(pending);if(raw&&Array.isArray(raw.stops)&&raw.stops.length){await applyDraft(raw);toast('已载入登录前编辑的行程，可继续调整或导出')}}}catch{/* 暂存草稿无效时保留已恢复的行程 */}
-  }else saveStatus('离线展示，请导出行程留存。');saveBooting=false;setHydrating(false);scheduleSave();}
-  catch(e){if(e.status===401){cfg.persistenceConfigured=false;saveBooting=false;setHydrating(false);const needLogin=cfg.authMode==='standalone';saveStatus(needLogin?'登录后可自动保存行程，访客行程仅保留在本页。':'访客行程仅保留在本页，请导出留存。');$('#draftinfo').textContent=needLogin?'登录后行程自动保存到你的账号；访客请导出文件留存。':'访客行程不连接账号保存，请导出文件留存。';return}if(!cfg.mapConfigured){mapConnection='failed';showMapStatus()}restoreFailed=true;saveBlocked=true;saveStatus('暂时无法读取已保存行程。请重试读取，以保留之前的修改。',true);$('#saveretry').textContent='重试读取行程';}
-  finally{$('#saveretry').disabled=false;if(!restoreFailed)$('#saveretry').textContent='重试保存';renderDecision()}
+function setRestoreStatus(state,message='',canContinue=false){
+  const box=$('#restore-status'),copy=$('#restore-status-message'),retry=$('#restore-retry'),keep=$('#restore-continue');
+  restoreContinueAllowed=state==='error'&&canContinue;
+  if(box){box.hidden=state==='ready';if(box.dataset.state!==state)box.dataset.state=state}
+  if(copy&&copy.textContent!==message)copy.textContent=message;
+  if(retry){retry.disabled=state==='loading';retry.onclick=init}
+  if(keep){keep.hidden=!restoreContinueAllowed;keep.disabled=state==='loading';keep.onclick=keepRestoredJourney}
+}
+function keepRestoredJourney(){
+  if(restorePromise||!restoreFailed||!restoreContinueAllowed)return;
+  lastSaved=JSON.stringify(compactDraft());clearTimeout(saveTimer);
+  saveBooting=false;saveBlocked=false;restoreFailed=false;setHydrating(false);setRestoreStatus('ready');
+  saveStatus('已保留当前行程，登录前的暂存内容仍保留。');$('#saveretry').textContent='重试保存';renderDecision();
+  void Promise.resolve().then(()=>search()).catch(()=>{});
+}
+function init(){
+  if(restorePromise)return restorePromise;
+  restorePromise=restoreJourney().finally(()=>{restorePromise=null});
+  return restorePromise;
+}
+async function restoreJourney(){
+  const requestOptions={timeoutMs:12000};let phase='account';
+  saveBooting=true;saveBlocked=true;restoreFailed=false;clearTimeout(saveTimer);setHydrating(true);$('#saveretry').disabled=true;
+  setRestoreStatus('loading','正在读取账号与已保存行程，请稍候…');
+  try{
+    if(!restoreInitialized){renderPhotoCredits();renderPresets();if(!trip.length)loadPreset('luoyang',true);restoreInitialized=true}
+    cfg=await api('/api/config',undefined,requestOptions);
+    await refreshAuth(requestOptions);
+    renderGallery();$('#draftinfo').textContent=cfg.persistenceConfigured?'行程自动保存到当前账号；也可以导出文件留存。':'离线展示不连接账号保存，请导出行程留存。';connectMap();
+    if(cfg.persistenceConfigured){
+      phase='saved';const stored=await api('/api/draft',undefined,requestOptions);
+      if(stored.draft){
+        const validated=await api('/api/validate',stored.draft,requestOptions);
+        if(!await applyDraft(stored.draft,validated,{searchAfter:false}))throw Error('行程已变化，请重试读取');
+        saveRevision=stored.revision;lastSaved=JSON.stringify(compactDraft());saveStatus('已恢复上次保存的行程');
+      }else{saveRevision=0;lastSaved='';saveStatus('自动保存已开启')}
+      phase='pending';const pending=typeof sessionStorage==='undefined'?null:sessionStorage.getItem('yujianxingji.pendingDraft');
+      if(pending){
+        const raw=JSON.parse(pending);
+        if(!raw||!Array.isArray(raw.stops)||!raw.stops.length)throw Error('登录前行程格式不正确');
+        const validated=await api('/api/validate',raw,requestOptions);
+        if(!await applyDraft(raw,validated,{searchAfter:false}))throw Error('行程已变化，请重试读取');
+        sessionStorage.removeItem('yujianxingji.pendingDraft');
+        toast('已载入登录前编辑的行程，可继续调整或导出');
+      }
+    }else saveStatus('离线展示，请导出行程留存。');
+    saveBooting=false;saveBlocked=false;setHydrating(false);setRestoreStatus('ready');scheduleSave();
+    // Supplementary place search must not hold up a validated restored draft.
+    void Promise.resolve().then(()=>search()).catch(()=>{});
+  }catch(e){
+    if(e.status===401){
+      cfg.persistenceConfigured=false;saveBooting=false;saveBlocked=false;setHydrating(false);setRestoreStatus('ready');
+      const needLogin=cfg.authMode==='standalone';
+      saveStatus(needLogin?'登录后可自动保存行程，访客行程仅保留在本页。':'访客行程仅保留在本页，请导出留存。');
+      $('#draftinfo').textContent=needLogin?'登录后行程自动保存到你的账号；访客请导出文件留存。':'访客行程不连接账号保存，请导出文件留存。';
+      return;
+    }
+    if(!cfg.mapConfigured){mapConnection='failed';showMapStatus()}
+    restoreFailed=true;saveBlocked=true;
+    const message=phase==='pending'?'登录前的暂存行程未能完成恢复，原暂存内容已保留。可重试读取，或保留当前已读取行程继续。':e.code==='REQUEST_TIMEOUT'?'连接超时，已暂停恢复与自动保存。请重试读取行程。':'暂时无法读取已保存行程。请重试读取，以保留之前的修改。';
+    saveStatus(message,true);setRestoreStatus('error',message,phase==='pending');$('#saveretry').textContent='重试读取行程';
+  }finally{
+    $('#saveretry').disabled=false;if(!restoreFailed)$('#saveretry').textContent='重试保存';renderDecision();
+  }
 }

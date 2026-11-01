@@ -9,7 +9,7 @@ function askCurrentView(){return document.body?.dataset?.view||(typeof activeVie
 function askAllowedView(){return ['planner','overview'].includes(askCurrentView())}
 function askReducedMotion(){return Boolean(globalThis.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches)}
 function askTripSnapshot(){
-  if(typeof saveBooting!=='undefined'&&saveBooting)throw Error('正在恢复已保存行程，请稍后提问');
+  if(typeof saveBooting!=='undefined'&&saveBooting)throw Error(typeof restoreFailed!=='undefined'&&restoreFailed?'行程读取未完成，请关闭问答并点击页面顶部“重试读取行程”。':'正在恢复已保存行程，请稍后提问');
   const source=typeof currentShareSnapshot==='function'?currentShareSnapshot():typeof createShareSnapshot==='function'&&typeof trip!=='undefined'?createShareSnapshot(trip,Number(askElement('days')?.value)||1):null;
   if(!source||!Array.isArray(source.places)||!source.places.length||!Array.isArray(source.schedule))throw Error('请先加入地点或生成行程，再来提问');
   const local=typeof trip!=='undefined'&&Array.isArray(trip)?trip:[];

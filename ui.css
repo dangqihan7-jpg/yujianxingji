@@ -457,3 +457,13 @@ dialog {border:1px solid var(--line);border-radius:8px;background:#fffefb;color:
   #posterpreview .poster-preview-actions>*{display:flex;align-items:center;justify-content:center;width:100%;min-height:44px}
   #posterpreview .poster-preview-note,#posterpreviewstatus{font-size:14px;line-height:1.8;overflow-wrap:anywhere;margin:12px 0}
 }
+
+.restore-status{display:flex;align-items:center;gap:16px;margin:12px auto;padding:14px 18px;width:calc(100% - 32px);max-width:1280px;box-sizing:border-box;border:1px solid #4dd8ff55;border-radius:12px;background:#102436;color:#e9f4f5}
+.restore-status[hidden]{display:none!important}
+.restore-status p{flex:1;min-width:0;margin:0;font-size:14px;line-height:1.7;overflow-wrap:anywhere}
+.restore-status button{flex:none;min-height:44px;color:inherit;border-color:#4dd8ff88}
+.restore-status button:disabled{opacity:.6;cursor:wait}
+@media(max-width:767px){
+  .restore-status{align-items:stretch;flex-direction:column;gap:10px;width:calc(100% - 24px);padding:14px}
+  .restore-status button{width:100%}
+}
