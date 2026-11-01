@@ -12,14 +12,19 @@ const localTrip=[
   {day:1,duration:60,place:{id:'food-kaifeng',name:'开封美食',city:'开封',category:'food'}},
   {day:2,duration:90,place:{id:'hn-kaifeng-fu',name:'开封府',city:'开封',category:'scenic'}}
 ];
-function fixture({view='planner',protocol='https:',observer=true}={}){
-  const nodes=new Map(),requests=[],timers=new Map(),documentEvents=new Map(),globalEvents=new Map();let nextTimer=0,observerCallback=null;
+function fixture({view='planner',protocol='https:',observer=true,domMutations=false}={}){
+  const nodes=new Map(),requests=[],timers=new Map(),documentEvents=new Map(),globalEvents=new Map(),mutationRecords=[];let nextTimer=0,observerCallback=null,observing=false;
+  function recordChildList(target){
+    if(!domMutations||!observing)return;
+    for(let node=target;node;node=node.parentNode)if(node===body){mutationRecords.push({type:'childList',target});break}
+  }
   class Node {
-    constructor(tag='div'){this.tagName=tag;this._id='';this._html='';this._text='';this.value='';this.placeholder='';this.open=false;this.hidden=false;this.disabled=false;this.dataset={};this.attributes={};this.children=[];this.handlers=new Map();this.style={overflow:''};this.isConnected=true;this.scrollTop=0;this.scrollHeight=400}
+    constructor(tag='div'){this.tagName=tag;this._id='';this._html='';this._text='';this.textWrites=0;this.value='';this.placeholder='';this.open=false;this.hidden=false;this.disabled=false;this.dataset={};this.attributes={};this.children=[];this.handlers=new Map();this.style={overflow:''};this.isConnected=true;this.scrollTop=0;this.scrollHeight=400}
     set id(value){this._id=value;nodes.set(value,this)}get id(){return this._id}
-    set innerHTML(value){this._html=value;for(const match of value.matchAll(/\bid="([^"]+)"/g)){const node=new Node(match[1]==='ask-question'?'textarea':'div');node.id=match[1];if(match[1]==='ask-question')node.placeholder='龙门石窟需要提前预约吗？';this.children.push(node)}}get innerHTML(){return this._html}
-    set textContent(value){this._text=String(value)}get textContent(){return this._text}
-    append(node){node.parentNode=this;node.isConnected=true;this.children.push(node);if(node.id)nodes.set(node.id,node)}
+    set innerHTML(value){this._html=value;for(const match of value.matchAll(/\bid="([^"]+)"/g)){const node=new Node(match[1]==='ask-question'?'textarea':'div');node.id=match[1];node.parentNode=this;if(match[1]==='ask-question')node.placeholder='龙门石窟需要提前预约吗？';this.children.push(node)}recordChildList(this)}get innerHTML(){return this._html}
+    // Native textContent replaces text nodes even when the string is unchanged.
+    set textContent(value){this._text=String(value);this.textWrites++;recordChildList(this)}get textContent(){return this._text}
+    append(node){node.parentNode=this;node.isConnected=true;this.children.push(node);if(node.id)nodes.set(node.id,node);recordChildList(this)}
     setAttribute(key,value){this.attributes[key]=value}getAttribute(key){return this.attributes[key]}
     addEventListener(type,handler){const list=this.handlers.get(type)||[];list.push(handler);this.handlers.set(type,list)}
     emit(type,event={}){for(const handler of this.handlers.get(type)||[])handler(event)}
@@ -38,11 +43,20 @@ function fixture({view='planner',protocol='https:',observer=true}={}){
     matchMedia:()=>motion,addEventListener(type,handler){globalEvents.set(type,handler)},setTimeout(fn,delay){const id=++nextTimer;timers.set(id,{fn,delay});return id},clearTimeout:id=>timers.delete(id),
     localStorage:new Proxy({},{get(){throw Error('Question history must never use localStorage')}}),
     fetch:async(path,options)=>{requests.push({path,options});return context.response instanceof Promise?await context.response:context.response},response:{ok:true,status:200,json:async()=>({answer:'第一天安排了 1 个景点：龙门石窟；另外有 1 站美食。'})}};
-  if(observer)context.MutationObserver=class{constructor(callback){observerCallback=callback}observe(node,options){assert.equal(node,body);assert(options.childList&&options.subtree);this.options=options}};
+  if(observer)context.MutationObserver=class{constructor(callback){observerCallback=callback}observe(node,options){assert.equal(node,body);assert(options.childList&&options.subtree);this.options=options;observing=true}};
   vm.createContext(context);vm.runInContext(source,context);
   const emit=(type,event={})=>{for(const handler of documentEvents.get(type)||[])handler(event)};
   return {context,nodes,requests,timers,motion,globalEvents,body,html,Node,emit,get:id=>nodes.get(id),run:code=>vm.runInContext(code,context),install:()=>context.installAskUI(),open:()=>context.openAsk(),send:question=>{nodes.get('ask-question').value=question;return context.submitAskQuestion({preventDefault(){}})},
-    mutate(){observerCallback?.()},tick(){const entry=[...timers.entries()][0];assert(entry,'Expected a placeholder timer');timers.delete(entry[0]);assert.equal(entry[1].delay,5000);entry[1].fn()},async flush(){await Promise.resolve();await Promise.resolve();await Promise.resolve()}};
+    mutate(){observerCallback?.()},async settleMutations(){
+      // Deliver batched childList records between microtask checkpoints, bounded
+      // so a refresh -> textContent -> observer loop fails rather than hangs.
+      for(let round=0;round<20;round++){
+        await Promise.resolve();await Promise.resolve();await Promise.resolve();
+        if(!mutationRecords.length)return;
+        observerCallback?.(mutationRecords.splice(0));
+      }
+      assert.fail('Ask UI MutationObserver refresh must settle without rewriting unchanged text');
+    },tick(){const entry=[...timers.entries()][0];assert(entry,'Expected a placeholder timer');timers.delete(entry[0]);assert.equal(entry[1].delay,5000);entry[1].fn()},async flush(){await Promise.resolve();await Promise.resolve();await Promise.resolve()}};
 }
 
 // Persistent native entry, exact view scope and accessibility; opening is read-only.
@@ -56,6 +70,25 @@ function fixture({view='planner',protocol='https:',observer=true}={}){
   f.body.dataset.view='gallery';f.context.refreshAskUI();assert(f.get('ask-launcher').hidden);f.open();assert(!dialog.open);
   f.body.dataset.view='overview';f.context.refreshAskUI();assert(!f.get('ask-launcher').hidden);f.open();assert(dialog.open);
   f.body.dataset.view='decision';f.context.refreshAskUI();assert(!dialog.open);assert(f.get('ask-launcher').hidden);
+}
+// Real childList notifications must not turn unchanged button text into a microtask loop.
+{
+  const f=fixture({domMutations:true}),pending=deferred();f.install();await f.settleMutations();f.open();await f.settleMutations();
+  const send=f.get('ask-send'),input=f.get('ask-question');
+  async function assertStableRefresh(state){
+    const writes=send.textWrites;
+    for(let i=0;i<3;i++){f.context.refreshAskUI();await f.settleMutations()}
+    assert.equal(send.textWrites,writes,`${state}: refreshing unchanged controls must not replace their text nodes`);
+  }
+  assert.equal(send.textContent,'发送 ↗');assert(send.disabled);await assertStableRefresh('open');
+  input.value='第二天会不会太赶？';input.emit('input');f.emit('input');await f.settleMutations();
+  assert(!send.disabled);await assertStableRefresh('typing');
+  f.context.response=pending.promise;const work=f.send(input.value);await f.settleMutations();
+  assert.equal(send.textContent,'取消回答');assert.equal(send.type,'button');await assertStableRefresh('pending');
+  send.onclick({preventDefault(){}});await f.settleMutations();
+  assert.equal(send.textContent,'发送 ↗');assert.equal(input.value,'第二天会不会太赶？');await assertStableRefresh('cancelled');
+  pending.resolve({ok:true,status:200,json:async()=>({answer:'迟到的结果'})});await work;await f.settleMutations();
+  assert.equal(f.run('askHistory[0].state'),'cancelled');assert.equal(f.requests.length,1);
 }
 // Real share snapshot builder, category-aware, immutable and privacy-whitelisted.
 {
@@ -96,7 +129,7 @@ function fixture({view='planner',protocol='https:',observer=true}={}){
 }
 // Closing/Escape aborts one pending request. Late results cannot leak into another question.
 {
-  const f=fixture(),pending=deferred();f.context.response=pending.promise;f.install();f.open();const first=f.send('第一个问题？');await f.flush();assert.equal(f.requests.length,1);assert.equal(f.get('ask-status').textContent,'AI 正在回答…');assert(f.get('ask-send').disabled);
+  const f=fixture(),pending=deferred();f.context.response=pending.promise;f.install();f.open();const first=f.send('第一个问题？');await f.flush();assert.equal(f.requests.length,1);assert.match(f.get('ask-status').textContent,/AI 正在回答/);assert(!f.get('ask-send').disabled);assert.equal(f.get('ask-send').type,'button');assert.equal(f.get('ask-send').textContent,'取消回答');
   await f.send('不应重复发送？');assert.equal(f.requests.length,1);f.get('ask-dialog').cancel();assert(f.requests[0].options.signal.aborted);assert.equal(f.run('askHistory[0].state'),'cancelled');
   f.context.response={ok:true,status:200,json:async()=>({answer:'新的问题答案'})};f.open();await f.send('新的问题？');pending.resolve({ok:true,status:200,json:async()=>({answer:'迟到的旧答案'})});await first;
   assert.equal(f.run('askHistory[1].answer'),'新的问题答案');assert.equal(f.run('askHistory[0].answer'),'');assert.equal(f.run('askHistory[0].state'),'cancelled');assert.equal(f.requests.length,2);
@@ -119,6 +152,42 @@ function fixture({view='planner',protocol='https:',observer=true}={}){
   const without=fixture({observer:false}),late=deferred();without.context.response=late.promise;without.install();without.open();const old=without.send('一天几站？');without.context.trip.pop();late.resolve({ok:true,status:200,json:async()=>({answer:'过时答案'})});await old;assert.match(without.get('ask-status').textContent,/行程已修改/);assert.equal(without.run('askHistory[0].answer'),'');
   const changed=fixture(),wait=deferred();changed.context.response=wait.promise;changed.install();changed.open();const work=changed.send('怎么坐车？');changed.get('travelmode').value='driving';changed.emit('change');await changed.flush();assert(changed.requests[0].options.signal.aborted);wait.resolve({ok:true,status:200,json:async()=>({answer:'公交答案'})});await work;
 }
+// Cancelling in place keeps the drawer and original question, without a second call.
+{
+  const f=fixture(),pending=deferred();f.context.response=pending.promise;f.install();f.open();const question='第二天我想保留开封府，但担心安排太赶，应该怎么调整？',work=f.send(question);await f.flush();
+  const deadline=[...f.timers.values()].find(timer=>timer.delay===35000);assert(deadline,'The whole request has a bounded deadline');
+  let prevented=0;f.get('ask-send').onclick({preventDefault(){prevented++}});
+  assert.equal(prevented,1);assert(f.get('ask-dialog').open);assert(f.requests[0].options.signal.aborted);assert.equal(f.requests.length,1);assert.equal(f.get('ask-question').value,question);
+  assert.equal(f.run('askHistory[0].state'),'cancelled');assert(!f.run('askHistory[0].recoverElement.hidden'));assert.equal(f.get('ask-send').type,'submit');assert(!f.get('ask-send').disabled);assert.equal(f.get('ask-dialog').attributes['aria-busy'],'false');assert(![...f.timers.values()].some(timer=>timer.delay===35000));
+  pending.resolve({ok:true,status:200,json:async()=>({answer:'取消后的迟到答案'})});await work;assert.equal(f.run('askHistory[0].answer'),'');assert.equal(f.requests.length,1);
+}
+// Recovery never overwrites a new draft question or silently retries a paid request.
+{
+  const f=fixture(),pending=deferred();f.context.response=pending.promise;f.install();f.open();const work=f.send('第一天会不会太赶？');f.get('ask-question').value='我正在写另一个问题';
+  pending.resolve({ok:false,status:502,json:async()=>({error:'upstream failed'})});await work;
+  const recovery=f.run('askHistory[0].recoverElement');assert(!recovery.hidden);assert(!recovery.disabled);assert.equal(f.get('ask-question').value,'我正在写另一个问题');
+  recovery.onclick();assert.equal(f.get('ask-question').value,'我正在写另一个问题');assert.match(f.get('ask-status').textContent,/已有新的问题/);assert.equal(f.requests.length,1);
+  f.get('ask-question').value='';recovery.onclick();assert.equal(f.get('ask-question').value,'第一天会不会太赶？');assert.match(f.get('ask-status').textContent,/手动发送/);assert.equal(f.requests.length,1);
+  f.context.trip[0].duration=180;f.context.response={ok:true,status:200,json:async()=>({answer:'根据当前安排，第一站预留180分钟。'})};await f.send(f.get('ask-question').value);
+  assert.equal(f.requests.length,2);assert.equal(JSON.parse(f.requests[1].options.body).trip.schedule[0].stops[0].duration,180);assert.deepEqual(Object.keys(JSON.parse(f.requests[1].options.body)),['question','trip']);assert.equal(f.run('askHistory[0].state'),'error');assert.equal(f.run('askHistory[1].state'),'answered');assert(f.run('askHistory[1].recoverElement.hidden'));
+  const cancel=fixture(),waiting=deferred();cancel.context.response=waiting.promise;cancel.install();cancel.open();const old=cancel.send('旧问题');cancel.get('ask-question').value='保留新问题';cancel.get('ask-send').onclick({preventDefault(){}});assert.equal(cancel.get('ask-question').value,'保留新问题');waiting.resolve({ok:true,status:200,json:async()=>({answer:'迟到'})});await old;
+}
+// The deadline covers both fetch and body reading, and stale timers/results cannot cancel new work.
+{
+  for(const stage of ['fetch','body']){
+    const f=fixture(),pending=deferred(),next=deferred();f.context.response=stage==='fetch'?pending.promise:{ok:true,status:200,json:()=>pending.promise};f.install();f.open();const first=f.send('长时间等待的问题');await f.flush();
+    const [timerId,timer]=[...f.timers.entries()].find(([,entry])=>entry.delay===35000);f.timers.delete(timerId);timer.fn();
+    assert(f.requests[0].options.signal.aborted);assert.equal(f.run('askHistory[0].state'),'error');assert.equal(f.get('ask-question').value,'长时间等待的问题');assert.match(f.get('ask-status').textContent,/超时/);assert.equal(f.requests.length,1);assert.equal(f.run('askRequest'),null);assert(!f.run('askHistory[0].recoverElement.hidden'));
+    f.context.response=next.promise;const second=f.send('超时后手动发起的新问题');await f.flush();timer.fn();assert(!f.requests[1].options.signal.aborted,'An old deadline cannot abort a new request');assert.equal([...f.timers.values()].filter(entry=>entry.delay===35000).length,1);
+    pending.resolve(stage==='fetch'?{ok:true,status:200,json:async()=>({answer:'过时回答'})}:{answer:'过时回答'});await first;assert.equal(f.run('askHistory[0].answer'),'');assert.equal(f.run('askHistory[1].state'),'pending');assert.equal(f.get('ask-send').textContent,'取消回答');assert(f.run('askHistory[0].recoverElement.disabled'));
+    next.resolve({ok:true,status:200,json:async()=>({answer:'新的有效回答'})});await second;assert.equal(f.run('askHistory[1].answer'),'新的有效回答');assert(![...f.timers.values()].some(entry=>entry.delay===35000));assert(!f.run('askHistory[0].recoverElement.disabled'));
+  }
+}
+// Unexpected upstream aborts are recoverable rather than leaving a permanent pending entry.
+{
+  const f=fixture(),error=Error('interrupted');error.name='AbortError';f.context.response=Promise.reject(error);f.install();f.open();await f.send('需要保留的问题');assert.equal(f.run('askHistory[0].state'),'error');assert.equal(f.get('ask-question').value,'需要保留的问题');assert.match(f.get('ask-status').textContent,/中断/);assert.equal(f.run('askRequest'),null);assert(![...f.timers.values()].some(entry=>entry.delay===35000));assert.equal(f.requests.length,1);
+  const failure=fixture();failure.context.response={ok:false,status:429,json:async()=>({error:'今天额度已用完'})};failure.install();failure.open();await failure.send('原问题');assert.equal(failure.get('ask-question').value,'原问题');assert.equal(failure.requests.length,1);assert.match(failure.get('ask-status').textContent,/额度已用完/);
+}
 // Examples rotate only when the open drawer is visible, idle, empty and blurred.
 {
   const f=fixture();f.install();assert.equal(f.timers.size,0);f.open();assert.equal(f.timers.size,0,'Autofocused input cannot rotate');f.get('ask-question').blur();assert.equal(f.timers.size,1);f.tick();assert.equal(f.get('ask-question').placeholder,'第二天中午在开封有啥好吃的？');f.tick();assert.equal(f.get('ask-question').placeholder,'这两天的交通大概花多少钱？');f.tick();assert.equal(f.get('ask-question').placeholder,'龙门石窟需要提前预约吗？');assert.equal(f.get('ask-question').value,'');assert.equal(f.requests.length,0);
@@ -137,4 +206,4 @@ function fixture({view='planner',protocol='https:',observer=true}={}){
   assert.match(css,/@media \(max-width: 767px\)/);assert.match(css,/#ask-question[\s\S]*font-size: 16px/);assert.match(css,/min-height: 4[468]px/);assert.match(css,/safe-area-inset-bottom/);assert.match(css,/@media \(prefers-reduced-motion: reduce\)/);assert.match(css,/overscroll-behavior: contain/);assert(!/animation[^;]*infinite/.test(css));
   const legacy={document:{body:{dataset:{view:'gallery'}}}};vm.createContext(legacy);vm.runInContext(source,legacy);assert.doesNotThrow(()=>legacy.installAskUI());
 }
-console.log('Ask UI tests passed: view entry, real privacy-safe snapshots, read-only history, errors, cancellation, stale results, IME, examples and mobile controls.');
+console.log('Ask UI tests passed: view entry, MutationObserver convergence, privacy-safe snapshots, read-only history, recoverable errors, in-place cancellation, bounded fetch/body deadlines, stale timers/results, preserved new input, manual resend with fresh context, IME, examples and mobile controls.');

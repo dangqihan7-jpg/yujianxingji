@@ -47,6 +47,8 @@ dialog.ask-dialog[open] { display: grid; grid-template-rows: auto auto minmax(10
 .ask-dialog #ask-question:focus { outline: 0; border-color: #00d4aa; box-shadow: 0 0 0 3px #00d4aa1f; }
 .ask-dialog #ask-send { flex: none; min-height: 46px; min-width: 74px; max-width: 112px; padding: 10px 12px; color: #03231e; background: #00d4aa; border: 1px solid #7bead2; border-radius: 10px; font-size: 14px; line-height: 1.5; font-family: inherit; font-weight: 650; }
 .ask-dialog #ask-send:disabled { opacity: .5; cursor: default; }
+.ask-dialog #ask-send[data-mode="cancel"] { color: #dffff6; background: #173648; border-color: #72dcc6; }
+.ask-dialog .ask-recover { min-height: 44px; min-width: 44px; margin: 10px 0 0 14px; padding: 8px 12px; border: 1px solid #00d4aa50; border-radius: 10px; color: #b1ffed; background: #173648; font: inherit; font-size: 13px; line-height: 1.6; }
 .ask-dialog .ask-input-note { margin: 8px 0 0; color: #8ea8ba; font-size: 10px; line-height: 1.6; }
 .ask-dialog .ask-reference { margin: 0; padding: 8px 20px max(14px, env(safe-area-inset-bottom)); background: #102238; color: #a8bfcf; font-size: 10px; line-height: 1.7; }
 @keyframes ask-arrive { from { transform: translateY(24px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }

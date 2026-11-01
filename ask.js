@@ -2,7 +2,8 @@
 // previous messages or credentials are copied into the model's trip context.
 const ASK_EXAMPLES=['龙门石窟需要提前预约吗？','第二天中午在开封有啥好吃的？','这两天的交通大概花多少钱？'];
 const ASK_REFERENCE='AI 回答仅供参考，出行前请核实';
-let askInstalled=false,askHistory=[],askOperation=0,askRequest=null,askPendingEntry=null,askReturnFocus=null,askExampleIndex=0,askExampleTimer=null,askObserver=null,askRefreshQueued=false,askScrollState=null;
+const ASK_REQUEST_TIMEOUT_MS=35000;
+let askInstalled=false,askHistory=[],askOperation=0,askRequest=null,askRequestTimer=null,askPendingEntry=null,askReturnFocus=null,askExampleIndex=0,askExampleTimer=null,askObserver=null,askRefreshQueued=false,askScrollState=null;
 const askElement=id=>document.getElementById?.(id)||document.querySelector?.('#'+id);
 function askCurrentView(){return document.body?.dataset?.view||(typeof activeView!=='undefined'?activeView:'gallery')}
 function askAllowedView(){return ['planner','overview'].includes(askCurrentView())}
@@ -36,6 +37,7 @@ function ensureAskDialog(){
   askElement('ask-close').onclick=closeAsk;
   const revise=askElement('ask-revise');revise.hidden=typeof openRevise!=='function';revise.onclick=()=>{if(typeof openRevise==='function'){closeAsk();openRevise()}};
   askElement('ask-form').onsubmit=submitAskQuestion;
+  askElement('ask-send').onclick=event=>{if(askRequest){event.preventDefault();cancelAskRequest('已取消本次回答，问题已保留，可编辑后重新发送。');refreshAskUI()}};
   const input=askElement('ask-question');
   input.addEventListener('focus',refreshAskPlaceholder);input.addEventListener('blur',refreshAskPlaceholder);input.addEventListener('input',refreshAskUI);
   input.addEventListener('keydown',event=>{if(event.key==='Enter'&&!event.shiftKey&&!event.isComposing&&event.keyCode!==229){event.preventDefault();void submitAskQuestion()}});
@@ -56,6 +58,17 @@ function refreshAskPlaceholder(){
   askExampleTimer=setTimeout(()=>{askExampleTimer=null;askExampleIndex=(askExampleIndex+1)%ASK_EXAMPLES.length;input.placeholder=ASK_EXAMPLES[askExampleIndex];refreshAskPlaceholder()},5000);
 }
 function askSetStatus(message,state='idle'){const element=askElement('ask-status');if(element){if(element.textContent!==message)element.textContent=message;if(element.dataset.state!==state)element.dataset.state=state}}
+function restoreAskQuestion(entry,{explicit=false}={}){
+  const input=askElement('ask-question');if(!input||!entry||!askHistory.includes(entry))return false;
+  if(explicit){
+    if(!askElement('ask-dialog')?.open||!askAllowedView()||askRequest)return false;
+    if(input.value.trim()&&input.value.trim()!==entry.question){askSetStatus('输入框已有新的问题，请先发送或清空；原问题仍保留在上方。','error');input.focus?.({preventScroll:true});return false}
+  }
+  if(!input.value.trim())input.value=entry.question;
+  if(explicit){refreshAskUI();askSetStatus('问题已填入，请编辑后手动发送；将使用发送时的最新行程。');input.focus?.({preventScroll:true})}
+  return true;
+}
+function clearAskRequestTimer(){if(askRequestTimer!==null)clearTimeout(askRequestTimer);askRequestTimer=null}
 function renderAskHistory(){
   const history=askElement('ask-history');if(!history)return;
   const empty=askElement('ask-empty');if(empty)empty.hidden=askHistory.length>0;
@@ -65,19 +78,20 @@ function renderAskHistory(){
       const question=document.createElement('p');question.className='ask-user-question';question.textContent=entry.question;article.append(question);
       const answer=document.createElement('p');answer.className='ask-answer';article.append(answer);
       const note=document.createElement('p');note.className='ask-answer-note';article.append(note);
-      entry.element=article;entry.answerElement=answer;entry.noteElement=note;history.append(article);
+      const recover=document.createElement('button');recover.type='button';recover.className='ask-recover';recover.textContent='重新编辑问题';recover.onclick=()=>restoreAskQuestion(entry,{explicit:true});article.append(recover);
+      entry.element=article;entry.answerElement=answer;entry.noteElement=note;entry.recoverElement=recover;history.append(article);
     }
     entry.element.dataset.state=entry.state;entry.answerElement.textContent=entry.answer||entry.message||'AI 正在回答…';
     entry.noteElement.textContent=entry.state==='answered'?'基于提问时行程 · '+ASK_REFERENCE:entry.state==='pending'?'基于提问时行程 · 处理中':'基于提问时行程 · 未获得回答';
+    entry.recoverElement.hidden=!['error','cancelled'].includes(entry.state);entry.recoverElement.disabled=Boolean(askRequest);
   }
   history.scrollTop=history.scrollHeight;
 }
-function cancelAskRequest(message){
+function cancelAskRequest(message,{state='cancelled'}={}){
   if(!askRequest)return;
-  askOperation++;askRequest.abort();askRequest=null;
-  if(askPendingEntry){askPendingEntry.state='cancelled';askPendingEntry.message=message;askPendingEntry=null;renderAskHistory()}
-  const send=askElement('ask-send');if(send){send.disabled=false;send.textContent='发送 ↗'}
-  askElement('ask-dialog')?.setAttribute('aria-busy','false');askSetStatus(message);refreshAskPlaceholder();
+  askOperation++;clearAskRequestTimer();askRequest.abort();askRequest=null;
+  if(askPendingEntry){askPendingEntry.state=state;askPendingEntry.message=message;restoreAskQuestion(askPendingEntry);askPendingEntry=null;renderAskHistory()}
+  askElement('ask-dialog')?.setAttribute('aria-busy','false');askSetStatus(message,state==='error'?'error':'idle');refreshAskUI();
 }
 function refreshAskUI(){
   const button=askElement('ask-launcher');if(button){button.hidden=!askAllowedView();button.setAttribute('aria-expanded',String(Boolean(askElement('ask-dialog')?.open)))}
@@ -87,7 +101,8 @@ function refreshAskUI(){
   if(askRequest&&JSON.stringify(snapshot)!==askPendingEntry?.fingerprint){cancelAskRequest('行程已修改，本次提问已取消。请针对最新行程重新发送。')}
   const context=askElement('ask-context'),copy=snapshot?`${snapshot.days} 天 · ${snapshot.schedule.reduce((sum,block)=>sum+block.stops.length,0)} 站 · 只读取提问时的行程，不会修改安排。`:error;
   if(context&&context.textContent!==copy)context.textContent=copy;
-  const send=askElement('ask-send');if(send)send.disabled=Boolean(askRequest||error||!askElement('ask-question')?.value.trim());
+  const send=askElement('ask-send');if(send){send.disabled=!askRequest&&Boolean(error||!askElement('ask-question')?.value.trim());send.type=askRequest?'button':'submit';const label=askRequest?'取消回答':'发送 ↗';if(send.textContent!==label)send.textContent=label;send.dataset.mode=askRequest?'cancel':'send'}
+  for(const entry of askHistory)if(entry.recoverElement)entry.recoverElement.disabled=Boolean(askRequest);
   refreshAskPlaceholder();
 }
 function queueAskRefresh(){if(askRefreshQueued)return;askRefreshQueued=true;Promise.resolve().then(()=>{askRefreshQueued=false;refreshAskUI()})}
@@ -117,7 +132,8 @@ async function submitAskQuestion(event){
   if(location.protocol==='file:'){askSetStatus('离线页面无法使用行程问答，请打开在线网站。','error');return}
   const fingerprint=JSON.stringify(snapshot),controller=new AbortController(),operation=++askOperation;
   const entry={question,fingerprint,state:'pending',answer:'',message:''};askHistory.push(entry);askPendingEntry=entry;askRequest=controller;input.value='';renderAskHistory();
-  askSetStatus('AI 正在回答…','loading');dialog.setAttribute('aria-busy','true');askElement('ask-send').textContent='回答中…';refreshAskUI();
+  clearAskRequestTimer();askRequestTimer=setTimeout(()=>{if(operation!==askOperation||askRequest!==controller)return;cancelAskRequest('等待回答超时，问题已保留，请稍后手动重试。',{state:'error'})},ASK_REQUEST_TIMEOUT_MS);
+  askSetStatus('AI 正在回答…可点击“取消回答”停止等待。','loading');dialog.setAttribute('aria-busy','true');refreshAskUI();
   try{
     const response=await fetch('/api/ask',{method:'POST',headers:{'Content-Type':'application/json'},credentials:'same-origin',body:JSON.stringify({question,trip:snapshot}),signal:controller.signal});
     let result;try{result=await response.json()}catch{throw Error('行程问答服务暂时不可用，请稍后重试')}
@@ -127,9 +143,9 @@ async function submitAskQuestion(event){
     if(typeof result?.answer!=='string'||!result.answer.trim()||result.answer.length>12000)throw Error('暂时没有收到有效回答，请换个行程相关问题重试');
     entry.answer=result.answer.trim();entry.state='answered';renderAskHistory();askSetStatus('已回答。你可以继续询问当前行程。','success');
   }catch(error){
-    if(operation!==askOperation||!dialog.open||error.name==='AbortError')return;
-    entry.state='error';entry.message=error instanceof TypeError?'网络暂时不可用，请稍后重试':error.message||'暂时无法回答，请稍后重试';renderAskHistory();askSetStatus(entry.message,'error');
-  }finally{if(operation===askOperation){askRequest=null;askPendingEntry=null;dialog.setAttribute('aria-busy','false');askElement('ask-send').textContent='发送 ↗';refreshAskUI()}}
+    if(operation!==askOperation||!dialog.open)return;
+    entry.state='error';entry.message=error.name==='AbortError'?'请求已中断，问题已保留，请稍后手动重试。':error instanceof TypeError?'网络暂时不可用，请稍后重试':error.message||'暂时无法回答，请稍后重试';restoreAskQuestion(entry);renderAskHistory();askSetStatus(entry.message,'error');
+  }finally{if(operation===askOperation){clearAskRequestTimer();askRequest=null;askPendingEntry=null;dialog.setAttribute('aria-busy','false');refreshAskUI()}}
 }
 function installAskUI(){
   if(askInstalled||!document.body?.append||typeof document.createElement!=='function')return;askInstalled=true;
