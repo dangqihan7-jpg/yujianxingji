@@ -7,9 +7,10 @@
   box-shadow: 0 8px 32px #0006, 0 0 28px #00d4aa18; font-family: inherit; font-size: 14px; font-weight: 600; line-height: 1.4;
 }
 .ask-launcher > span:first-child { font-size: 21px; line-height: 1; }
-body:not([data-view="planner"]):not([data-view="overview"]) .ask-launcher,
+body:not([data-view="gallery"]):not([data-view="planner"]):not([data-view="overview"]) .ask-launcher,
 .ask-launcher[hidden], .ask-dialog [hidden] { display: none !important; }
 .ask-dock-clearance { display: none; }
+body[data-view="gallery"] .ask-dock-clearance,
 body[data-view="planner"] .ask-dock-clearance,
 body[data-view="overview"] .ask-dock-clearance { display: block; height: calc(96px + env(safe-area-inset-bottom)); }
 .ask-launcher:focus-visible, .ask-dialog button:focus-visible { outline: 3px solid #b1ffed; outline-offset: 4px; }
@@ -21,11 +22,20 @@ dialog.ask-dialog {
 dialog.ask-dialog[open] { display: grid; grid-template-rows: auto auto minmax(100px, 1fr) auto auto auto; height: min(740px, calc(100dvh - 24px)); animation: ask-arrive .35s cubic-bezier(.2,.7,.2,1) both; }
 .ask-dialog::backdrop { background: #020a16a8; backdrop-filter: blur(5px); }
 .ask-dialog .ask-head { display: flex; justify-content: space-between; gap: 14px; align-items: center; padding: 17px 20px 14px; background: #10283a; border-bottom: 1px solid #00d4aa26; }
+.ask-dialog .ask-head > div:first-child { min-width: 0; }
+.ask-dialog .ask-head-actions { display: flex; align-items: center; gap: 8px; flex: none; }
+.ask-dialog #ask-revise { min-height: 44px; padding: 8px; font-size: 12px; white-space: nowrap; }
 .ask-dialog .ask-eyebrow { font: 10px/1.5 var(--mono, monospace); letter-spacing: .15em; color: #72dcc6; }
-.ask-dialog h2 { margin: 3px 0 0; font-family: inherit; font-size: 22px; font-weight: 700; line-height: 1.4; color: #e9f4fa; }
+.ask-dialog h2 { margin: 3px 0 0; font-family: inherit; font-size: 20px; font-weight: 700; line-height: 1.4; color: #e9f4fa; }
 .ask-dialog #ask-close { flex: none; display: grid; place-items: center; width: 44px; height: 44px; border: 1px solid #00d4aa35; border-radius: 50%; color: #c1eadf; background: #173648; padding: 0; font-size: 18px; }
 .ask-dialog .ask-context { padding: 11px 20px; margin: 0; color: #a0bdc9; font-size: 12px; line-height: 1.7; border-bottom: 1px solid #20394c; overflow-wrap: anywhere; }
 .ask-dialog .ask-history { min-height: 0; padding: 20px; overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin; scrollbar-color: #00d4aa40 transparent; }
+.ask-dialog .ask-scope { padding: 12px 14px; border: 1px solid #00d4aa38; border-radius: 12px; background: #102b38; color: #b5ceda; }
+.ask-dialog .ask-scope strong { color: #a5f4df; font-size: 14px; }
+.ask-dialog .ask-scope p { margin: 7px 0 0; font-size: 12px; line-height: 1.8; overflow-wrap: anywhere; }
+.ask-dialog .ask-examples { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin: 12px 0 18px; }
+.ask-dialog .ask-examples button { min-width: 0; min-height: 44px; padding: 8px 10px; border: 1px solid #406070; border-radius: 10px; background: #143043; color: #c5e8e3; text-align: left; font: inherit; font-size: 12px; line-height: 1.7; overflow-wrap: anywhere; }
+.ask-dialog .ask-examples button:disabled { opacity: .5; cursor: default; }
 .ask-dialog .ask-empty { padding: 20px 4px; margin: 0; font-size: 15px; line-height: 1.9; color: #c5dce5; }
 .ask-dialog .ask-empty span { display: block; margin-top: 10px; color: #8ba7b9; font-size: 12px; }
 .ask-dialog .ask-exchange { margin: 0 0 24px; min-width: 0; }
@@ -56,7 +66,10 @@ dialog.ask-dialog[open] { display: grid; grid-template-rows: auto auto minmax(10
   .ask-launcher { right: 16px; bottom: calc(18px + env(safe-area-inset-bottom)); min-width: 104px; min-height: 50px; }
   dialog.ask-dialog { inset: auto 0 0 0; width: 100%; max-width: 100%; border-left: 0; border-right: 0; border-radius: 18px 18px 0 0; }
   dialog.ask-dialog[open] { height: min(740px, calc(100dvh - 12px)); max-height: calc(100dvh - 12px); }
-  .ask-dialog .ask-head { padding: 13px 16px 12px; }
+  .ask-dialog .ask-head { padding: 13px 16px 12px; gap: 8px; }
+  .ask-dialog h2 { font-size: 18px; }
+  .ask-dialog .ask-eyebrow { font-size: 9px; letter-spacing: .05em; }
+  .ask-dialog .ask-head-actions { gap: 4px; }
   .ask-dialog .ask-context { padding: 9px 16px; font-size: 11px; }
   .ask-dialog .ask-history { padding: 16px; }
   .ask-dialog .ask-status { padding-right: 16px; padding-left: 16px; }

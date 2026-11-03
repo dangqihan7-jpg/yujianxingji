@@ -21,7 +21,7 @@ function fixture({view='planner',protocol='https:',observer=true,domMutations=fa
   class Node {
     constructor(tag='div'){this.tagName=tag;this._id='';this._html='';this._text='';this.textWrites=0;this.value='';this.placeholder='';this.open=false;this.hidden=false;this.disabled=false;this.dataset={};this.attributes={};this.children=[];this.handlers=new Map();this.style={overflow:''};this.isConnected=true;this.scrollTop=0;this.scrollHeight=400}
     set id(value){this._id=value;nodes.set(value,this)}get id(){return this._id}
-    set innerHTML(value){this._html=value;for(const match of value.matchAll(/\bid="([^"]+)"/g)){const node=new Node(match[1]==='ask-question'?'textarea':'div');node.id=match[1];node.parentNode=this;if(match[1]==='ask-question')node.placeholder='龙门石窟需要提前预约吗？';this.children.push(node)}recordChildList(this)}get innerHTML(){return this._html}
+    set innerHTML(value){this._html=value;for(const match of value.matchAll(/\bid="([^"]+)"/g)){const node=new Node(match[1]==='ask-question'?'textarea':'div');node.id=match[1];node.parentNode=this;if(match[1]==='ask-question')node.placeholder='我的行程每天分别安排了哪些地点？';this.children.push(node)}recordChildList(this)}get innerHTML(){return this._html}
     // Native textContent replaces text nodes even when the string is unchanged.
     set textContent(value){this._text=String(value);this.textWrites++;recordChildList(this)}get textContent(){return this._text}
     append(node){node.parentNode=this;node.isConnected=true;this.children.push(node);if(node.id)nodes.set(node.id,node);recordChildList(this)}
@@ -67,9 +67,35 @@ function fixture({view='planner',protocol='https:',observer=true,domMutations=fa
   const dialog=f.get('ask-dialog');assert(dialog.open);assert.equal(dialog.tagName,'dialog');assert.equal(dialog.attributes['aria-labelledby'],'ask-title');assert(dialog.innerHTML.includes('最多 600 字'));
   assert.equal(f.context.document.activeElement,f.get('ask-question'));assert.equal(f.body.style.overflow,'hidden');assert.equal(f.html.style.overflow,'hidden');assert.equal(f.requests.length,0);
   f.open();assert.equal(f.get('ask-dialog'),dialog);dialog.close();assert.equal(f.body.style.overflow,'auto');assert.equal(f.html.style.overflow,'clip');assert.equal(f.context.document.activeElement,f.get('ask-launcher'));
-  f.body.dataset.view='gallery';f.context.refreshAskUI();assert(f.get('ask-launcher').hidden);f.open();assert(!dialog.open);
+  f.body.dataset.view='gallery';f.context.refreshAskUI();assert(!f.get('ask-launcher').hidden);f.open();assert(dialog.open);assert.equal(f.get('ask-dialog'),dialog,'Gallery reuses the same drawer');f.context.closeAsk();
   f.body.dataset.view='overview';f.context.refreshAskUI();assert(!f.get('ask-launcher').hidden);f.open();assert(dialog.open);
   f.body.dataset.view='decision';f.context.refreshAskUI();assert(!dialog.open);assert(f.get('ask-launcher').hidden);
+}
+// Public-service presentation is limited to actual trip and site functions on the home entry.
+{
+  const f=fixture({view:'gallery'});f.install();assert(!f.get('ask-launcher').hidden);assert.equal(f.get('ask-launcher').children[1].textContent,'问行程与站内功能');
+  assert.match(f.get('ask-launcher').attributes['aria-label'],/公众服务问答/);f.open();const html=f.get('ask-dialog').innerHTML;
+  assert.match(html,/公众服务问答 · 河南周末游/);assert.match(html,/解释当前行程、分享与导出操作、拍照识景点/);assert.match(html,/不会替你改单或执行操作/);assert.match(html,/实时票价、天气、预约及站外服务信息未核实/);
+  assert(!/便民热线|一键预约|实时天气查询/.test(html));assert.equal(f.requests.length,0);
+  f.context.saveBooting=true;f.context.restoreFailed=true;f.context.refreshAskUI();assert.match(f.get('ask-context').textContent,/重试读取行程/);assert(f.get('ask-send').disabled);
+  f.context.saveBooting=false;f.context.trip=[];f.context.refreshAskUI();assert.equal(f.get('ask-context').textContent,'请先加入地点');assert(f.get('ask-send').disabled);assert.equal(f.requests.length,0);
+}
+// Example chips only fill an editable question, protect user input and disable while pending.
+{
+  const f=fixture({view:'gallery'}),pending=deferred();f.install();f.open();const input=f.get('ask-question');
+  const ids=['ask-example-trip','ask-example-share','ask-example-export','ask-example-vision'];
+  assert.equal(f.get(ids[0]).textContent,'第 1 天安排了几站，会不会太赶？');
+  for(const [index,id] of ids.entries()){
+    input.value='';f.get(id).onclick();assert.equal(input.value,f.get(id).textContent);assert.match(f.get('ask-status').textContent,/手动发送/);assert.equal(f.requests.length,0);
+    input.value='保留我正在写的问题';f.get(id).onclick();assert.equal(input.value,'保留我正在写的问题');assert.match(f.get('ask-status').textContent,/不会覆盖/);assert.equal(f.requests.length,0);
+  }
+  // The trip example follows the draft's actual nonempty day, not a hardcoded destination/order.
+  f.context.trip=f.context.trip.filter(stop=>stop.day===2);f.context.refreshAskUI();assert.equal(f.get(ids[0]).textContent,'第 2 天安排了几站，会不会太赶？');
+  input.value='';f.get(ids[1]).onclick();f.context.response=pending.promise;const work=f.send(input.value);assert.equal(f.requests.length,1);
+  for(const id of ids){assert(f.get(id).disabled);f.get(id).onclick();assert.equal(input.value,'','Busy chips must not insert a new question even if invoked directly')}
+  pending.resolve({ok:true,status:200,json:async()=>({answer:'站内功能说明：在地图规划的我的行程底部点击分享行程，可复制链接或查看二维码。'})});await work;
+  for(const id of ids)assert(!f.get(id).disabled);
+  const entry=f.run('askHistory[0]');assert.match(entry.answerElement.textContent,/^站内功能说明：/);assert.match(entry.noteElement.textContent,/依据本站操作说明/);assert(!/AI|模型|已执行/.test(entry.noteElement.textContent));assert.equal(f.requests.length,1);assert.equal(f.requests[0].path,'/api/ask');
 }
 // Real childList notifications must not turn unchanged button text into a microtask loop.
 {
@@ -103,6 +129,19 @@ function fixture({view='planner',protocol='https:',observer=true,domMutations=fa
   assert.equal(f.run('askHistory.length'),2);assert.equal(JSON.parse(f.requests[1].options.body).trip.schedule[0].stops[0].duration,150);assert.equal(Object.keys(JSON.parse(f.requests[1].options.body)).join(','),'question,trip','No conversation history is sent to the model');
   const fresh=fixture();fresh.install();fresh.open();assert.equal(fresh.run('askHistory.length'),0,'Refreshing/reloading starts a fresh in-memory session');
 }
+// A confirmed numeric budget is the only intent field copied; unknown and unconfirmed values stay private.
+{
+  for(const budget of [0,800,100000,null,undefined,'800',-1,100001,NaN,Infinity]){
+    const f=fixture();f.context.decisionState={intent:{budget,rawText:'PRIVATE_INTENT',notes:'PRIVATE_NOTES'},expenses:{tickets:42},user:{name:'PRIVATE_ACCOUNT'}};
+    f.context.briefResult={fields:{budget:999},rawText:'UNCONFIRMED_BRIEF'};const before=copy(f.context.trip);f.install();f.open();await f.send('我的预算是多少？');
+    const payload=JSON.parse(f.requests[0].options.body),valid=typeof budget==='number'&&Number.isFinite(budget)&&budget>=0&&budget<=100000;
+    assert.equal(Object.hasOwn(payload.trip,'budget'),valid);if(valid)assert.equal(payload.trip.budget,budget);
+    assert(!/PRIVATE|UNCONFIRMED|rawText|notes|expenses|user/.test(f.requests[0].options.body));assert.deepEqual(f.context.trip,before);
+  }
+  const f=fixture(),pending=deferred();f.context.decisionState={intent:{budget:800}};f.install();f.open();f.context.response=pending.promise;const work=f.send('预算会不会超？');
+  f.context.decisionState.intent.budget=500;f.context.refreshAskUI();assert(f.requests[0].options.signal.aborted);assert.match(f.get('ask-status').textContent,/行程已修改/);
+  pending.resolve({ok:true,status:200,json:async()=>({answer:'基于旧预算'})});await work;assert.equal(f.run('askHistory[0].answer'),'');
+}
 // Browser-bound user/model strings can never create elements or HTML.
 {
   const f=fixture();f.install();f.open();const unsafe='<img src=x onerror=alert(1)>';f.context.response={ok:true,status:200,json:async()=>({answer:'<script>alert(2)</script>\n仅作回答文字'})};await f.send(unsafe);
@@ -129,7 +168,7 @@ function fixture({view='planner',protocol='https:',observer=true,domMutations=fa
 }
 // Closing/Escape aborts one pending request. Late results cannot leak into another question.
 {
-  const f=fixture(),pending=deferred();f.context.response=pending.promise;f.install();f.open();const first=f.send('第一个问题？');await f.flush();assert.equal(f.requests.length,1);assert.match(f.get('ask-status').textContent,/AI 正在回答/);assert(!f.get('ask-send').disabled);assert.equal(f.get('ask-send').type,'button');assert.equal(f.get('ask-send').textContent,'取消回答');
+  const f=fixture(),pending=deferred();f.context.response=pending.promise;f.install();f.open();const first=f.send('第一个问题？');await f.flush();assert.equal(f.requests.length,1);assert.match(f.get('ask-status').textContent,/正在处理问题/);assert(!f.get('ask-send').disabled);assert.equal(f.get('ask-send').type,'button');assert.equal(f.get('ask-send').textContent,'取消回答');
   await f.send('不应重复发送？');assert.equal(f.requests.length,1);f.get('ask-dialog').cancel();assert(f.requests[0].options.signal.aborted);assert.equal(f.run('askHistory[0].state'),'cancelled');
   f.context.response={ok:true,status:200,json:async()=>({answer:'新的问题答案'})};f.open();await f.send('新的问题？');pending.resolve({ok:true,status:200,json:async()=>({answer:'迟到的旧答案'})});await first;
   assert.equal(f.run('askHistory[1].answer'),'新的问题答案');assert.equal(f.run('askHistory[0].answer'),'');assert.equal(f.run('askHistory[0].state'),'cancelled');assert.equal(f.requests.length,2);
@@ -190,7 +229,7 @@ function fixture({view='planner',protocol='https:',observer=true,domMutations=fa
 }
 // Examples rotate only when the open drawer is visible, idle, empty and blurred.
 {
-  const f=fixture();f.install();assert.equal(f.timers.size,0);f.open();assert.equal(f.timers.size,0,'Autofocused input cannot rotate');f.get('ask-question').blur();assert.equal(f.timers.size,1);f.tick();assert.equal(f.get('ask-question').placeholder,'第二天中午在开封有啥好吃的？');f.tick();assert.equal(f.get('ask-question').placeholder,'这两天的交通大概花多少钱？');f.tick();assert.equal(f.get('ask-question').placeholder,'龙门石窟需要提前预约吗？');assert.equal(f.get('ask-question').value,'');assert.equal(f.requests.length,0);
+  const f=fixture();f.install();assert.equal(f.timers.size,0);f.open();assert.equal(f.timers.size,0,'Autofocused input cannot rotate');f.get('ask-question').blur();assert.equal(f.timers.size,1);f.tick();assert.equal(f.get('ask-question').placeholder,'怎么分享这份行程？');f.tick();assert.equal(f.get('ask-question').placeholder,'怎么导出行程图？');f.tick();assert.equal(f.get('ask-question').placeholder,'拍照识景点怎么用，没识别出来怎么办？');f.tick();assert.equal(f.get('ask-question').placeholder,'第 1 天安排了几站，会不会太赶？');assert.equal(f.get('ask-question').value,'');assert.equal(f.requests.length,0);
   f.get('ask-question').focus();assert.equal(f.timers.size,0);f.get('ask-question').value='我自己的问题';f.get('ask-question').blur();assert.equal(f.timers.size,0);f.get('ask-question').value='';f.context.refreshAskUI();assert.equal(f.timers.size,1);
   f.context.document.hidden=true;f.emit('visibilitychange');assert.equal(f.timers.size,0);f.context.document.hidden=false;f.emit('visibilitychange');assert.equal(f.timers.size,1);
   f.motion.matches=true;f.motion.handler();assert.equal(f.timers.size,0);f.motion.matches=false;f.motion.handler();assert.equal(f.timers.size,1);f.get('ask-dialog').close();assert.equal(f.timers.size,0);
@@ -204,6 +243,7 @@ function fixture({view='planner',protocol='https:',observer=true,domMutations=fa
 // Scoped styling, touch-safe mobile layout, truthful animation and legacy fixture guards.
 {
   assert.match(css,/@media \(max-width: 767px\)/);assert.match(css,/#ask-question[\s\S]*font-size: 16px/);assert.match(css,/min-height: 4[468]px/);assert.match(css,/safe-area-inset-bottom/);assert.match(css,/@media \(prefers-reduced-motion: reduce\)/);assert.match(css,/overscroll-behavior: contain/);assert(!/animation[^;]*infinite/.test(css));
+  assert.match(css,/body:not\(\[data-view="gallery"\]\)/);assert.match(css,/\.ask-examples button \{[^}]*min-height: 44px/);assert.match(css,/grid-template-columns: repeat\(2, minmax\(0, 1fr\)\)/);
   const legacy={document:{body:{dataset:{view:'gallery'}}}};vm.createContext(legacy);vm.runInContext(source,legacy);assert.doesNotThrow(()=>legacy.installAskUI());
 }
-console.log('Ask UI tests passed: view entry, MutationObserver convergence, privacy-safe snapshots, read-only history, recoverable errors, in-place cancellation, bounded fetch/body deadlines, stale timers/results, preserved new input, manual resend with fresh context, IME, examples and mobile controls.');
+console.log('Ask UI tests passed: gallery public-service entry, scoped help, fill-only protected examples, honest site-instruction notes, numeric budget privacy, view entry, MutationObserver convergence, privacy-safe snapshots, read-only history, recoverable errors, in-place cancellation, bounded fetch/body deadlines, stale timers/results, preserved new input, manual resend with fresh context, IME, examples and mobile controls.');

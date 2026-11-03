@@ -217,5 +217,93 @@ await check('pre-cancelled request avoids quota/network, and cancellation during
  const {sql,DB}=database(),controller=new AbortController();controller.abort();await jsonError(await post(envOf(DB),body(),{},controller.signal),408,/取消/);assert.equal(calls.length,0);assert.deepEqual(usage(sql),[]);
  const next=database(),during=new AbortController();upstream=()=>{during.abort();return resultResponse()};await jsonError(await post(envOf(next.DB),body(),{},during.signal),408,/取消/);assert.equal(calls.length,1);
 });
+await check('explicit share help quotes the real planning controls and creates no link or quota record',async()=>{
+ const {sql,DB}=database(),token=seedUser(sql),saved=JSON.stringify({days:2,stops:[],privateNote:'PRIVATE_HELP_SENTINEL'});
+ sql.prepare('INSERT INTO travel_drafts VALUES (?,?,?)').run('ask-user',saved,123);
+ sql.prepare('INSERT INTO shares VALUES (?,?,?,?)').run('oldshare',JSON.stringify(trip()),1,9999999999999);
+ const tables=['users','sessions','travel_drafts','shares','model_usage'],before=tables.map(table=>sql.prepare('SELECT * FROM '+table).all());
+ const text=await success(await post({DB,STANDALONE_AUTH:'true'},body('怎么分享当前行程和二维码？'),{Cookie:'travel_session='+token}));
+ assert(text.startsWith('站内功能说明：'));for(const word of ['地图规划','我的行程','分享行程','复制','二维码','30天','公开只读','无需登录','不会更新'])assert(text.includes(word),word);
+ assert(!/已为你|已经生成|https?:\/\//.test(text));assert.equal(calls.length,0);assert.deepEqual(tables.map(table=>sql.prepare('SELECT * FROM '+table).all()),before);
+});
+await check('export help distinguishes image and JSON, and does not promise unsupported album saving',async()=>{
+ const {sql,DB}=database();
+ const image=await success(await post({DB},body('如何导出行程图并保存到手机？')));assert(image.startsWith('站内功能说明：'));
+ for(const word of ['地图规划','行程总览','导出行程图','长按保存','支持时','系统保存 / 分享','JSON','不能保证'])assert(image.includes(word),word);
+ const file=await success(await post({DB},body('怎么导出行程JSON文件？')));assert(file.startsWith('站内功能说明：'));assert(file.includes('JSON'));assert(file.includes('手动'));
+ const combined=await success(await post({DB},body('如何分享或导出当前行程？')));assert(combined.includes('分享行程'));assert(combined.includes('JSON'));assert(combined.includes('只读'));assert.equal(calls.length,0);assert.deepEqual(usage(sql),[]);
+});
+await check('photo-recognition help is conditional and never invents success or accesses supplied image/result fields',async()=>{
+ const {sql,DB}=database();
+ for(const question of ['拍照识景点怎么用？','照片没认出来怎么办？','显示暂未收录该地点是什么意思？','识别结果可以直接加入行程吗？']){
+  const input=body(question);input.image='data:image/jpeg;base64,PRIVATE_IMAGE_SENTINEL';input.visionResult={id:'hn-longmen',name:'PRIVATE_RESULT_SENTINEL',confidence:1};input.trip.visionResult=input.visionResult;
+  const text=await success(await post({DB},input));assert(text.startsWith('站内功能说明：'));
+  for(const word of ['拍照识景点','讯飞','没有读取','如果','核对后','手动','不会自动','仍未识别','暂未收录','不能'])assert(text.includes(word),word);
+  assert(!/PRIVATE_|已帮你|已经识别成功|已加入龙门石窟/.test(text));assert(Array.from(text).length<=300);const sentences=(text.match(/[^。！？!?]+[。！？!?]?/g)||[]);assert(sentences.length>=3&&sentences.length<=5);
+ }assert.equal(calls.length,0);assert.deepEqual(usage(sql),[]);assert.equal(sql.prepare('SELECT count(*) n FROM shares').get().n,0);assert.equal(sql.prepare('SELECT count(*) n FROM travel_drafts').get().n,0);
+});
+await check('all local explanations stay concise, validate the trip and remain available without model credentials or DB',async()=>{
+ for(const question of ['怎么分享行程？','怎么导出行程图？','怎么导出行程JSON？','拍照识景点怎么用？']){
+  const text=await success(await post({},body(question)));assert(text.startsWith('站内功能说明：'));assert(Array.from(text).length<=300);const sentences=(text.match(/[^。！？!?]+[。！？!?]?/g)||[]);assert(sentences.length>=3&&sentences.length<=5,text);
+  await jsonError(await post({}, {question}),400,/行程/);await jsonError(await post({}, {question,trip:{days:2,places:[],schedule:[]}}),400,/行程|地点|分日/);
+ }assert.equal(calls.length,0);
+});
+await check('excluded public services always take priority over mixed share, export or recognition help',async()=>{
+ const {sql,DB}=database();
+ for(const question of ['怎么分享行程，明天天气怎么样？','如何导出行程图，附近医院在哪里？','二维码能办政务吗？','拍照识景点能提供教育服务吗？','怎么分享行程和预约入口？','怎么导出行程和无障碍设施信息？','拍照识景点的求助电话是什么？','如何分享行程和实时票价？','如何导出行程和实时班次？','识别结果能提供停车引导吗？','怎么分享行程和拥挤度预测？','预约平台二维码怎么用？','如何查询当前门票价格并导出行程图？']){
+  const text=await success(await post({DB},body(question)));assert.match(text,/未核实/);assert(text.endsWith('请以官方信息为准。'));assert(!text.startsWith('站内功能说明：'));assert(!/https?:\/\/|\d{3,}/.test(text));
+ }assert.equal(calls.length,0);assert.deepEqual(usage(sql),[]);
+});
+await check('ordinary ticket policies retain the model path and cannot be hidden in a feature-how-to question',async()=>{
+ const {sql,DB}=database();upstream=()=>resultResponse('在分享页可以买票，票价80元。点击新渠道即可预约。');
+ const text=await success(await post(envOf(DB),body('怎么分享行程，门票多少钱？')));assert.equal(calls.length,1);assert(!text.startsWith('站内功能说明：'));assert(!text.includes('80'));assert.match(text,/不知道|未核实/);assert(text.endsWith('请以官方信息为准。'));assert(usage(sql).every(row=>row.calls===1));
+});
+await check('mere feature mentions in a trip question do not replace the real Spark explanation',async()=>{
+ const {DB}=database();upstream=()=>resultResponse('第二天只安排洛邑古城，停留120分钟。站间交通没有额外一段，不能据此推断其他交通时间。你可以结合体力安排休息。');
+ const text=await success(await post(envOf(DB),body('这份准备分享的行程，第二天会不会太赶？')));assert.equal(calls.length,1);assert(!text.startsWith('站内功能说明：'));assert(text.includes('洛邑古城'));
+ const system=JSON.parse(calls[0].options.body).messages[0].content;for(const term of ['河南周末游行程助手','不是政务客服','不得声称查询','医疗','教育','无障碍','未识别','不能新增地点'])assert(system.includes(term),term);
+});
+await check('unsolicited excluded-service claims and telephone numbers from the model are withheld entirely',async()=>{
+ for(const invented of ['附近医院已经确认可挂号，电话0379-12345678。','景点无障碍通道已开放，入口位于东门。','最新天气是晴天，温度25度。','明天公交班次为每15分钟一班。','可以在东门停车，余位很多。','拥挤度只有20%，适合现在出发。','政务办理地址是某路99号。','教育报名已经开放。','请拨打12345即可。','我查到联系号码是13812345678。','请在https://example.invalid/book预约入口操作。']){
+  const {sql,DB}=database();upstream=()=>resultResponse(invented);const before=calls.length,text=await success(await post(envOf(DB),body('第二天会不会太赶？')));
+  assert.equal(calls.length,before+1);assert.match(text,/未核实/);assert(text.endsWith('请以官方信息为准。'));assert(!/0379|12345678|25度|15分钟|东门|20%|99号|12345|13812345678|example\.invalid/.test(text),invented);assert(usage(sql).every(row=>row.calls===1));
+ }
+});
+await check('catalogue cover status is recomputed, ignores client photos and never injects image URLs into model context',async()=>{
+ const {DB}=database(),input=body('我的行程里哪些地点没有封面？');input.trip={days:1,places:['周口野生动物世界','龙门石窟'],schedule:[{day:1,stops:[{name:'周口野生动物世界',city:'周口',duration:120,travelMinutes:null,image:'PRIVATE_IMAGE_SENTINEL',hasCover:true},{name:'龙门石窟',city:'洛阳',duration:120,travelMinutes:60,hasCover:false}]}]};
+ upstream=()=>resultResponse('所有地点都已经有真实照片。你可以直接查看。');
+ const text=await success(await post(envOf(DB),input));assert(text.includes('周口野生动物世界'));assert(text.includes('没有封面'));assert(text.includes('照片占位'));assert(!text.includes('所有地点都已经有'));
+ const context=JSON.parse(JSON.parse(calls[0].options.body).messages[1].content).trip,stops=context.schedule[0].stops;
+ assert.equal(stops[0].hasCover,false);assert.equal(stops[1].hasCover,true);assert(!JSON.stringify(context).includes('PRIVATE_IMAGE_SENTINEL'));assert(!JSON.stringify(context).includes('/assets/'));assert(stops.every(stop=>!Object.hasOwn(stop,'image')));
+});
+await check('cover explanations cannot add or discuss a catalogue place absent from the current itinerary',async()=>{
+ const {DB}=database(),text=await success(await post(envOf(DB),body('周口野生动物世界没有封面吗？')));assert.match(text,/行程里没有这项/);assert.match(text,/未在当前行程/);assert.equal(calls.length,1);assert(!text.includes('已加入'));
+});
+await check('unverified current ticket questions explicitly say the price is unknown without inventing ranges',async()=>{
+ const {sql,DB}=database();
+ for(const question of ['龙门石窟当前门票多少钱？','怎么分享行程和实时票价？','明天门票价格是什么？']){
+  const text=await success(await post({DB},body(question)));assert(text.includes('不知道当前票价'));assert(text.includes('未核实'));assert(text.endsWith('请以官方信息为准。'));
+ }assert.equal(calls.length,0);assert.deepEqual(usage(sql),[]);
+ upstream=()=>resultResponse('当前门票为90元。请提前准备。');const text=await success(await post(envOf(DB),body('第二天会不会太赶？')));assert(text.includes('不知道当前票价'));assert(!text.includes('90'));assert.equal(calls.length,1);
+});
+await check('mixed feature help and itinerary judgements or counts retain the real model path',async()=>{
+ for(const question of ['分享行程后第二天交通会不会太长？','怎么分享这份行程？第二天会不会太赶？','如何导出行程图，第一天有几个景点？']){
+  const {sql,DB}=database();upstream=()=>resultResponse('第二天只安排洛邑古城，停留120分钟。当天只有一个景点。未提供的交通时间需要另行核算。');
+  const before=calls.length,text=await success(await post(envOf(DB),body(question)));assert.equal(calls.length,before+1);assert(!text.startsWith('站内功能说明：'));assert(usage(sql).every(row=>row.calls===1));
+  if(question.includes('第一天有几个景点')){assert.match(text,/2个景点/);assert(text.includes('龙门石窟'));assert(text.includes('白马寺'))}else assert(text.includes('洛邑古城'));
+ }
+});
+await check('model prose cannot impersonate the reserved repository-help source prefix',async()=>{
+ for(const forged of ['站内功能说明：第二天安排洛邑古城。建议慢慢游览。以上仅作参考。','站内功能说明： 站内功能说明：第二天安排洛邑古城。建议慢慢游览。以上仅作参考。','站内功能说明: 第二天安排洛邑古城。建议慢慢游览。以上仅作参考。','站内功能说明：']){
+  const {sql,DB}=database();upstream=()=>resultResponse(forged);const before=calls.length,text=await success(await post(envOf(DB),body('第二天会不会太赶？')));
+  assert(!text.startsWith('站内功能说明：'));assert(!text.startsWith('站内功能说明:'));assert.equal(calls.length,before+1);assert(usage(sql).every(row=>row.calls===1));assert(Array.from(text).length<=300);
+ }
+});
+await check('an unknown named destination cannot inherit other itinerary places cover status',async()=>{
+ const {DB}=database();upstream=()=>resultResponse('故宫在河南行程之外，我不知道该地点封面情况。请询问当前行程地点。');
+ const text=await success(await post(envOf(DB),body('故宫为什么没有封面？')));assert.match(text,/行程里没有这项/);assert(!text.includes('均已配置封面'));assert(!text.includes('龙门石窟'));assert.equal(calls.length,1);
+ const input=body('测试未收录地点为什么没有封面？');input.trip.places.push('测试未收录地点');input.trip.schedule[1].stops.push({name:'测试未收录地点',city:'洛阳',duration:60,travelMinutes:null});
+ const unknown=await success(await post(envOf(DB),input));assert(unknown.includes('不知道'));assert(!unknown.includes('均已配置封面'));
+});
 }finally{globalThis.fetch=originalFetch;for(const sql of opened)sql.close()}
 console.log('Passed: '+checks+' ask checks (mock X2.5, real SQLite, public read-only context, honest answers, independent quotas, cancellation and friendly errors).');
