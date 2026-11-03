@@ -47,6 +47,97 @@ Node本地入口通过 `scripts/dev.mjs` 白名单读取这三项配置。只为
 ## 文件
 前端作者文件、server.mjs、完整 worker/index.js、迁移、测试、照片均提交。Worker 由 assemble.py 生成，修改作者文件后重新构建。dist/build、依赖、真实环境配置、日志、临时文件排除。index-offline.html 通过 node scripts/offline.mjs 重建，不计为缺失源码。
 
+## 现有阿里云实例：脱离 SSH 的更新部署
+
+本节适用于已有的 Ubuntu 22.04 / Node 24 实例；本次仅交付脚本，**没有连接、修改或重启线上服务器**。脚本不安装或升级 Node、系统包及项目依赖版本；`npm ci` 按现有锁文件安装。已有环境文件必须存在且权限为 600，`.local` 必须链接到 `/var/lib/yujianxingji`，检查不通过就停止，不自动重建账号、数据库或配置。
+
+### 校验慢的诊断（2026-11-03）
+
+针对 `0c4378f` 的已编译产物，`dist/server/index.js` 为 **73,467,407 bytes（70.06 MiB）**；内嵌 `PHOTOS` 行为 72,439,695 bytes，占 **98.60%**。`validate-artifact.mjs` 读取后再将整份源码编码为 **97,956,572 字符的 data URL**，随后 `import`，存在额外编码、解码、模块 URL 处理和解析的内存开销。
+
+在本地 Mac arm64、Node 24.21.0 的分段测量：
+
+| 阶段 | 耗时 |
+|---|---:|
+| 读取 Worker 与 manifest | 36.02ms |
+| 解析 manifest JSON | 0.16ms |
+| 生成 data URL | 125.65ms |
+| 导入 data URL | 982.46ms |
+| default.fetch 断言 | 0.13ms |
+
+原验证器不作任何修改运行，用时约 1.01s，峰值 RSS 1,276,985,344 bytes（约 1.19 GiB）；单独 Node 启动约 0.16s / 44.47 MiB。探针阻断并计数 `fetch`、`WebSocket`，顶层调用均为 0。Worker 数据库操作只在请求处理函数中通过 `env.DB` 执行，校验不会加载打开 SQLite / HTTP 监听的 `scripts/dev.mjs`。
+
+因此已定位**校验自身的热点为大产物的 data URL 导入**，并非 manifest 解析或顶层网络、数据库副作用。本地测量不能代替那台 2 核 2 GiB Ubuntu 的历史遥测；当天是否发生换页、OOM 或其他争用尚无证据，不能宣称已证实。堆限额 512/768 MiB 的原校验对照仍超过 1 GiB RSS，故本次不把堆限额或超时当作根治措施。产物 SHA256：`d2ab5e09e81fd85c68add4b300256117052efde69a3ab0418dd0549c2c290963`。
+
+部署仍完整运行 **`npm run validate`**：读产物、解析 manifest、data URL ESM import、断言 `default.fetch` 全部保留。未修改校验器或测试断言，未增加全量 `npm test`。每次实际部署会记录产物字节数、校验前 `MemAvailable`，若有 `/usr/bin/time` 则记录 validate 的 elapsed 和峰值 RSS，供下次定位；没有该工具时仍运行完整校验。
+
+### 后台运行、锁与日志
+
+选择方案 A：`scripts/deploy-detached.sh` 先取得 `/run/lock/yujianxingji-deploy.lock` 的非阻塞 `flock`，再以 `setsid nohup` 启动部署脚本快照。stdin 来自 `/dev/null`，stdout/stderr 全部写入固定日志 **`/root/yujianxingji-deploy.log`**。工作进程继承同一把 FD 9 锁，启动终端关闭、SSH 断开不影响它；重复启动会提示查看现有日志，不再启动第二份部署，也不截断正在写的日志。直接运行 `deploy-aliyun.sh` 也使用同一把锁，但**脱离 SSH 必须使用新启动脚本**。
+
+启动器打印实际工作进程 PID，保存在 `/run/yujianxingji-deploy.pid`；状态文件 `/run/yujianxingji-deploy.status` 为 STARTING / RUNNING / FAILED / SUCCEEDED。PID 文件只是记录，防重复以锁为准，不会误信被复用的旧 PID。状态为 RUNNING 但进程已消失时不能视为成功。启动快照保存在 `/root/yujianxingji-deploy-run.*`，避免 `git reset` 替换正在执行的脚本；该目录不进入仓库。
+
+每步开始、结束均带北京时间与用时，包括 npm ci、build、validate、写服务、daemon-reload、enable、restart、nginx 配置检查及 reload，例如：
+
+```text
+== [2026-11-03 13:14:22] 开始 validate ==
+== [2026-11-03 13:14:37] validate 仍在运行，已用时 15s ==
+== [2026-11-03 13:15:04] validate 完成，用时 42s ==
+```
+
+上述时间仅为日志格式示例。运行中每 15 秒输出心跳；失败打印最后步骤、退出码、脚本行与日志位置。`restart` 失败、服务不 active、启动时间未变化、`nginx -t` 失败或 reload 失败均立即非零退出，状态标记 FAILED，不会输出“部署完成”。脚本不自动回滚已 reset 的源码；失败时保留备份与日志，定位失败步骤后可重新运行。
+
+### 自动备份与保护
+
+在 `git fetch` / `reset --hard origin/main` 前，创建 `/root/yujianxingji-backup-YYYYMMDD-HHMMSS-PID/`（实际完整路径打印进日志，目录权限 700）：
+
+- `app.tar`：整个 `/opt/yujianxingji`，包括 `.git`、node_modules、dist、实际 Worker 和 `.local` 符号链接；保留权限、ACL、扩展属性，不跟随链接把活动数据库当普通文件复制。
+- `travel.sqlite`：Python SQLite Online Backup API 对活动数据库做一致性备份，覆盖 WAL 中已提交数据；备份后运行 `PRAGMA quick_check`，失败就不执行 reset。
+- `source-head.txt`：备份时的提交号。
+
+备份文件默认权限 600，未自动清理旧备份；请保留足够磁盘空间，备份失败即停止。本次不读出或打印密钥，不修改 `/etc/yujianxingji.env` 的内容、权限或所有者；重置后与完成前核对其指纹、权限和数据链接。systemd 的 WorkingDirectory、ExecStart 不变；`daemon-reload`、`enable` 后明确 `restart` 并核验启动时间已改变。原有含 `ssl_certificate` 的 Nginx 配置不覆盖，`nginx -t` 成功后才 reload。
+
+### 本次本地验证边界
+
+两脚本 `bash -n` 通过。六组隔离测试通过：完整成功、validate 失败、restart 失败、nginx 检查失败、启动时间未更新、后台运行与重跑。最后一组验证启动父进程退出后发送 SIGHUP，仍完成所有步骤；并发第二次启动被拒绝，完成后同一命令可再执行。检查了备份先于 reset、SQLite 副本可读、`.local` / env 权限 / HTTPS 配置不变、失败时不输出成功或继续 reload。
+
+测试在 Mac 临时目录进行，以 Python 的 `os.setsid` / `fcntl.flock` 等模拟本机缺少的 Linux 命令，并替换破坏性系统操作；不是 Ubuntu 实机部署或真实 SSH 断线验收。未连接线上服务器，用户部署后的三项核对仍必须执行。
+
+### 用户下次执行的完整命令
+
+Mac 终端登录：
+
+```sh
+ssh -i ~/.ssh/aliyun_edu root@112.124.35.179
+```
+
+在服务器依次执行（脚本更新只 checkout 这两个部署文件）：
+
+```sh
+cd /opt/yujianxingji
+git fetch origin
+git checkout origin/main -- scripts/deploy-aliyun.sh scripts/deploy-detached.sh
+bash scripts/deploy-detached.sh
+tail -n 80 -f /root/yujianxingji-deploy.log
+```
+
+`Ctrl+C` 只停止看日志，不会终止后台部署。断线后重新 SSH 登录，仍用上述 `tail` 命令查看。看到“部署完成”后：
+
+```sh
+cat /run/yujianxingji-deploy.status
+git -C /opt/yujianxingji log --oneline -1
+systemctl is-active yujianxingji
+systemctl show yujianxingji -p ActiveEnterTimestamp
+```
+
+必须同时满足：状态为 SUCCEEDED；HEAD 是本次更新脚本的提交（或之后的目标 main）；服务 active；ActiveEnterTimestamp 为**本次部署的最新启动时间**，不能仍是 `2026-11-02 00:50:55`。只见“部署完成”但启动时间没变，仍按未部署处理。
+
+**HEAD 口径修正：** 本次必须将部署脚本提交到 main，因此 main 不可能仍停在 `0c4378f`；新提交只修改部署相关文件，包含 `0c4378f` 的应用代码。不能同时要求拉最新 main 并让最终 HEAD 恰好等于旧提交。可额外验证祖先关系（无输出且退出码 0 才通过）：
+
+```sh
+git -C /opt/yujianxingji merge-base --is-ancestor 0c4378f HEAD
+```
+
 ## 阿里云 IP HTTPS
 
 当前访问入口为 https://112.124.35.179/，不依赖域名。Nginx 监听443并终止TLS，转发到仅回环地址监听的 `127.0.0.1:8787`。80端口仅保留 `/.well-known/acme-challenge/` 验证目录，其他请求308跳转到固定的HTTPS地址。Nginx覆盖转发的Host及协议头，登录会话在HTTPS下附带Secure属性。
