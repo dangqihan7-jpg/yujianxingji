@@ -197,7 +197,11 @@ try{
   assert.match(response.headers.get('Content-Type'),/^text\/event-stream/);
   assert.match(response.headers.get('Cache-Control'),/no-transform/);assert.equal(response.headers.get('X-Accel-Buffering'),'no');
   const events=await allEvents(response),done=events.filter(v=>v.event==='done');assert.equal(done.length,1);assert.equal(events.at(-1).event,'done');
-  const jsonBody=await (await post('/api/agent',body)).json();assert.deepEqual(done[0].data,jsonBody);assertStages(events,done[0].data);
+  const jsonBody=await (await post('/api/agent',body)).json();
+  // Timeline durations are measured server-side, so two requests never agree on them.
+  // Normalize only the measured durations; every other field must still match exactly.
+  const normalizeTimeline=copy=>{if(Array.isArray(copy.timeline))copy.timeline=copy.timeline.map(s=>({...s,durationMs:null}));return copy};
+  assert.deepEqual(normalizeTimeline(structuredClone(done[0].data)),normalizeTimeline(structuredClone(jsonBody)));assertStages(events,done[0].data);
  }
  // Mixed fallback remains truthful, and failed HTTP attempts count as calls.
  let attempts=0;

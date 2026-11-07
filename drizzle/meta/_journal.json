@@ -36,6 +36,27 @@
       "when": 1792255745942,
       "tag": "0004_trip_shares",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "6",
+      "when": 1794044979218,
+      "tag": "0005_clever_tattoo",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "6",
+      "when": 1794046324116,
+      "tag": "0006_grey_phantom_reporter",
+      "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "6",
+      "when": 1794046706144,
+      "tag": "0007_polite_havok",
+      "breakpoints": true
     }
   ]
 }

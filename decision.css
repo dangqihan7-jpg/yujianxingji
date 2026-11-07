@@ -64,3 +64,45 @@ body:not([data-view="decision"]) .decision-view{display:none}body[data-view="dec
   .study-start button{width:100%;margin-top:12px}
   .study-records{grid-template-columns:minmax(0,1fr)}
 }
+/* 闭环改革一期：AI 思考过程时间线 + 学习信号（演示） */
+.agent-timeline{margin-top:16px;border-top:1px solid #dbe6dd;padding-top:14px}
+.agent-timeline h4{font-size:15px;margin:0 0 10px;color:#1e5665}
+.agent-timeline ol{list-style:none;padding:0;margin:0;display:grid;gap:8px}
+.agent-timeline li{display:flex;gap:9px;align-items:baseline;font-size:14px;line-height:1.7}
+.agent-timeline-state{flex:none;padding:1px 7px;font-size:12px;border-radius:3px;background:#dceade;color:#315d3e}
+.agent-timeline-state.skipped{background:#eef1f1;color:#7a8a90}
+.agent-timeline-state.pending{background:#f0e4c5;color:#785f24}
+.agent-timeline-copy{min-width:0;flex:1}
+.agent-timeline-copy b{display:block;color:#25483e}
+.agent-timeline-copy small{display:block;color:#6b8075;line-height:1.7}
+.agent-timeline-meta{flex:none;font-size:12px;color:#6b8075;white-space:nowrap}
+.agent-timeline-source{font-size:12px;color:#6b8075;margin:10px 0 0}
+.learning-signals{margin-top:10px;padding:10px 12px;background:#f4f8f9;border:1px solid #dbe6ea;border-radius:8px;font-size:13px;line-height:1.8;color:#376a78}
+
+.learning-applied{margin-top:10px;padding:10px 12px;background:#fdf6e3;border:1px solid #ead9a0;border-radius:8px;font-size:13px;line-height:1.8;color:#6b5a1e}
+.brief-learning{display:flex;gap:8px;align-items:flex-start;margin:12px 0;font-size:13px;line-height:1.7;color:#376a78;cursor:pointer}
+.brief-learning input{margin-top:3px}
+.demo-mode{margin-top:12px;padding:10px 12px;background:#fdf6e3;border:1px solid #ead9a0;border-radius:8px;font-size:13px;line-height:1.8;color:#6b5a1e;display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.demo-mode small{flex-basis:100%;color:#8a7a45}
+.demo-banner{margin-top:10px;padding:10px 12px;background:#fdf6e3;border:1px solid #ead9a0;border-radius:8px;font-size:13px;font-weight:700;line-height:1.8;color:#6b5a1e}
+.group-entry{margin-top:12px;padding:10px 12px;background:#eef6f7;border:1px solid #cfe3e6;border-radius:8px;font-size:13px;line-height:1.8;color:#376a78;display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.group-entry small{color:#5b7a82}
+.group-create,.group-join,.group-plan{display:grid;gap:10px;margin-top:12px}
+.group-create label,.group-join label,.group-plan label{display:grid;gap:4px;font-size:13px;color:#376a78}
+.group-create input,.group-create select,.group-join input,.group-plan select{padding:8px 10px;border:1px solid #cfe3e6;border-radius:8px;font-size:14px}
+.group-list{display:grid;gap:8px;margin-top:12px}
+.group-item{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:10px 12px;border:1px solid #e3ecee;border-radius:8px}
+.group-item div{display:grid;gap:2px}
+.group-item span{font-size:12px;color:#6b7f88}
+.group-meta{font-size:13px;color:#6b7f88}
+.group-members ul{list-style:none;margin:6px 0;padding:0}
+.group-members li{display:grid;gap:2px;padding:6px 0;border-bottom:1px solid #eef3f4;font-size:13px;line-height:1.8}
+.group-members li span{font-size:12px;color:#5b6f77}
+.group-merged p,.group-conflicts p{margin:6px 0;font-size:13px;line-height:1.8}
+.group-plan-note{font-size:13px;color:#8a6d1e}
+.group-resolutions fieldset{border:1px solid #ead9a0;border-radius:8px;padding:8px 10px;display:flex;gap:16px;flex-wrap:wrap}
+.group-resolutions legend{font-size:13px;font-weight:700}
+.group-resolutions label{display:flex;gap:6px;align-items:center;font-size:13px}
+#group .dialog-content{display:grid;gap:4px}
+#group h3{margin:8px 0 0}
+#group h4{margin:12px 0 4px}
