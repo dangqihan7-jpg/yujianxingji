@@ -27,7 +27,9 @@ await check('migration keeps existing tables and adds exactly the requested shar
  for(const name of ['flow_stats','model_usage','travel_drafts','sessions','users'])assert(sql.prepare('SELECT name FROM sqlite_master WHERE type=\'table\' AND name=?').get(name));
  const snapshots=(await readdir(new URL('../drizzle/meta/',import.meta.url))).filter(name=>/^\d+_snapshot\.json$/.test(name)).sort();
  let prior;for(const name of snapshots){const snapshot=JSON.parse(await readFile(new URL('../drizzle/meta/'+name,import.meta.url),'utf8'));if(prior)assert.equal(snapshot.prevId,prior);prior=snapshot.id}
- assert.match(migrations.at(-1),/CREATE TABLE `shares`/);assert(!/DROP|ALTER|flow_stats/i.test(migrations.at(-1)));
+ // 闭环改革：迁移 0005（trip_reviews）之后，最后一个迁移不再是建 shares 表的那一个；
+ // 原断言“最后一个迁移建 shares 表”已失效，改查“任一迁移建 shares 表”，其余意图不变。
+ assert(migrations.some(m=>/CREATE TABLE `shares`/.test(m)),'a migration must create the shares table');assert(!/DROP|ALTER/i.test(migrations.at(-1)));
 });
 await check('create anonymous snapshot, strip private fields at every level, use 30-day millisecond TTL',async()=>{
  const {sql,DB}=database();const body={...trip(),user:{id:'secret-account'},email:'private@example.test',revision:99,prompt:'secret prompt'};body.schedule[0].user={username:'private'};Object.assign(body.schedule[0].stops[0],{user:{id:'private'},place:{location:[112,34]},routing:{address:'private address'},password:'secret'});

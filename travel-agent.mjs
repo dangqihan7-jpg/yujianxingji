@@ -29,16 +29,20 @@ export function agentPlanDraft(context,items,seen=null){
  if(intent.requiredIds.some(id=>!ids.has(id)))agentError('智能体遗漏了必去地点');
  return {...draft,stops};
 }
-export function agentRuleResult(context,reason='未连接模型，本次使用规则候选',steps=[],lifecycle=null){
+export function agentRuleResult(context,reason='未连接模型，本次使用规则候选',steps=[],lifecycle=null,learningWeights){
  lifecycle?.start('需求理解',1);
  const {draft,intent,allowed,operation}=context;
  lifecycle?.complete({name:'需求理解',source:'confirmed',provider:null});
  lifecycle?.start('地点推荐',2);
- let seed=draft;
+ let seed=draft,learningApplied=[];
  if(operation==='select'){
-  const score=p=>intent.interests.reduce((n,t)=>n+(p.interests?.includes(t)||t==='culture'&&/文化|历史|博物|石窟|古城|寺|古都/.test(p.theme+' '+p.name)||t==='nature'&&/山|峡|自然|水|湖/.test(p.theme)||t==='food'&&p.category==='food'||t==='immersive'&&/演艺|戏剧|夜游|武侠|电影|宋韵/.test(p.theme)?3:0),0);
+  // 闭环改革二期：v3 学习加权（bonus 见 server.mjs 的 LEARNING_BONUS，默认 1，只影响同分候选顺序）。
+  const bonusOf=p=>learningWeights?.get?.(p.category)?.bonus||0;
+  const score=p=>intent.interests.reduce((n,t)=>n+(p.interests?.includes(t)||t==='culture'&&/文化|历史|博物|石窟|古城|寺|古都/.test(p.theme+' '+p.name)||t==='nature'&&/山|峡|自然|水|湖/.test(p.theme)||t==='food'&&p.category==='food'||t==='immersive'&&/演艺|戏剧|夜游|武侠|电影|宋韵/.test(p.theme)?3:0),0)+bonusOf(p);
   const required=allowed.filter(p=>intent.requiredIds.includes(p.id)),ranked=[...allowed].sort((a,b)=>score(b)-score(a)||Number(Boolean(b.weekendPick))-Number(Boolean(a.weekendPick)));
   const places=[...new Map([...required,...ranked].map(p=>[p.id,p])).values()].slice(0,Math.min(15,Math.max(required.length,draft.days*2)));
+  const learningLabels={scenic:'景点',food:'美食',stay:'住宿'};
+  learningApplied=[...new Map(places.filter(p=>bonusOf(p)>0).map(p=>[p.category,{category:p.category,label:learningWeights.get(p.category).label||learningLabels[p.category]||p.category,users:learningWeights.get(p.category).users,bonus:bonusOf(p)}])).values()];
   seed={...draft,stops:places.map(place=>({place,day:1,duration:place.duration||90}))};
  }
  lifecycle?.complete({name:'地点推荐',source:'rules',provider:null});
@@ -50,5 +54,5 @@ export function agentRuleResult(context,reason='未连接模型，本次使用�
  lifecycle?.start('冲突校验',5);
  const audit=auditDecision(result);
  lifecycle?.complete({name:'冲突校验',source:'rules',provider:null});
- return {source:'rules',draft:result,stops:result.stops.map(s=>({id:s.place.id,day:s.day})),audit,note:'规则候选按主题、城市与停留负荷生成，交通和费用仍需确认。',tips:['预约、营业与实际费用尚未核实。'],fallback:{reason},agent:{status:'fallback',version:1,steps:[...steps,{tool:'fallback',status:'pending',label:reason}],modelCalls:0,toolCalls:steps.length,limits:AGENT_LIMITS}};
+ return {source:'rules',draft:result,stops:result.stops.map(s=>({id:s.place.id,day:s.day})),audit,learningApplied:{enabled:!!(learningWeights&&learningWeights.size),mode:'weight',applied:learningApplied,note:!learningWeights||!learningWeights.size?'学习版：本次暂无复盘信号，未应用加权。':'学习版：复盘里 '+learningApplied.map(a=>a.users+' 个人觉得'+a.label+'类地方值得多待').join('、')+'，这类地点在候选里排前了（加权 +1，仅影响同分候选顺序）。'},note:'规则候选按主题、城市与停留负荷生成，交通和费用仍需确认。',tips:['预约、营业与实际费用尚未核实。'],fallback:{reason},agent:{status:'fallback',version:1,steps:[...steps,{tool:'fallback',status:'pending',label:reason}],modelCalls:0,toolCalls:steps.length,limits:AGENT_LIMITS}};
 }

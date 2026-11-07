@@ -19,3 +19,15 @@ body{background:var(--paper);min-height:100dvh}body[data-view="gallery"],body[da
 .side-route:focus-visible,.feature-cta:focus-visible,.feature-ai:focus-visible{outline:3px solid #e6bf8e;outline-offset:3px}
 
 @media (hover:hover) and (pointer:fine){.side-route:hover{background:#1f373e;border-color:#d6a77477}.side-route:hover img{transform:scale(1.04)}.feature-cta:hover{background:#f2d6af}}
+
+/* 闭环改革一期：出行复盘 */
+.review-section{margin-top:22px;border:1px solid #dbe7eb;border-radius:11px;padding:20px 22px;background:#fff}
+.review-heading{display:flex;justify-content:space-between;gap:16px;align-items:flex-start}
+.review-heading h3{font-family:"Songti SC",serif;font-weight:500;font-size:22px;color:#214b59}
+.review-heading p{font-size:13px;color:#6e8790;line-height:1.8;margin-top:6px}
+.review-heading .primary{background:var(--blue);color:#fff;border-color:var(--blue);padding:11px 17px;font-size:14px;border-radius:7px}
+.review-summary{font-size:13px;color:#537b87;line-height:1.9;margin-top:12px}
+#review .dialog-content>form{display:grid;gap:14px}
+#review .dialog-content label{display:block;font-size:14px;color:#376a78;margin-bottom:6px}
+#review .dialog-content input,#review .dialog-content select{width:100%;padding:10px 12px;border:1px solid #d3e0e5;border-radius:7px;font-size:14px;background:#fff}
+#review .statusline{font-size:13px;color:#708a96;line-height:1.7}

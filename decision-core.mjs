@@ -123,12 +123,15 @@ export function applyAgentDefaults(rawIntent,catalog){
  return {fields,defaulted};
 }
 // 决策：智能体自主选点。必去优先，其余按兴趣打分补足；取舍同样是决策并记录依据。
-export function agentSelectRules(rawIntent,catalog){
+// 闭环改革二期：v3 学习加权。learningWeights 是 Map（地点类型 → {bonus,users,label}），
+// bonus 默认 1（见 server.mjs 的 LEARNING_BONUS）：一次兴趣命中计 3 分，加权只影响同分候选顺序。
+export function agentSelectRules(rawIntent,catalog,learningWeights){
  const places=Array.isArray(catalog)?catalog:(typeof CATALOG!=='undefined'?CATALOG:[]);
  const {fields,defaulted}=applyAgentDefaults(rawIntent,places);
  const city=fields.city,pool=places.filter(p=>!fields.excludedIds.includes(p.id)&&(city==='河南'||p.city===city));
  const required=fields.requiredIds.map(id=>places.find(p=>p.id===id)).filter(p=>p&&!fields.excludedIds.includes(p.id));
- const scoreOf=p=>fields.interests.reduce((n,t)=>n+(agentInterestHit(t,p)?3:0),0);
+ const bonusOf=p=>learningWeights?.get?.(p.category)?.bonus||0;
+ const scoreOf=p=>fields.interests.reduce((n,t)=>n+(agentInterestHit(t,p)?3:0),0)+bonusOf(p);
  const ranked=pool.filter(p=>!required.some(r=>r.id===p.id)).sort((a,b)=>scoreOf(b)-scoreOf(a));
  const target=Math.min(15,Math.max(required.length,fields.days*2,2)),picks=[...required];
  for(const p of ranked){if(picks.length>=target)break;picks.push(p)}
@@ -136,12 +139,14 @@ export function agentSelectRules(rawIntent,catalog){
  const rationale=defaulted.map(reason=>({decision:'补默认条件',reason}));
  for(const p of required)rationale.push({decision:'必去：'+p.name,reason:'你在需求中明确要求，智能体优先安排'});
  for(const p of picks.slice(required.length)){
-  const hits=fields.interests.filter(t=>agentInterestHit(t,p));
-  rationale.push({decision:'选择：'+p.name,reason:hits.length?'匹配你的兴趣（'+hits.map(t=>AGENT_INTEREST_LABELS[t]).join('、')+'）':'同城顺路，用于补足 '+fields.days+' 天行程'});
+  const hits=fields.interests.filter(t=>agentInterestHit(t,p)),entry=learningWeights?.get?.(p.category);
+  rationale.push({decision:'选择：'+p.name,reason:(hits.length?'匹配你的兴趣（'+hits.map(t=>AGENT_INTEREST_LABELS[t]).join('、')+'）':'同城顺路，用于补足 '+fields.days+' 天行程')+(entry&&entry.bonus?('；复盘学习：'+entry.users+' 名用户觉得这类地方值得多待（学习版，加权 +'+entry.bonus+'）'):'' )});
  }
  if(pool.length>picks.length)rationale.push({decision:'取舍：其余 '+(pool.length-picks.length)+' 个地点未入选',reason:'控制每天游览负荷在 '+fields.maxHours+' 小时内，优先保留兴趣匹配度高的地点'});
  const durationOf=p=>Number.isInteger(p.duration)&&p.duration>=15&&p.duration<=720?p.duration:90;
- return {fields,defaulted,selections:picks.map(p=>({id:p.id,duration:durationOf(p)})),rationale};
+ const learningLabels={scenic:'景点',food:'美食',stay:'住宿'};
+ const learningApplied=[...new Map(picks.filter(p=>bonusOf(p)>0).map(p=>[p.category,{category:p.category,label:learningWeights.get(p.category).label||learningLabels[p.category]||p.category,users:learningWeights.get(p.category).users,bonus:bonusOf(p)}])).values()];
+ return {fields,defaulted,selections:picks.map(p=>({id:p.id,duration:durationOf(p)})),rationale,learningApplied};
 }
 // 规则辅助入口：需求理解与地点推荐；日程编排复用 rulePlan，交通核算与冲突校验由上层流水线完成。
 export function agentPlanRules(text,catalog){

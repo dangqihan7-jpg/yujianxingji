@@ -1,4 +1,8 @@
 let decisionState=validateDecisionState(),activeStudy=null,lastPlanningSource='manual';
+// 闭环改革一期：当前这趟行程的编号。复盘按（账号，行程编号）保存；换示例、清空行程时换新编号，刷新页面沿用同一编号。
+let currentTripId='';
+function getTripId(){if(!currentTripId){try{currentTripId=sessionStorage.getItem('yujianxingji.tripId')||''}catch{}if(!currentTripId){currentTripId='trip_'+Date.now().toString(36)+Math.random().toString(36).slice(2,10);try{sessionStorage.setItem('yujianxingji.tripId',currentTripId)}catch{}}}return currentTripId}
+function resetTripId(){currentTripId='';try{sessionStorage.removeItem('yujianxingji.tripId')}catch{}if(typeof reviewCache!=='undefined')reviewCache={tripId:null,review:null,loaded:false}}
 let lastRenderedDraft=null;let currentPresetId='classic',saveBooting=true,saveRevision=0,lastSaved='',saveTimer,saveInFlight=false,saveBlocked=false,restoreFailed=false;
 let restorePromise=null,restoreInitialized=false,restoreContinueAllowed=false;
 const undoStack=[],trafficCache=new Map();let trafficExpiryTimer=null;
