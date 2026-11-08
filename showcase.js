@@ -236,12 +236,12 @@ function revealPlannerMap(){
   if(typeof requestAnimationFrame==='function')requestAnimationFrame(redraw);else redraw();
 }
 function setView(view){
-  if(!['gallery','planner','overview','decision'].includes(view))return;
+  if(!['gallery','planner','overview','decision','spots'].includes(view))return;
   if(typeof cancelSTTHero==='function')cancelSTTHero();
   if(view!=='planner')map?.setStatus?.({resizeEnable:false});
   activeView=view;document.body&&(document.body.dataset.view=view);
   document.querySelectorAll('.view-nav [data-view]').forEach(b=>{b.setAttribute?.('aria-current',b.dataset.view===view?'page':'false')});
-  if(view==='gallery')renderGallery();if(view==='overview')renderOverview();if(view==='decision')renderDecision();
+  if(view==='gallery')renderGallery();if(view==='overview')renderOverview();if(view==='decision')renderDecision();if(view==='spots')renderSpots();else if(typeof spots3DStop==='function')spots3DStop();
   if(view==='planner')revealPlannerMap();
   scheduleHeroRotation();
   if(typeof refreshAIHeroLifecycle==='function')refreshAIHeroLifecycle();

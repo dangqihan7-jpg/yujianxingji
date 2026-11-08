@@ -1,0 +1,92 @@
+/* 景点页（三层）：总览（3D 空间 + 维度分布）→ 景点卡片 → 沉浸式细看。
+   一次只看一层；沿用站内暖纸主题（--paper/--ink/--blue 朱砂/--gold），
+   第 3 层沉浸式细看用暗夜底，与站内深色 gallery 呼应。 */
+body:not([data-view="spots"]) .spots-view{display:none}
+body[data-view="spots"] .workspace,body[data-view="spots"] .routebar,body[data-view="spots"] .mobile-nav{display:none}
+body[data-view="spots"]{height:auto;min-height:100dvh}
+.spots-view{max-width:1120px;margin:0 auto;padding:28px 20px 64px}
+.spots-crumb{display:flex;align-items:center;gap:8px;color:var(--muted);font-size:14px;line-height:1.5;margin-bottom:16px}
+.spots-crumb button{background:none;border:0;padding:4px 0;font:inherit;color:var(--blue);cursor:pointer}
+.spots-crumb-sep{opacity:.6}
+.spots-head{display:flex;justify-content:space-between;align-items:flex-end;gap:16px 24px;flex-wrap:wrap;margin-bottom:18px}
+.spots-head h2{font-size:32px;line-height:1.2;margin:6px 0 4px}
+.spots-sub{color:var(--muted);line-height:1.6;margin:0}
+.spots-summary{font-size:14px;line-height:1.6;color:var(--muted);background:#fff;border:1px solid var(--line);border-radius:999px;padding:8px 14px}
+.spots-dims{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px}
+.spots-chip{display:inline-flex;align-items:center;gap:6px;padding:7px 12px;border:1px solid var(--line);border-radius:999px;background:#fff;color:var(--ink);font:inherit;font-size:14px;line-height:1.4;cursor:pointer}
+.spots-chip b{font-weight:600}
+.spots-chip.active{border-color:var(--blue);color:var(--blue);background:#fdf6f3}
+.spots-dot{width:9px;height:9px;border-radius:50%;background:var(--dim,#8a8f96);flex:none}
+.spots-3d-wrap{position:relative;border-radius:18px;overflow:hidden;background:var(--space);margin-bottom:12px}
+.spots-3d{height:520px}
+.spots-3d canvas{display:block;width:100%;height:100%;touch-action:none}
+.spots-3d-bar{position:absolute;left:0;right:0;bottom:0;display:flex;justify-content:space-between;align-items:center;gap:12px;padding:10px 14px;color:rgba(255,255,255,.75);font-size:13px;line-height:1.5;background:linear-gradient(transparent,rgba(11,18,32,.75))}
+.spots-3d-bar button{color:#fff;border-color:rgba(255,255,255,.4)}
+.spots-3d-tip{position:absolute;pointer-events:none;background:rgba(11,18,32,.9);color:#fff;font-size:13px;line-height:1.4;padding:5px 9px;border-radius:8px;white-space:nowrap;z-index:2}
+.spots-3d-fallback{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,.85);padding:24px;text-align:center;line-height:1.7}
+.spots-note{color:var(--muted);font-size:14px;line-height:1.7;margin:0 0 18px}
+.spots-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.spots-item{display:flex;gap:12px;align-items:center;background:#fff;border:1px solid var(--line);border-radius:14px;padding:10px;cursor:pointer;text-align:left}
+.spots-item:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
+.spots-item-photo{width:96px;flex:0 0 96px;aspect-ratio:4/3;border-radius:10px;overflow:hidden;background:#eceae2}
+.spots-item-photo img,.spots-item-photo .photo{width:100%;height:100%;object-fit:cover;display:block}
+.spots-item-photo .photo-placeholder{width:100%;height:100%}
+.spots-item-body{flex:1;min-width:0}
+.spots-item-body h3{font-size:16px;line-height:1.35;margin:0 0 4px}
+.spots-item-meta{color:var(--muted);font-size:13px;line-height:1.5;margin:0 0 6px}
+.spots-item-dims{display:flex;flex-wrap:wrap;gap:6px;margin:0}
+.spots-dim-tag{display:inline-flex;align-items:center;font-size:12px;line-height:1.4;color:var(--dim);border:1px solid var(--line);border-radius:999px;padding:2px 8px}
+.spots-pop{font-size:12px;line-height:1.4;color:var(--gold);border:1px solid var(--line);border-radius:999px;padding:2px 8px}
+.spots-item-add{flex:0 0 auto;padding:8px 12px;border-radius:999px;border:1px solid var(--line);background:#fff;font:inherit;font-size:13px;cursor:pointer}
+.spots-item-add.on{border-color:var(--blue);color:var(--blue)}
+.spots-card-grid{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,6fr);gap:28px;align-items:start}
+.spots-card-photo{border-radius:18px;overflow:hidden;background:#eceae2}
+.spots-card-photo img,.spots-card-photo .photo{width:100%;height:auto;display:block}
+.spots-card-photo .photo-placeholder{aspect-ratio:4/3}
+.spots-card-info h2{font-size:30px;line-height:1.25;margin:6px 0 8px}
+.spots-card-meta{color:var(--muted);font-size:14px;line-height:1.6;margin:0 0 10px}
+.spots-pop-line{font-size:14px;line-height:1.6;margin:0 0 6px}
+.spots-demo-note{display:inline-block;background:#fdf6f3;color:var(--blue);border:1px solid #eecfc6;border-radius:8px;padding:4px 8px;font-size:13px;line-height:1.5;margin:0 0 12px}
+.spots-desc{line-height:1.7;margin:12px 0}
+.spots-tip,.spots-addr{line-height:1.7;margin:8px 0}
+.spots-credit{color:var(--muted);font-size:13px;line-height:1.7}
+.spots-credit a{color:var(--blue)}
+.spots-actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px}
+.spots-actions button{padding:10px 16px;border-radius:999px;border:1px solid var(--line);background:#fff;font:inherit;font-weight:500;line-height:1.4;cursor:pointer}
+.spots-add.on,.spots-worth.on{border-color:var(--blue);color:var(--blue)}
+.spots-immersive-btn,.spots-next{background:var(--ink)!important;color:#fff!important;border-color:var(--ink)!important}
+.spots-immersive{background:var(--space);color:#eef2f6;border-radius:18px;overflow:hidden}
+.spots-immersive .spots-crumb{padding:16px 20px 0;color:rgba(255,255,255,.7)}
+.spots-immersive .spots-crumb button{color:#fff}
+.spots-hero{position:relative;min-height:62svh;display:flex;align-items:flex-end}
+.spots-hero-media{position:absolute;inset:0}
+.spots-hero-media img,.spots-hero-media .photo{width:100%;height:100%;object-fit:cover;display:block}
+.spots-hero-media .photo-placeholder{width:100%;height:100%}
+.spots-hero-shade{position:absolute;inset:0;background:linear-gradient(180deg,rgba(11,18,32,.15),rgba(11,18,32,.55) 55%,rgba(11,18,32,.92))}
+.spots-hero-text{position:relative;padding:28px;max-width:720px}
+.spots-eyebrow{font-size:12px;font-weight:700;letter-spacing:2px;color:var(--gold)}
+.spots-hero-text h2{font-size:clamp(30px,6vw,52px);line-height:1.15;margin:8px 0 10px}
+.spots-hero-text p{line-height:1.7;color:rgba(255,255,255,.85);margin:0}
+.spots-imm-body{padding:8px 28px 36px}
+.spots-sec{border-top:1px solid rgba(255,255,255,.14);padding:22px 0}
+.spots-sec-no{color:var(--gold);font-size:13px;letter-spacing:.12em}
+.spots-sec h3{font-size:20px;line-height:1.4;margin:6px 0 8px}
+.spots-sec p{line-height:1.7;color:rgba(255,255,255,.85);margin:0}
+.spots-slider-row{display:flex;align-items:center;gap:14px;margin-top:12px}
+.spots-slider-row input{flex:1;accent-color:var(--gold);min-width:0}
+.spots-duration-label{font-weight:600;white-space:nowrap}
+.spots-map-link{color:#9fc6e8}
+.spots-actions.dark button{background:transparent;color:#fff;border-color:rgba(255,255,255,.35)}
+.spots-actions.dark .on{border-color:var(--gold);color:var(--gold)}
+.spots-actions.dark .spots-immersive-btn,.spots-actions.dark .spots-next{background:#fff!important;color:var(--space)!important;border-color:#fff!important}
+.spots-trip-line{color:rgba(255,255,255,.7);line-height:1.6;margin:14px 0 0}
+.spots-credit.light{color:rgba(255,255,255,.6)}
+.spots-credit.light a{color:#9fc6e8}
+@media(max-width:760px){
+ .spots-view{padding:20px 14px 48px}
+ .spots-list{grid-template-columns:1fr}
+ .spots-card-grid{grid-template-columns:1fr}
+ .spots-3d{height:420px}
+ .spots-imm-body{padding:8px 18px 28px}
+ .spots-hero-text{padding:20px}
+}
