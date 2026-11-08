@@ -531,6 +531,50 @@ async function learningSignalsEndpoint(request,env){
  const signals=await collectLearningSignals(env,extraRows);
  return json({demo:true,signals,weighting:{bonus:LEARNING_BONUS,threshold:LEARNING_SIGNAL_THRESHOLD},note:'学习版·演示：复盘汇总信号；生成行程时这类地点可小幅加权（+'+LEARNING_BONUS+'，仅影响同分候选顺序），可在需求确认里关闭。'});
 }
+// 热门轮播（演示范围）：热门分 ＝ 复盘“值得多待” ×3 ＋ 加入行程 ×1。
+// 真实复盘（trip_reviews）与演示数据（demo_reviews / demo_adds）分开汇总再合并，
+// 演示行绝不混进真实计数；不传 demo 参数时只含真实复盘。
+// 真实“加入行程”计数现在还没有，added 目前只来自演示加入数（固定种子），
+// 正式上线前必须补真实计数并换掉种子数。只返回 henan.json 目录里的地点，
+// 没数据的地点不出现、不编数；按热门分降序，同分按地点名排。
+function popularPlaceByName(name){
+ const trimmed=String(name||'').trim();
+ if(!trimmed)return null;
+ return CATALOG.find(p=>p.name===trimmed)||CATALOG.find(p=>trimmed.includes(p.name)||p.name.includes(trimmed))||null;
+}
+async function popularEndpoint(request,env){
+ if(request.method!=='GET')fail('方法不支持',405);
+ const demoSession=new URL(request.url).searchParams.get('demo');
+ if(demoSession!=null&&!DEMO_SESSION_ID.test(demoSession))fail('演示会话编号不正确',400);
+ const byId=new Map();
+ const entryFor=place=>{if(!byId.has(place.id))byId.set(place.id,{place,worthReal:new Set(),worthDemo:new Set(),addedDemo:0});return byId.get(place.id)};
+ if(env.DB){
+  const real=await env.DB.prepare('SELECT user_id, payload FROM trip_reviews').all();
+  for(const row of real.results||[]){
+   let saved;try{saved=JSON.parse(row.payload)}catch{continue}
+   const place=popularPlaceByName(saved.worthMoreStop);if(!place)continue;
+   entryFor(place).worthReal.add(row.user_id);
+  }
+ }
+ if(demoSession!=null){
+  for(const row of await demoRowsForSession(env,demoSession)){
+   let saved;try{saved=JSON.parse(row.payload)}catch{continue}
+   const place=popularPlaceByName(saved.worthMoreStop);if(!place)continue;
+   entryFor(place).worthDemo.add(row.userKey);
+  }
+  for(const row of await demoAddsForSession(env,demoSession)){
+   const place=popularPlaceByName(row.spotName);if(!place)continue;
+   entryFor(place).addedDemo+=row.adds;
+  }
+ }
+ const items=[...byId.values()].map(({place,worthReal,worthDemo,addedDemo})=>{
+  const worth=worthReal.size+worthDemo.size;
+  return {id:place.id,name:place.name,city:place.city,worth,added:addedDemo,score:worth*POPULAR_WORTH_WEIGHT+addedDemo*POPULAR_ADD_WEIGHT,demo:worthDemo.size>0||addedDemo>0,worthReal:worthReal.size,worthDemo:worthDemo.size};
+ }).filter(item=>item.worth>0||item.added>0)
+  .sort((a,b)=>b.score-a.score||a.name.localeCompare(b.name,'zh-CN'))
+  .slice(0,POPULAR_LIMIT);
+ return json({demo:demoSession!=null,items,weights:{worth:POPULAR_WORTH_WEIGHT,added:POPULAR_ADD_WEIGHT},note:demoSession!=null?'演示模式 · 以下含演示数据：热门分 ＝ 复盘“值得多待” ×3 ＋ 加入行程 ×1；加入次数目前为演示种子数，正式上线前须换成真实计数。':'热门分 ＝ 复盘“值得多待” ×3 ＋ 加入行程 ×1；加入次数目前只有演示种子，正式上线前须补真实计数。'});
+}
 // 闭环改革二期：演示模式。演示复盘只进 demo_reviews，与真实复盘严格隔离，
 // 答辩现场匿名可用。一套固定模拟复盘（4 行）：2 名演示用户标景点类“值得多待”
 // （龙门石窟、白马寺，达到 2 人阈值出信号）、1 名标美食类“值得多待”
@@ -542,6 +586,26 @@ const DEMO_SEED_ROWS=[
  {userLabel:'演示用户丙',tripId:'demo_trip_c',payload:{worthMoreStop:'西工小街',chosenPlan:'洛阳一日 · 美食线'}},
  {userLabel:'演示用户丁',tripId:'demo_trip_d',payload:{actualCost:486,overtimeStop:'龙门石窟',chosenPlan:'洛阳一日 · 景点线'}}
 ];
+// 热门轮播（演示范围）：演示加入数固定种子（演示数据，非真实计数）。
+// 真实“加入行程”计数现在还没有，正式上线前必须补真实计数并换掉这组种子数。
+const DEMO_SEED_ADDS=[
+ {spotName:'龙门石窟',adds:86},
+ {spotName:'老君山',adds:74},
+ {spotName:'云台山',adds:68},
+ {spotName:'清明上河园',adds:61},
+ {spotName:'河南博物院',adds:52},
+ {spotName:'白马寺',adds:47},
+ {spotName:'西工小街',adds:44},
+ {spotName:'只有河南·戏剧幻城',adds:39}
+];
+const POPULAR_WORTH_WEIGHT=3;
+const POPULAR_ADD_WEIGHT=1;
+const POPULAR_LIMIT=8;
+async function demoAddsForSession(env,sessionId){
+ if(!env.DB)return [];
+ const rows=await env.DB.prepare('SELECT spot_name, adds FROM demo_adds WHERE session_id = ?').bind(sessionId).all();
+ return (rows.results||[]).map(r=>({spotName:r.spot_name,adds:Number(r.adds)||0}));
+}
 async function demoRowsForSession(env,sessionId){
  if(!env.DB)return [];
  const rows=await env.DB.prepare('SELECT user_label, payload FROM demo_reviews WHERE session_id = ?').bind(sessionId).all();
@@ -556,15 +620,27 @@ async function demoSeedEndpoint(request,env){
  if(request.method!=='POST')fail('方法不支持',405);
  if(!env.DB)fail('演示数据暂不可用，请稍后重试',503);
  const sessionId=demoSessionFromBody(await readBody(request));
+ // 复盘与加入数分开种、各自幂等：只补缺的那一边，已有的不翻倍。
  const existing=await env.DB.prepare('SELECT trip_id FROM demo_reviews WHERE session_id = ?').bind(sessionId).all();
- const count=(existing.results||[]).length;
- if(count>0)return json({seeded:false,count,signals:await collectLearningSignals(env,await demoRowsForSession(env,sessionId))});
- const now=Date.now();
- for(const row of DEMO_SEED_ROWS){
-  await env.DB.prepare('INSERT INTO demo_reviews (session_id, user_label, trip_id, payload, created_at) VALUES (?, ?, ?, ?, ?) ON CONFLICT(session_id, trip_id) DO NOTHING').bind(sessionId,row.userLabel,row.tripId,JSON.stringify(row.payload),now).run();
+ let seeded=false;
+ if((existing.results||[]).length===0){
+  const now=Date.now();
+  for(const row of DEMO_SEED_ROWS){
+   await env.DB.prepare('INSERT INTO demo_reviews (session_id, user_label, trip_id, payload, created_at) VALUES (?, ?, ?, ?, ?) ON CONFLICT(session_id, trip_id) DO NOTHING').bind(sessionId,row.userLabel,row.tripId,JSON.stringify(row.payload),now).run();
+  }
+  seeded=true;
+ }
+ const addsExisting=await env.DB.prepare('SELECT spot_name FROM demo_adds WHERE session_id = ?').bind(sessionId).all();
+ if((addsExisting.results||[]).length===0){
+  const now=Date.now();
+  for(const row of DEMO_SEED_ADDS){
+   await env.DB.prepare('INSERT INTO demo_adds (session_id, spot_name, adds, created_at) VALUES (?, ?, ?, ?) ON CONFLICT(session_id, spot_name) DO NOTHING').bind(sessionId,row.spotName,row.adds,now).run();
+  }
+  seeded=true;
  }
  const rows=await demoRowsForSession(env,sessionId);
- return json({seeded:true,count:rows.length,signals:await collectLearningSignals(env,rows)});
+ const adds=await demoAddsForSession(env,sessionId);
+ return json({seeded,count:rows.length,addsCount:adds.length,signals:await collectLearningSignals(env,rows)});
 }
 async function demoClearEndpoint(request,env){
  if(request.method!=='POST')fail('方法不支持',405);
@@ -572,17 +648,19 @@ async function demoClearEndpoint(request,env){
  const sessionId=demoSessionFromBody(await readBody(request));
  // 只删该会话的演示行，绝不删真实复盘（trip_reviews 不在此语句中）。
  const result=await env.DB.prepare('DELETE FROM demo_reviews WHERE session_id = ?').bind(sessionId).run();
- return json({cleared:Number(result.meta?.changes||0)});
+ const addsResult=await env.DB.prepare('DELETE FROM demo_adds WHERE session_id = ?').bind(sessionId).run();
+ return json({cleared:Number(result.meta?.changes||0),addsCleared:Number(addsResult.meta?.changes||0)});
 }
 async function demoStatusEndpoint(request,env){
  if(request.method!=='GET')fail('方法不支持',405);
  const session=new URL(request.url).searchParams.get('session');
  if(session==null)return json({active:false,count:0});
  if(!DEMO_SESSION_ID.test(session))fail('演示会话编号不正确',400);
- if(!env.DB)return json({active:false,count:0});
+ if(!env.DB)return json({active:false,count:0,addsCount:0});
  const rows=await env.DB.prepare('SELECT trip_id FROM demo_reviews WHERE session_id = ?').bind(session).all();
  const count=(rows.results||[]).length;
- return json({active:count>0,count});
+ const adds=await env.DB.prepare('SELECT spot_name FROM demo_adds WHERE session_id = ?').bind(session).all();
+ return json({active:count>0,count,addsCount:(adds.results||[]).length});
 }
 // ---------- 闭环改革二期：宿舍拼团最小版 ----------
 // 建团、加入（偏好合并）、发起人定冲突、复用 /api/agent 管线生成拼团行程。
@@ -962,6 +1040,7 @@ if(url.pathname==='/api/revise')return await reviseEndpoint(request,env);
 if(url.pathname==='/api/stt')return await sttEndpoint(request,env);
 if(url.pathname.startsWith('/api/trips/')&&url.pathname.endsWith('/review'))return await reviewEndpoint(request,env,url.pathname.slice('/api/trips/'.length,-'/review'.length));
 if(url.pathname==='/api/learning-signals')return await learningSignalsEndpoint(request,env);
+if(url.pathname==='/api/popular')return await popularEndpoint(request,env);
 if(url.pathname==='/api/demo/reviews/seed')return await demoSeedEndpoint(request,env);
 if(url.pathname==='/api/demo/reviews/clear')return await demoClearEndpoint(request,env);
 if(url.pathname==='/api/demo/status')return await demoStatusEndpoint(request,env);

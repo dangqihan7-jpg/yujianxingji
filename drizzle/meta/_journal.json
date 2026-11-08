@@ -57,6 +57,13 @@
       "when": 1794046706144,
       "tag": "0007_polite_havok",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "6",
+      "when": 1794140828661,
+      "tag": "0008_cultured_fallen_one",
+      "breakpoints": true
     }
   ]
 }

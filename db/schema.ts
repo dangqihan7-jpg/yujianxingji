@@ -65,3 +65,13 @@ export const demoReviews=sqliteTable("demo_reviews",{
 },table=>[
  primaryKey({columns:[table.sessionId,table.tripId]})
 ]);
+// 热门轮播（演示范围）：演示加入数只进 demo_adds，按（会话，地点名）保存；
+// 真实“加入行程”计数现在还没有，演示加入数是固定种子数，正式上线前必须补真实计数并换掉种子数。
+export const demoAdds=sqliteTable("demo_adds",{
+ sessionId:text("session_id").notNull(),
+ spotName:text("spot_name").notNull(),
+ adds:integer("adds").notNull(),
+ createdAt:integer("created_at").notNull()
+},table=>[
+ primaryKey({columns:[table.sessionId,table.spotName]})
+]);
