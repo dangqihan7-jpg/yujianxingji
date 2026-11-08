@@ -130,7 +130,7 @@ const seed2=await (await post3('/api/demo/reviews/seed',{sessionId:'demo_test1'}
 assert.equal(seed2.seeded,false,'reseed must be idempotent');
 assert.equal(seed2.count,4,'reseed must not duplicate rows');
 assert(seed2.count<=6,'a session must hold at most 6 demo rows');
-assert.deepEqual(await (await call3('/api/demo/status?session=demo_test1')).json(),{active:true,count:4});
+assert.deepEqual(await (await call3('/api/demo/status?session=demo_test1')).json(),{active:true,count:4,addsCount:8});
 assert.equal((await post3('/api/demo/reviews/seed',{sessionId:'bad id!'})).status,400,'invalid session id must be rejected');
 assert.equal((await post3('/api/demo/reviews/clear',{sessionId:''})).status,400,'empty session id must be rejected');
 // 不带 demo 参数：信号里只有真实美食信号（2 人，demo:false），没有演示行
@@ -179,7 +179,7 @@ assert.equal((await post3('/api/demo/reviews/clear',{sessionId:''})).status,400,
 {
  const cleared=await (await post3('/api/demo/reviews/clear',{sessionId:'demo_test1'})).json();
  assert.equal(cleared.cleared,4);
- assert.deepEqual(await (await call3('/api/demo/status?session=demo_test1')).json(),{active:false,count:0});
+ assert.deepEqual(await (await call3('/api/demo/status?session=demo_test1')).json(),{active:false,count:0,addsCount:0});
  const signals=await (await call3('/api/learning-signals?demo=demo_test1',null,'alice')).json();
  assert.equal(signals.signals.length,1);
  assert.equal(signals.signals[0].category,'food');
