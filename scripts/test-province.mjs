@@ -38,14 +38,13 @@ const nodes=new Map();const get=s=>{if(!nodes.has(s))nodes.set(s,{value:s==='#da
 const context={document:{body:{dataset:{view:'gallery'}},querySelector:get,querySelectorAll:()=>[],head:{append(){}}},navigator:{},URL,Blob,Map,Set,console,setTimeout:()=>0,clearTimeout(){},fetch:(path,options)=>worker.fetch(new Request('https://fixture.test'+path,options),{})};context.window=context;vm.createContext(context);
 vm.runInContext(HTML.split('<script>')[1].split('</script>')[0].replace(/\ninit\(\);\s*$/,''),context);const run=s=>vm.runInContext(s,context);
 const before=run('JSON.stringify(compactDraft())');get('#brieftext').value='保留我的旅行需求';
-run("atlasQuery='宝泉';renderCityAtlas()");assert(get('#city-atlas-list').innerHTML.includes('新乡'));assert(!get('#city-atlas-list').innerHTML.includes('data-atlas-city="洛阳"'));assert(get('#atlas-city-detail').innerHTML.includes('河南宝泉旅游区'));
-run("atlasQuery='';atlasRegion='豫东人文';renderCityAtlas()");assert(get('#city-atlas-list').innerHTML.includes('周口'));assert(get('#city-atlas-list').innerHTML.includes('商丘'));assert.equal((get('#city-atlas-list').innerHTML.match(/data-atlas-city=/g)||[]).length,2);
-run("atlasQuery='不存在的目的地';renderCityAtlas()");assert(get('#atlasresults').textContent.includes('暂无匹配'));
-run("atlasQuery='';atlasRegion='全部';renderCityAtlas();chooseAtlasCity('信阳')");assert(get('#atlas-city-detail').innerHTML.includes('南湾湖'));
+// 首页改版后城市导览（renderCityAtlas）与主题路线预览（previewFeaturedRoute）
+// 已随首页堆叠区块移除，景点页目前只按维度过滤；以下只验进出首页分层不丢草稿。
+run("showHomeLayer('plan')");run("showHomeLayer('hero')");
+assert.equal(run('JSON.stringify(compactDraft())'),before);assert.equal(get('#brieftext').value,'保留我的旅行需求');
 for(const c of CITY_GUIDES){context.city=c.name;const stops=run("candidateStops(validateIntent({city,days:2}))");assert(stops.length>=2);assert(stops.every(s=>s.place.city===c.name&&s.place.planningEligible!==false))}
 assert(CATALOG.filter(p=>p.planningEligible===false).length===2);
 for(const p of CATALOG.filter(p=>p.planningEligible===false)){const report=auditDecision({days:1,maxHours:8,stops:[{place:p,day:1,duration:p.duration}]});assert.equal(report.status,'pending');assert(report.daily[0].pending.some(t=>t.includes('开放')))}
-for(const r of PRESETS){context.id=r.id;run('previewFeaturedRoute(id)');const markup=get('#theme-routes').innerHTML;assert(!markup.includes('src="undefined"'));assert.equal((markup.match(/class="side-route"/g)||[]).length,2);if(!r.image){assert(markup.includes('路线示意 · 未使用实景照片'));assert(markup.includes('route-type-cover'))}}
 assert.equal(run('JSON.stringify(compactDraft())'),before);assert.equal(get('#brieftext').value,'保留我的旅行需求');
 const catalog=await (await worker.fetch(new Request('https://fixture.test/api/catalog'),{})).json();assert.equal(catalog.cityGuides.length,18);assert.equal(catalog.cities.length,18);
 const photos=JSON.parse(await readFile(new URL('../docs/photo-catalog.json',import.meta.url),'utf8'));
@@ -56,5 +55,6 @@ for(const record of photos){
  const source=await readFile(new URL('../'+record.file,import.meta.url));assert.equal(createHash('sha256').update(source).digest('hex'),record.sha256);assert(p.image.endsWith('?v='+record.sha256.slice(0,12)));
  const asset=await worker.fetch(new Request('https://fixture.test'+p.image),{});assert.equal(asset.status,200);assert.equal(asset.headers.get('content-type'),'image/jpeg');assert.equal(createHash('sha256').update(Buffer.from(await asset.arrayBuffer())).digest('hex'),record.sha256);
 }
-run("atlasQuery='';atlasRegion='全部';chooseAtlasCity('安阳')");assert(get('#atlas-city-detail').innerHTML.includes(CATALOG.find(p=>p.id==='hn-yinxu').image));assert.equal(run('JSON.stringify(compactDraft())'),before);
-console.log('Passed: 18 destinations, 95 places, 20 valid routes, county aliases and exclusions, unavailable-place guard, region/search discovery, honest covers, photo provenance and asset hashes, preserved draft.');
+run("showHomeLayer('plan')");run("showHomeLayer('hero')");
+assert.equal(run('JSON.stringify(compactDraft())'),before);
+console.log('Passed: 18 destinations, 95 places, 20 valid routes, county aliases and exclusions, unavailable-place guard, honest covers, photo provenance and asset hashes, preserved draft.');

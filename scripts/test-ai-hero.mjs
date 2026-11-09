@@ -18,15 +18,17 @@ function fixture({reduced=false}={}){
  for(const id of ids)nodes.set(id,new Node(id));
  const context={console,esc:escape,cfg:{aiConfigured:true,authMode:'standalone',publicAiDemo:false},authUser:null,activeView:'gallery',saveBooting:false,briefBusy:false,
   document:{hidden:false,activeElement:null,body:{dataset:{view:'gallery'}},getElementById:id=>nodes.get(id)||null,querySelector:s=>s==='dialog[open]'?(modal?{}:null):nodes.get(s.slice(1))||null,addEventListener(type,fn){events.set(type,fn)}},
-  setTimeout(fn,delay){const id=++next;timers.set(id,{fn,delay});return id},clearTimeout:id=>timers.delete(id),matchMedia:()=>({matches:reduced,addEventListener(){}}),addEventListener(type,fn){events.set(type,fn)},toast:text=>messages.push(text),openBrief:async text=>requests.push(text)};
+  setTimeout(fn,delay){const id=++next;timers.set(id,{fn,delay});return id},clearTimeout:id=>timers.delete(id),matchMedia:()=>({matches:reduced,addEventListener(){}}),addEventListener(type,fn){events.set(type,fn)},toast:text=>messages.push(text),openBriefLayer:async text=>requests.push(text)};
  vm.createContext(context);vm.runInContext(source,context);context.bindAIPlanningHero();
  return {context,nodes,timers,events,requests,messages,run:s=>vm.runInContext(s,context),get:id=>nodes.get(id),replace(){for(const id of ids){nodes.get(id).isConnected=false;nodes.set(id,new Node(id))}context.bindAIPlanningHero()},modal(value){modal=value;context.refreshAIHeroLifecycle()},tick(){const entry=[...timers.entries()][0];assert(entry,'Expected a placeholder timer');timers.delete(entry[0]);entry[1].fn()}};
 }
 {
  const f=fixture(),html=f.context.aiPlanningHeroHTML();
- assert(html.includes('一句话，让 AI 为你规划河南周末游'));assert(html.includes('5 个 AI 智能体协同'));
- assert.equal((html.match(/class="ai-hero-agent"/g)||[]).length,5);
- for(const role of ['需求理解','地点推荐','日程编排','交通核算','冲突校验'])assert(html.includes(role));
+ assert(html.includes('周末去河南，一句话就出发。'));assert(html.includes('不用想好全部，写个城市也行，剩下的智能体问你。'));
+ assert(!html.includes('ai-hero-agent'),'First screen shows no agent list');
+ assert(!html.includes('ai-hero-vision'),'Photo recognition leaves the first screen');
+ assert(html.includes('data-home-popular')&&html.includes('data-home-spots'),'Hero offers only the two secondary entries');
+ assert(html.includes('开始规划'));
  assert(html.includes('type="submit"'));assert(html.includes('maxlength="600"'));assert(html.includes('规则规划'));
  f.context.authUser={id:1};assert(f.context.aiPlanningHeroHTML().includes('AI 服务已配置'));
  f.context.cfg.aiConfigured=false;assert(f.context.aiPlanningHeroHTML().includes('当前使用规则规划'));
@@ -43,7 +45,7 @@ function fixture({reduced=false}={}){
  f.context.saveBooting=false;f.context.briefBusy=true;await f.context.submitAIHero();assert.equal(f.requests.length,1);
 }
 {
- const f=fixture(),pending=deferred();f.context.openBrief=text=>{f.requests.push(text);return pending.promise};f.get('ai-hero-input').value='开封一日游';
+ const f=fixture(),pending=deferred();f.context.openBriefLayer=text=>{f.requests.push(text);return pending.promise};f.get('ai-hero-input').value='开封一日游';
  const first=f.context.submitAIHero();assert(f.get('ai-hero-submit').disabled);assert.equal(f.get('ai-hero-form').attributes['aria-busy'],'true');
  await f.context.submitAIHero();assert.equal(f.requests.length,1,'Repeated taps must not start another intent request');
  f.context.captureAIHeroDraft();f.replace();assert.equal(f.get('ai-hero-input').value,'开封一日游');assert(f.get('ai-hero-submit').disabled,'Rerendering cannot bypass the in-flight guard');
@@ -73,7 +75,7 @@ function fixture({reduced=false}={}){
 }
 
 // Execute the built application, so the new form must actually reach the
-// existing openBrief and /api/intent path rather than an isolated duplicate.
+// existing openBriefLayer and /api/intent path rather than an isolated duplicate.
 {
  const nodes=new Map(),requests=[];const body={dataset:{view:'gallery'},contains:()=>true};
  const get=selector=>{if(selector==='dialog[open]')return [...nodes.values()].find(n=>n.open)||null;if(!nodes.has(selector))nodes.set(selector,{value:selector==='#days'?'2':selector==='#city'?'河南':selector==='#start'?'09:00':selector==='#travelmode'?'driving':selector==='#maxhours'?'8':selector==='#restmins'?'30':'',innerHTML:'',textContent:'',style:{},dataset:{},hidden:false,open:false,isConnected:true,classList:{add(){},toggle(){}},querySelectorAll:()=>[],addEventListener(){},setAttribute(){},focus(){},showModal(){this.open=true},close(){this.open=false}});return nodes.get(selector)};
@@ -81,13 +83,17 @@ function fixture({reduced=false}={}){
  vm.createContext(context);vm.runInContext(HTML.split('<script>')[1].split('</script>')[0].replace(/\ninit\(\);\s*$/,''),context);
  const run=code=>vm.runInContext(code,context),markup=get('#gallery').innerHTML;
  assert(markup.indexOf('id="ai-planning-hero"')>=0&&markup.indexOf('id="ai-planning-hero"')<markup.indexOf('id="hero-slideshow"'));
- for(const old of ['id="hero-slideshow"','id="henan-cities"','id="weekend-plan"','id="theme-routes"'])assert(markup.includes(old),'Keep the existing gallery section '+old);
+ assert(markup.includes('id="hero-slideshow"'),'Popular layer keeps the existing slideshow');
+ assert(markup.includes('id="home-plan-layer"')&&markup.includes('id="home-plan-host"'),'Plan layer hosts the shared brief form');
+ for(const old of ['id="henan-cities"','id="weekend-plan"','id="theme-routes"','loop-strip'])assert(!markup.includes(old),'First screen no longer stacks '+old);
  run('saveBooting=false');const before=run('JSON.stringify(compactDraft())');get('#ai-hero-input').value='洛阳两天，公交，预算800元';
  await get('#ai-hero-form').onsubmit({preventDefault(){}});
  const intents=requests.filter(r=>r.path==='/api/intent');assert.equal(intents.length,1);assert.equal(intents[0].body.text,'洛阳两天，公交，预算800元');
- assert(get('#brief').open,'The existing requirement confirmation opens');assert(get('#briefbody').innerHTML.includes('id="buildcandidate"'));
+ assert(!get('#brief').open,'Submitting opens the plan layer, not the dialog');assert.equal(run('homeLayer'),'plan');
+ assert.equal(get('#home-plan-layer').hidden,false);assert.equal(get('#home-hero-layer').hidden,true);
+ assert(get('#briefbody').innerHTML.includes('id="buildcandidate"'));
  assert.equal(run('JSON.stringify(compactDraft())'),before,'The Hero cannot apply or replace a draft without confirmation');
  assert(!requests.some(r=>r.path==='/api/agent'),'Agent generation still waits for the existing condition confirmation');
  run("setView('planner');setView('gallery')");assert.equal(get('#ai-hero-input').value,'洛阳两天，公交，预算800元');
 }
-console.log('AI 首页：五角色渲染、真实入口桥接、条件确认门禁、空输入/重复/加载保护、三示例轮换、焦点/后台/弹窗/减少动效暂停与草稿保留通过。');
+console.log('AI 首页：分层首屏、真实入口桥接、条件确认门禁、空输入/重复/加载保护、三示例轮换、焦点/后台/弹窗/减少动效暂停与草稿保留通过。');

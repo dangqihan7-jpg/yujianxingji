@@ -1,19 +1,17 @@
-// This entry only opens the existing condition-confirmation flow. The five
-// agents still execute in buildCandidate(), after the user confirms conditions.
+// This entry only opens the existing condition-confirmation flow, now as the
+// homepage's nested plan layer. The five agents still execute in
+// buildCandidate(), after the user confirms conditions.
 const AI_HERO_EXAMPLES=[
   '郑州周末2天，想看古都和吃烩面，预算800元',
   '开封1天，带爸妈，节奏慢一点',
   '洛阳2天，想去老君山，自驾，预算600元'
 ];
-const AI_HERO_AGENTS=[
-  {name:'需求理解',description:'读懂时间、预算和偏好',icon:'<path d="M5 4h14v12H9l-4 4V4Z"/><path d="M9 8h6M9 12h4"/>'},
-  {name:'地点推荐',description:'按条件筛选河南好去处',icon:'<path d="M19 10c0 5-7 10-7 10S5 15 5 10a7 7 0 1 1 14 0Z"/><circle cx="12" cy="10" r="2"/>'},
-  {name:'日程编排',description:'组合分日路线和停留',icon:'<rect x="4" y="5" width="16" height="15" rx="2"/><path d="M8 3v4m8-4v4M4 10h16M8 14h3m2 3h3"/>'},
-  {name:'交通核算',description:'高德核算交通，未知项待确认',icon:'<path d="M4 5h5v5H4zM15 14h5v5h-5zM9 7h7a3 3 0 0 1 0 6H8a3 3 0 0 0 0 6h7"/>'},
-  {name:'冲突校验',description:'检查超时、预算与行程冲突',icon:'<path d="m12 3 8 3v6c0 5-8 9-8 9s-8-4-8-9V6l8-3Z"/><path d="m8 12 3 3 5-6"/>'}
-];
 let aiHeroDraft='',aiHeroBusy=false,aiHeroPlaceholderIndex=0,aiHeroPlaceholderTimer=0;
 let aiHeroFocus=null;
+// 首页首屏封面：热门第 1 名（接 /api/popular，由 showcase.js 写入）；
+// 没热门数据时为 null，回落到现有日期轮换选景。
+let aiHeroCoverPlace=null;
+function setAIHeroCoverPlace(place){aiHeroCoverPlace=place&&place.id?place:null}
 const aiHeroElement=id=>document.getElementById?.(id)||document.querySelector?.('#'+id);
 const aiHeroReducedMotion=()=>Boolean(globalThis.matchMedia?.('(prefers-reduced-motion: reduce)').matches);
 function aiHeroAvailability(){
@@ -28,6 +26,7 @@ function aiHeroScenery(){
   const catalogue=typeof CATALOG!=='undefined'&&Array.isArray(CATALOG)?CATALOG:[];
   const daily=typeof heroPlaces!=='undefined'&&Array.isArray(heroPlaces)?heroPlaces:[];
   const usable=place=>Boolean(place?.image&&/^https:\/\//i.test(place.photoReference||'')&&/^https:\/\//i.test(place.licenseUrl||'')&&/^\/assets\/[A-Za-z0-9_-]+\.(?:jpe?g|png|webp)(?:\?[^\s<>]*)?$/i.test(place.image));
+  if(aiHeroCoverPlace&&usable(aiHeroCoverPlace))return aiHeroCoverPlace;
   const landscapes=['hn-baoquan','hn-laojunshan','hn-yuntai','hn-wanxianshan','hn-wangwu','hn-nanwan'];
   const dailyLandscape=landscapes.map(id=>daily.find(place=>place.id===id&&usable(place))).find(Boolean);
   // Cultural landmarks stay in the daily album, while this cover keeps a
@@ -59,18 +58,17 @@ function aiPlanningHeroHTML(){
     <div id="ai-hero-backdrop" class="ai-hero-backdrop" aria-hidden="true" data-place="${esc(aiHeroScenery()?.id||'placeholder')}">${aiHeroBackdropHTML()}</div>
     <div class="ai-hero-content">
       <div class="ai-hero-intro">
-      <div class="ai-hero-eyebrow"><p class="ai-hero-kicker"><span aria-hidden="true"></span>AI WEEKEND PLANNER</p><button id="ai-hero-vision" class="ai-hero-vision" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 6 9.5 3h5L16 6h4v14H4V6h4Z"/><circle cx="12" cy="12" r="3.5"/></svg>拍照识景点</button></div>
-      <h1 id="ai-planning-title">一句话，让 AI 为你规划河南周末游</h1>
-      <p class="ai-hero-lead">去山野透口气，或走进一座古城。<br>从一个想法开始，把周末过成喜欢的样子。</p>
-      <p class="ai-hero-subtitle"><strong>5 个 AI 智能体协同</strong><span>需求理解 → 地点推荐 → 日程编排 → 交通核算 → 冲突校验</span></p>
+      <div class="ai-hero-eyebrow"><p class="ai-hero-kicker"><span aria-hidden="true"></span>AI WEEKEND PLANNER</p></div>
+      <h1 id="ai-planning-title">周末去河南，一句话就出发。</h1>
+      <p class="ai-hero-lead">不用想好全部，写个城市也行，剩下的智能体问你。</p>
       </div>
       <form id="ai-hero-form" aria-label="用一句话开始 AI 规划">
         <div class="ai-hero-compose-heading"><span class="ai-hero-compose-symbol" aria-hidden="true">✦</span><div><p>从这里，出发</p><span>写下时间、预算和你想去的地方</span></div><span class="ai-hero-compose-label" aria-hidden="true">YOUR WEEKEND</span></div>
         <div class="ai-hero-input-wrap"><label class="ai-hero-input-label" for="ai-hero-input">说说你的周末想法</label><textarea id="ai-hero-input" name="travel-request" rows="2" maxlength="600" placeholder="${esc(AI_HERO_EXAMPLES[aiHeroPlaceholderIndex])}" aria-describedby="ai-hero-status">${esc(aiHeroDraft)}</textarea>${typeof sttHeroControlsHTML==='function'?sttHeroControlsHTML():''}</div>
-        <div class="ai-hero-form-footer"><p id="ai-hero-status" class="ai-hero-hint" role="status">${esc(aiHeroBusy?'正在识别你的旅行需求…':aiHeroAvailability())}</p><button id="ai-hero-submit" class="primary" type="submit" ${aiHeroBusy?'disabled':''}>${aiHeroBusy?'正在识别需求…':'让 AI 规划'}<span aria-hidden="true">↗</span></button></div>
+        <div class="ai-hero-form-footer"><p id="ai-hero-status" class="ai-hero-hint" role="status">${esc(aiHeroBusy?'正在识别你的旅行需求…':aiHeroAvailability())}</p><button id="ai-hero-submit" class="primary" type="submit" ${aiHeroBusy?'disabled':''}>${aiHeroBusy?'正在识别需求…':'开始规划'}<span aria-hidden="true">↗</span></button></div>
       </form>
+      <nav class="ai-hero-links" aria-label="首页次要入口"><button type="button" class="ai-hero-link" data-home-popular>看看热门 <span aria-hidden="true">↓</span></button><button type="button" class="ai-hero-link" data-home-spots>景点 <span aria-hidden="true">↗</span></button></nav>
     </div>
-    <ol class="ai-hero-agents" aria-label="5 个智能体的能力">${AI_HERO_AGENTS.map((agent,index)=>`<li class="ai-hero-agent" data-ai-agent="${index+1}"><span class="ai-hero-agent-number" aria-hidden="true">0${index+1}</span><span class="ai-hero-agent-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">${agent.icon}</svg></span><div class="ai-hero-agent-copy"><strong>${esc(agent.name)}</strong><span>${esc(agent.description)}</span></div></li>`).join('')}</ol>
     <div id="ai-hero-photo-credit" class="ai-hero-photo-credit" aria-label="背景实景照片信息">${aiHeroCreditHTML()}</div>
   </section>`;
 }
@@ -102,7 +100,7 @@ function refreshAIHeroLifecycle(){scheduleAIHeroPlaceholder();refreshAIHeroScene
 function updateAIHeroSubmit(){
   const form=aiHeroElement('ai-hero-form'),button=aiHeroElement('ai-hero-submit'),status=aiHeroElement('ai-hero-status');
   if(form)form.setAttribute?.('aria-busy',String(aiHeroBusy));
-  if(button){button.disabled=aiHeroBusy;button.innerHTML=(aiHeroBusy?'正在识别需求…':'让 AI 规划')+'<span aria-hidden="true">↗</span>'}
+  if(button){button.disabled=aiHeroBusy;button.innerHTML=(aiHeroBusy?'正在识别需求…':'开始规划')+'<span aria-hidden="true">↗</span>'}
   if(status)status.textContent=aiHeroBusy?'正在识别你的旅行需求…':aiHeroAvailability();
   if(typeof refreshSTTHero==='function')refreshSTTHero();
 }
@@ -115,13 +113,12 @@ async function submitAIHero(event){
   if(!text){const status=aiHeroElement('ai-hero-status');if(status)status.textContent='先写下时间、预算或想去的地方吧';input.focus?.();scheduleAIHeroPlaceholder();return}
   if(typeof saveBooting!=='undefined'&&saveBooting){if(typeof toast==='function')toast('正在恢复已保存行程，请稍后操作');return}
   aiHeroBusy=true;updateAIHeroSubmit();scheduleAIHeroPlaceholder();
-  try{await openBrief(text)}
+  try{await (typeof openBriefLayer==='function'?openBriefLayer(text):openBrief(text))}
   catch(error){if(typeof toast==='function')toast(error.message||'暂时无法开始规划，请重试')}
   finally{aiHeroBusy=false;updateAIHeroSubmit();scheduleAIHeroPlaceholder()}
 }
 function bindAIPlanningHero(){
   const form=aiHeroElement('ai-hero-form'),input=aiHeroElement('ai-hero-input');if(!form||!input)return;
-  const visionButton=aiHeroElement('ai-hero-vision');if(visionButton)visionButton.onclick=()=>{if(typeof openVision==='function')openVision()};
   input.value=aiHeroDraft;form.onsubmit=submitAIHero;
   input.oninput=()=>{captureAIHeroDraft();if(!aiHeroBusy){const status=aiHeroElement('ai-hero-status');if(status)status.textContent=aiHeroAvailability()}scheduleAIHeroPlaceholder()};
   input.onfocus=scheduleAIHeroPlaceholder;input.onblur=scheduleAIHeroPlaceholder;

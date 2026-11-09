@@ -30,7 +30,7 @@ function fixture(customFetch){
     navigator:{},location:{origin:'https://fixture.test'},URL,Map,Set,Blob,Response,AbortController,console,
     sessionStorage:{getItem:key=>storage.get(key)??null,setItem:(key,value)=>storage.set(key,String(value)),removeItem:key=>storage.delete(key)},
     setTimeout(fn,delay){const id=++timerId;timers.set(id,{fn,delay});return id},clearTimeout:id=>timers.delete(id),
-    fetch(path,options={}){requests.push({path,options});return customFetch?customFetch(path,options,fallback):fallback(path,options)}
+    fetch(path,options={}){requests.push({path,options});if(typeof path==='string'&&path.startsWith('/api/popular'))return json({items:[]});return customFetch?customFetch(path,options,fallback):fallback(path,options)}
   };
   context.window=context;vm.createContext(context);vm.runInContext(script,context);
   return {get,context,storage,requests,timers,run:source=>vm.runInContext(source,context),
@@ -73,15 +73,16 @@ for(const stage of ['fetch','body']){
   const request=f.run("api('/fixture',undefined,{timeoutMs:12000})");
   const rejected=assert.rejects(request,error=>error.code==='REQUEST_TIMEOUT');
   await tick();f.deadline();await settled(rejected);
-  assert.equal(f.requests[0].options.signal.aborted,true);assert.equal(f.deadlines(),0);
+  assert.equal(f.requests.find(r=>r.path==='/fixture').options.signal.aborted,true);assert.equal(f.deadlines(),0);
   late.resolve(stage==='fetch'?json({ok:true}):{ok:true});await tick();
 }
 {
   const late=deferred();const f=fixture(()=>late.promise);
   const request=f.run("api('/fixture',{value:1})");await tick();
   assert.equal(f.deadlines(),0,'Other API calls retain their existing default timeout behavior');
-  assert.equal(f.requests[0].options.signal,undefined);assert.equal(f.requests[0].options.method,'POST');
-  assert.equal(f.requests[0].options.body,'{"value":1}');late.resolve(json({ok:true}));
+  const fixtureRequest=f.requests.find(r=>r.path==='/fixture');
+  assert.equal(fixtureRequest.options.signal,undefined);assert.equal(fixtureRequest.options.method,'POST');
+  assert.equal(fixtureRequest.options.body,'{"value":1}');late.resolve(json({ok:true}));
   assert.equal((await settled(request)).ok,true);
   const fast=fixture(()=>Promise.resolve(json({ok:true})));
   await settled(fast.run("api('/fixture',undefined,{timeoutMs:12000})"));assert.equal(fast.deadlines(),0,'Success must clear its deadline');

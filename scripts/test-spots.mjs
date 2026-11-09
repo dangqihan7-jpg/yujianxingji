@@ -94,6 +94,40 @@ assert(get('#spots-list').innerHTML.includes('鼓楼夜市')&&get('#spots-list')
 assert(!get('#spots-list').innerHTML.includes('龙门石窟'),'Food filter must hide other places');
 run("setSpotsFilter('culture')");assert.equal(run('spotsVisiblePlaces().length'),43,'Culture filter must contain 43 places');
 run("setSpotsFilter('all')");assert.equal(run('spotsVisiblePlaces().length'),95,'Clearing the filter restores all places');
+// 城市筛选：18 城 + 全部，每颗 chip 标地点数；城市与维度联合过滤（AND）
+assert.equal(run('spotsCityCounts().length'),18,'City filter must cover all 18 cities');
+assert.equal(run('spotsCityCounts().reduce((s,c)=>s+c.count,0)'),95,'City counts must sum to the catalogue');
+assert.equal(run("JSON.stringify(spotsCityCounts().slice(0,3))"),'[{"name":"洛阳","count":10},{"name":"郑州","count":8},{"name":"开封","count":8}]','Cities must be ordered by place count');
+assert(get('#spots').innerHTML.includes('洛阳 <b>10</b>'),'Overview must show the city chip with its count');
+run("setSpotsCity('洛阳')");
+assert.equal(run('spotsVisiblePlaces().length'),10,'Luoyang filter must contain exactly ten places');
+assert(get('#spots-list').innerHTML.includes('龙门石窟')&&get('#spots-list').innerHTML.includes('白马寺'),'Luoyang filter must list Luoyang places');
+assert(!get('#spots-list').innerHTML.includes('河南博物院'),'Luoyang filter must hide other cities');
+run("setSpotsFilter('culture')");
+assert.equal(run('spotsVisiblePlaces().length'),6,'Luoyang + culture must be the AND of both filters');
+run("setSpotsCity('济源');setSpotsFilter('food')");
+assert.equal(run('spotsVisiblePlaces().length'),0,'A city-dimension combination with no places must be empty');
+assert(get('#spots-list').innerHTML.includes('暂无地点'),'An empty combination must say so');
+// 3D 与列表同步：无 WebGL 时用假 mesh 验过滤谓词
+run("spots3D={meshes:new Map([['hn-longmen',{visible:true}],['hn-henan-museum',{visible:true}]])}");
+run("setSpotsCity('洛阳');setSpotsFilter('all');spots3DApplyFilter()");
+assert.equal(run("spots3D.meshes.get('hn-longmen').visible"),true,'3D must keep the filtered city visible');
+assert.equal(run("spots3D.meshes.get('hn-henan-museum').visible"),false,'3D must hide other cities');
+run("setSpotsCity('all');spots3DApplyFilter()");
+assert.equal(run("spots3D.meshes.get('hn-henan-museum').visible"),true,'Clearing the city filter must show all cities in 3D');
+// 进卡片再返回，城市筛选保持；“全部”清空；未知城市不改动
+run("setSpotsCity('洛阳')");
+run("openSpotsCard('hn-longmen')");
+run('spotsBack()');
+assert.equal(run('spotsLayer'),'overview','Back from the card returns to the overview');
+assert.equal(run('spotsCity'),'洛阳','Returning to the overview must keep the city filter');
+assert.equal(run('spotsVisiblePlaces().length'),10,'Returning must keep the filtered list');
+assert(get('#spots').innerHTML.includes('spots-city-chip active" data-spots-city="洛阳"'),'Returning must keep the city chip active');
+run("setSpotsCity('不存在')");
+assert.equal(run('spotsCity'),'洛阳','An unknown city must not change the filter');
+run("setSpotsCity('all');setSpotsFilter('all')");
+assert.equal(run('spotsVisiblePlaces().length'),95,'All must clear the city filter');
+run('spots3D=null');
 // 点击委托：点球/列表项进卡片，加入行程按钮复用站内草稿（可加入、可移除）
 const freeId=run("CATALOG.find(p=>!same(p)).id");
 get('#spots').onclick({target:{closest:s=>s==='[data-spots-open]'?{dataset:{spotsOpen:'hn-longmen'}}:null}});
@@ -143,4 +177,4 @@ assert(!get('#spots').innerHTML.includes('演示数据'),'Card must not label re
 await call('/api/trips/'+encodeURIComponent(tripId)+'/review',{actualCost:500,worthMoreStop:'龙门石窟'},'alice');
 await run("toggleSpotsWorth('hn-longmen')");
 assert.equal(run('spotsReview.worthMoreStop'),null,'Unmarking must clear the worth-more stop');
-console.log('test-spots: layers, filter, draft, worth-more, popular and demo labels OK');
+console.log('test-spots: layers, filter, city filter, draft, worth-more, popular and demo labels OK');

@@ -8,6 +8,7 @@
 }
 .ask-launcher > span:first-child { font-size: 21px; line-height: 1; }
 body:not([data-view="gallery"]):not([data-view="planner"]):not([data-view="overview"]) .ask-launcher,
+body[data-view="gallery"][data-home-layer="hero"] .ask-launcher,
 .ask-launcher[hidden], .ask-dialog [hidden] { display: none !important; }
 .ask-dock-clearance { display: none; }
 body[data-view="gallery"] .ask-dock-clearance,
