@@ -70,7 +70,7 @@ async function authEndpoint(request,env,action){
     if(request.method!=='GET')fail('方法不支持',405);
     const user=await currentUser(request,env);
     if(!user)fail('尚未登录',401);
-    return json({user});
+    return json({user:{...user,isAdmin:await isAdminUser(user,env)}});
   }
   if(action==='logout'){
     if(request.method!=='POST')fail('方法不支持',405);
@@ -89,13 +89,13 @@ async function authEndpoint(request,env,action){
     const id='u_'+randomHex(12),now=Date.now();
     await env.DB.prepare('INSERT INTO users (id, username, password_hash, created_at) VALUES (?, ?, ?, ?)').bind(id,username,await hashPassword(raw.password),now).run();
     const token=await createSession(env,id);
-    return json({user:{id,username}},200,{'Set-Cookie':sessionCookieHeader(token,request,SESSION_DAYS*86400)});
+    return json({user:{id,username,isAdmin:await isAdminUser({id,username},env)}},200,{'Set-Cookie':sessionCookieHeader(token,request,SESSION_DAYS*86400)});
   }
   if(action==='login'){
     const row=await env.DB.prepare('SELECT id, username, password_hash FROM users WHERE username = ?').bind(username).first();
     if(!row||!(await verifyPassword(raw.password,row.password_hash)))fail('用户名或密码不正确',401);
     const token=await createSession(env,row.id);
-    return json({user:{id:row.id,username:row.username}},200,{'Set-Cookie':sessionCookieHeader(token,request,SESSION_DAYS*86400)});
+    return json({user:{id:row.id,username:row.username,isAdmin:await isAdminUser({id:row.id,username:row.username},env)}},200,{'Set-Cookie':sessionCookieHeader(token,request,SESSION_DAYS*86400)});
   }
   fail('接口不存在或方法不支持',404);
 }
@@ -1041,6 +1041,7 @@ if(url.pathname==='/api/stt')return await sttEndpoint(request,env);
 if(url.pathname.startsWith('/api/trips/')&&url.pathname.endsWith('/review'))return await reviewEndpoint(request,env,url.pathname.slice('/api/trips/'.length,-'/review'.length));
 if(url.pathname==='/api/learning-signals')return await learningSignalsEndpoint(request,env);
 if(url.pathname==='/api/popular')return await popularEndpoint(request,env);
+if(url.pathname==='/api/admin/personas')return await adminPersonasEndpoint(request,env);
 if(url.pathname==='/api/demo/reviews/seed')return await demoSeedEndpoint(request,env);
 if(url.pathname==='/api/demo/reviews/clear')return await demoClearEndpoint(request,env);
 if(url.pathname==='/api/demo/status')return await demoStatusEndpoint(request,env);
