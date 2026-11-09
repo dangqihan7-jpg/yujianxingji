@@ -28,3 +28,5 @@ dialog{border:1px solid #e5ebee;border-radius:22px;padding:0;width:min(600px,92v
 #authform label{display:block;margin-bottom:6px;font-size:14px;font-weight:600;color:#315c6d}
 #authform input{width:100%;padding:11px 12px;border:1px solid #d3e3e9;border-radius:10px;font-size:15px;box-sizing:border-box}
 #autherror{color:#b3261e}
+/* 防横向溢出护栏：表单层打磨 v2 */
+html,body{overflow-x:clip}

@@ -106,3 +106,25 @@ body:not([data-view="decision"]) .decision-view{display:none}body[data-view="dec
 #group .dialog-content{display:grid;gap:4px}
 #group h3{margin:8px 0 0}
 #group h4{margin:12px 0 4px}
+
+/* 表单层浅色表单：#briefbody 搬进 #home-plan-host 浅色卡片时用浅色。
+   travel-theme.css 的深色覆盖层只适合深色 #brief 对话框（修改条件）与深色决策页，
+   不能全局改浅，否则对话框里的表单会深字压深底。以下规则只在表单层生效。 */
+#home-plan-host .brief-fields label,
+#home-plan-host .brief-interests legend,
+#home-plan-host .brief-interests label,
+#home-plan-host .brief-cross{color:#365764}
+#home-plan-host .brief-fields select,
+#home-plan-host .brief-fields input{color:#193944;background:#fff;border-color:#cbdce1}
+#home-plan-host .brief-fields select:hover,
+#home-plan-host .brief-fields input:hover{border-color:#9fb8c0}
+#home-plan-host .brief-fields select:focus,
+#home-plan-host .brief-fields input:focus{outline:0;border-color:#147784;box-shadow:0 0 0 3px rgba(20,119,132,.16)}
+#home-plan-host .brief-fields input::placeholder{color:#5f707a;opacity:1}
+#home-plan-host .source-chip{background:#edf6f7;color:#147784}
+#home-plan-host .instruction{color:#4a6570}
+#home-plan-host .brief-place-conditions{background:#f4f8f9;border-color:#d9e4e6;color:#365764}
+#home-plan-host .brief-place-conditions label{color:#365764}
+#home-plan-host .brief-place-conditions p{color:#4a6570}
+#home-plan-host .brief-unresolved{color:#84662c}
+#home-plan-host .brief-required{color:#365764}
