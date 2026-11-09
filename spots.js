@@ -15,9 +15,9 @@
 const SPOT_DIMS=[
  {key:'culture',name:'文化',color:'#a33e2d',test:p=>/文化|历史|博物|石窟|古城|寺|古都/.test((p.theme||'')+' '+(p.name||''))},
  {key:'nature',name:'山水',color:'#2e6b4f',test:p=>/山|峡|自然|水|湖/.test((p.theme||'')+' '+(p.name||''))},
- {key:'food',name:'美食',color:'#b8843c',test:p=>p.category==='food'||/美食|小吃|吃/.test((p.theme||'')+' '+(p.name||''))},
+ {key:'food',name:'美食',color:'#8a6420',test:p=>p.category==='food'||/美食|小吃|吃/.test((p.theme||'')+' '+(p.name||''))},
  {key:'immersive',name:'沉浸',color:'#6d5aa7',test:p=>/演艺|戏剧|夜游|武侠|电影|沉浸/.test((p.theme||'')+' '+(p.name||''))},
- {key:'family',name:'亲子',color:'#c25e7e',test:p=>/亲子|乐园|动物|儿童/.test((p.theme||'')+' '+(p.name||''))}
+ {key:'family',name:'亲子',color:'#a34a68',test:p=>/亲子|乐园|动物|儿童/.test((p.theme||'')+' '+(p.name||''))}
 ];
 function spotDimsOf(p){return SPOT_DIMS.filter(d=>{try{return d.test(p)}catch(e){return false}})}
 function spotPrimaryDim(p){const d=spotDimsOf(p);return d.length?d[0]:null}
