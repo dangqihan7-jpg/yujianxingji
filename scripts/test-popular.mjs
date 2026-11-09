@@ -123,7 +123,7 @@ const showcaseSrc=await readFile(new URL('../showcase.js',import.meta.url),'utf8
 for(const needle of ['/api/popular','refreshPopularHero','heroPopular','heroPopularHasDemo','热门轮播 · 演示模式 · 演示数据','hero-popular-info','heroPhotoHasPublicMetadata','restoreDailyHero'])assert(showcaseSrc.includes(needle),'showcase.js must contain '+needle);
 const decisionSrc=await readFile(new URL('../decision.js',import.meta.url),'utf8');
 assert(decisionSrc.includes('refreshPopularHero'),'decision.js must refresh the popular hero on demo toggle/clear');
-assert(decisionSrc.includes('模拟加入数'),'demo copy must mention the demo adds');
+assert(showcaseSrc.includes('模拟加入数'),'demo copy must mention the demo adds');
 const uiCss=await readFile(new URL('../ui.css',import.meta.url),'utf8');
 assert(uiCss.includes('#hero-popular-info'),'ui.css must style the popular info line');
 

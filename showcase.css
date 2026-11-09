@@ -31,3 +31,26 @@ body{background:var(--paper);min-height:100dvh}body[data-view="gallery"],body[da
 #review .dialog-content label{display:block;font-size:14px;color:#376a78;margin-bottom:6px}
 #review .dialog-content input,#review .dialog-content select{width:100%;padding:10px 12px;border:1px solid #d3e0e5;border-radius:7px;font-size:14px;background:#fff}
 #review .statusline{font-size:13px;color:#708a96;line-height:1.7}
+
+/* 首页嵌套层：一次只看一层，每层单独一屏。 */
+.home-layers{width:100%}
+.home-layer[hidden]{display:none}
+.home-layer-head{display:flex;align-items:center;gap:16px;max-width:1280px;margin:0 auto 18px}
+.home-layer-head h2{color:#eff4f4;font-size:24px;font-weight:500;line-height:1.5}
+.home-layer-kicker{margin:0;color:#9aafb7;font-size:13px;letter-spacing:.2em}
+.home-back{flex:none;min-height:44px;padding:10px 16px;border:1px solid #abc9dc2e;border-radius:24px;color:#e2fff6;background:#0c1b2c9c;font-family:inherit;font-size:14px;line-height:1.5}
+.home-back:focus-visible{outline:3px solid #abffe8;outline-offset:3px}
+.home-plan-note{max-width:1280px;margin:0 auto 18px;color:rgba(255,255,255,.85);font-size:14px;line-height:1.9}
+.home-plan-host{max-width:1280px;margin:0 auto;background:#fffefb;color:var(--ink);border:1px solid var(--line);border-radius:14px}
+.home-plan-extras{max-width:1280px;margin:18px auto 0;display:grid;gap:12px}
+.home-plan-extras .demo-mode,.home-plan-extras .group-entry{margin-top:0}
+.home-plan-links{display:flex;gap:12px;flex-wrap:wrap}
+.home-plan-links .quiet{color:#dae6e7;font-size:14px}
+/* 闭环四步条：只在行程总览页顶部，不在首页。 */
+.loop-strip{margin-bottom:22px}
+.loop-strip ol{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:0;padding:0;list-style:none}
+.loop-strip button{display:block;width:100%;min-height:44px;padding:14px 16px;text-align:left;border:1px solid #d7e3e6;border-radius:10px;background:#fff;color:#18343c;font-family:inherit}
+.loop-strip button b{display:block;font-size:14px;font-weight:600;line-height:1.6}
+.loop-strip button span{display:block;margin-top:4px;color:#6c8289;font-size:12px;line-height:1.7}
+.loop-strip button:focus-visible{outline:3px solid #1e6a79;outline-offset:2px}
+@media(max-width:760px){.loop-strip ol{grid-template-columns:1fr 1fr}.home-plan-host{border-radius:10px}}

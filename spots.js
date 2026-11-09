@@ -8,6 +8,9 @@
 // 维度定义与计数沿用三合一预览 spot-unified.html 的同一套正则（实算复核：
 // 文化 43、山水 38、美食 2、沉浸 9、亲子 6；8 个地点不命中任何维度，
 // 归为“综合”，3D 里用灰色球、列表里不贴维度标签）。
+// 城市筛选（18 城 chips，取 henan.json 里地点 city 字段的实际集合，每颗
+// chip 标该城地点数）与维度联合过滤（AND），3D 球与列表同步；返回第 1 层
+// 时城市筛选保持；城市筛选只影响第 1 层展示，不改卡片/沉浸式与热门接线。
 // 颜色按站内暖纸主题调整，未沿用预览的亮色。
 const SPOT_DIMS=[
  {key:'culture',name:'文化',color:'#a33e2d',test:p=>/文化|历史|博物|石窟|古城|寺|古都/.test((p.theme||'')+' '+(p.name||''))},
@@ -32,12 +35,17 @@ function spotPosition(p){
  const n=spotDimsOf(p).length;
  return{x,y:0.4+n*0.55,z,r:0.42+n*0.22,n};
 }
-let spotsLayer='overview',spotsSpotId=null,spotsFilter='all',spotsLastLayer=null;
+let spotsLayer='overview',spotsSpotId=null,spotsFilter='all',spotsCity='all',spotsLastLayer=null;
+function spotsCityCounts(){
+ const seen=new Map();
+ CATALOG.forEach(p=>{if(!seen.has(p.city))seen.set(p.city,{name:p.city,count:0});seen.get(p.city).count++});
+ return [...seen.values()].sort((a,b)=>b.count-a.count);
+}
 let spotsPopular=null,spotsPopularDemo=false,spotsPopularKey=null;
 let spotsReview={loaded:false,worthMoreStop:null};
 let spotsPlannedDuration={};
 let spots3D=null,spots3DFailed=false,spots3DRunning=false,spots3DAuto=true;
-function spotsVisiblePlaces(){return spotsFilter==='all'?CATALOG.slice():CATALOG.filter(p=>spotDimsOf(p).some(d=>d.key===spotsFilter))}
+function spotsVisiblePlaces(){return CATALOG.filter(p=>(spotsCity==='all'||p.city===spotsCity)&&(spotsFilter==='all'||spotDimsOf(p).some(d=>d.key===spotsFilter)))}
 function spotsPlace(id){return CATALOG.find(p=>p.id===id)||null}
 function spotsDurationFor(p){const stop=trip.find(s=>s.place.id===p.id);return spotsPlannedDuration[p.id]??(stop?stop.duration:undefined)??p.duration??90}
 function spotsPopularRank(id){if(!spotsPopular||!Array.isArray(spotsPopular.items))return null;const i=spotsPopular.items.findIndex(x=>x.id===id);return i<0?null:i+1}
@@ -99,10 +107,11 @@ function openSpotsCard(id){setSpotsLayer('card',id)}
 function openSpotsImmersive(id){setSpotsLayer('immersive',id||spotsSpotId)}
 function spotsBack(){if(spotsLayer==='immersive')setSpotsLayer('card');else if(spotsLayer==='card')setSpotsLayer('overview');else if(typeof setView==='function')setView('gallery')}
 function setSpotsFilter(key){if(!SPOT_DIMS.some(d=>d.key===key)&&key!=='all')return;spotsFilter=key;const chips=$('#spots')?$('#spots').querySelectorAll('[data-spots-filter]'):[];chips.forEach(c=>c.classList&&c.classList.toggle('active',c.dataset.spotsFilter===key));spots3DApplyFilter();renderSpotsList()}
+function setSpotsCity(city){if(city!=='all'&&!spotsCityCounts().some(c=>c.name===city))return;spotsCity=city;const chips=$('#spots')?$('#spots').querySelectorAll('[data-spots-city]'):[];chips.forEach(c=>c.classList&&c.classList.toggle('active',c.dataset.spotsCity===city));spots3DApplyFilter();renderSpotsList()}
 function spotsDimTagsHTML(p){return spotDimsOf(p).map(d=>'<span class="spots-dim-tag" style="--dim:'+d.color+'">'+d.name+'</span>').join('')}
 function spotsListHTML(){
  const list=spotsVisiblePlaces();
- if(!list.length)return '<div class="empty">这个维度暂无地点。</div>';
+ if(!list.length)return '<div class="empty">这个筛选下暂无地点。</div>';
  return list.map(p=>{
   const pop=spotsPopularFor(p.id),rank=spotsPopularRank(p.id);
   const inTrip=typeof same==='function'?same(p):false;
@@ -122,12 +131,14 @@ function renderSpotsList(){
 }
 function spotsOverviewHTML(){
  const counts=spotsDimCounts();
+ const cities=spotsCityCounts();
  const chips=[{key:'all',name:'全部',count:CATALOG.length,color:null}].concat(SPOT_DIMS.map(d=>({key:d.key,name:d.name,count:counts[d.key],color:d.color})));
  return '<div class="spots-page spots-overview">'
  +'<div class="spots-crumb"><span>景点</span><span class="spots-crumb-sep">/</span><span>总览</span></div>'
  +'<div class="spots-head"><div><div class="eyebrow">SPOTS · HENAN</div><h2>景点总览</h2><p class="spots-sub">95 个地点，先看 3D 空间，再点进一个景点细看。</p></div>'
  +'<div class="spots-summary">文化 '+counts.culture+' · 山水 '+counts.nature+' · 沉浸 '+counts.immersive+' · 亲子 '+counts.family+' · 美食 '+counts.food+'</div></div>'
- +'<div class="spots-dims" role="group" aria-label="按维度筛选">'+chips.map(c=>'<button class="spots-chip'+(spotsFilter===c.key?' active':'')+'" data-spots-filter="'+c.key+'"'+(c.color?' style="--dim:'+c.color+'"':'')+'><span class="spots-dot"></span>'+esc(c.name)+' <b>'+c.count+'</b></button>').join('')+'</div>'
+ +'<div class="spots-cities" role="group" aria-label="按城市筛选"><span class="spots-filter-label">城市</span><button class="spots-chip spots-city-chip'+(spotsCity==='all'?' active':'')+'" data-spots-city="all">全部 <b>'+CATALOG.length+'</b></button>'+cities.map(c=>'<button class="spots-chip spots-city-chip'+(spotsCity===c.name?' active':'')+'" data-spots-city="'+esc(c.name)+'">'+esc(c.name)+' <b>'+c.count+'</b></button>').join('')+'</div>'
+ +'<div class="spots-dims" role="group" aria-label="按维度筛选"><span class="spots-filter-label">维度</span>'+chips.map(c=>'<button class="spots-chip'+(spotsFilter===c.key?' active':'')+'" data-spots-filter="'+c.key+'"'+(c.color?' style="--dim:'+c.color+'"':'')+'><span class="spots-dot"></span>'+esc(c.name)+' <b>'+c.count+'</b></button>').join('')+'</div>'
  +'<div class="spots-3d-wrap"><div id="spots-3d" class="spots-3d" aria-label="3D 景点空间"></div>'
  +'<div class="spots-3d-bar"><span>拖动旋转 · 滚轮缩放 · 点球进卡片</span><button class="small quiet" data-spots-rotate>'+(spots3DAuto?'暂停旋转':'自动旋转')+'</button></div>'
  +'<div id="spots-3d-tip" class="spots-3d-tip" hidden></div>'
@@ -225,6 +236,7 @@ if(spotsRoot){
   const backBtn=t.closest('[data-spots-back]');if(backBtn){spotsBack();return}
   const backCard=t.closest('[data-spots-back-card]');if(backCard){setSpotsLayer('card');return}
   const filterBtn=t.closest('[data-spots-filter]');if(filterBtn){setSpotsFilter(filterBtn.dataset.spotsFilter);return}
+  const cityBtn=t.closest('[data-spots-city]');if(cityBtn){setSpotsCity(cityBtn.dataset.spotsCity);return}
   const rotateBtn=t.closest('[data-spots-rotate]');if(rotateBtn){spots3DAuto=!spots3DAuto;rotateBtn.textContent=spots3DAuto?'暂停旋转':'自动旋转';if(spots3D)spots3D.lastInteract=0;return}
   const openEl=t.closest('[data-spots-open]');if(openEl){openSpotsCard(openEl.dataset.spotsOpen);return}
  };
@@ -256,7 +268,7 @@ function spots3DDispose(){
 }
 function spots3DApplyFilter(){
  if(!spots3D)return;
- spots3D.meshes.forEach((mesh,id)=>{const p=spotsPlace(id);mesh.visible=!p||spotsFilter==='all'||spotDimsOf(p).some(d=>d.key===spotsFilter)});
+ spots3D.meshes.forEach((mesh,id)=>{const p=spotsPlace(id);mesh.visible=!p||((spotsCity==='all'||p.city===spotsCity)&&(spotsFilter==='all'||spotDimsOf(p).some(d=>d.key===spotsFilter)))});
 }
 function spots3DHighlight(id){
  if(!spots3D)return;

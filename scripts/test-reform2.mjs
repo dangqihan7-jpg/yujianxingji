@@ -192,7 +192,8 @@ assert.equal((await post3('/api/demo/reviews/clear',{sessionId:''})).status,400,
 db3.sql.close();
 
 // ---------- 前端：演示开关、清空、标注文案存在 ----------
-for(const needle of ['data-demo-mode','data-demo-toggle','data-demo-clear','一键清空演示数据','yujianxingji.demoSession','yujianxingji.demoOn','demoSession','演示模式 · 以下含演示数据','data-demo-banner','?demo=','/api/demo/reviews/seed','/api/demo/reviews/clear'])assert(decisionSrc.includes(needle),'decision.js must contain '+needle);
+for(const needle of ['data-demo-mode','data-demo-toggle','一键清空演示数据','yujianxingji.demoSession','yujianxingji.demoOn','demoSession','演示模式 · 以下含演示数据','data-demo-banner','?demo=','/api/demo/reviews/seed','/api/demo/reviews/clear'])assert(decisionSrc.includes(needle),'decision.js must contain '+needle);
+// data-demo-clear 随演示盒子搬进首页表单层（showcase.js planExtrasHTML），见下行断言。
 assert(decisionCss.includes('.demo-mode'),'decision.css must style the demo control');
 assert(decisionCss.includes('.demo-banner'),'decision.css must style the demo banner');
 const showcaseSrc=await readFile(new URL('../showcase.js',import.meta.url),'utf8');
@@ -364,7 +365,8 @@ db4.sql.prepare('INSERT INTO group_members (group_id, user_id, payload, joined_a
  assert(!ok.draft.stops.some(s=>s.place.id==='hn-ghost'));
 }
 // ---------- 前端：拼团入口、对话框、建团/加入/生成接线存在 ----------
-for(const needle of ['data-open-group','宿舍拼团','function openGroup','function renderGroupList','function renderGroupDetail','function submitGroupJoin','function submitGroupPlan','function renderGroupPlan','function applyGroupPlan','应用拼团行程','只有发起人能生成拼团行程',"'/api/groups'","group-resolution-",'data-group-join','data-group-plan','data-group-create','发起人定夺冲突','合并偏好'])assert(decisionSrc.includes(needle),'decision.js must contain '+needle);
+for(const needle of ['宿舍拼团','function openGroup','function renderGroupList','function renderGroupDetail','function submitGroupJoin','function submitGroupPlan','function renderGroupPlan','function applyGroupPlan','应用拼团行程','只有发起人能生成拼团行程',"'/api/groups'","group-resolution-",'data-group-join','data-group-plan','data-group-create','发起人定夺冲突','合并偏好'])assert(decisionSrc.includes(needle),'decision.js must contain '+needle);
+// data-open-group 随拼团入口搬进首页表单层（showcase.js planExtrasHTML），见下行断言。
 const appHtml=await readFile(new URL('../app.html',import.meta.url),'utf8');
 assert(appHtml.includes('id="group"'),'app.html must contain the group dialog');
 assert(appHtml.includes('id="groupbody"'),'app.html must contain the group dialog body');

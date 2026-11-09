@@ -21,8 +21,9 @@ function fixture({daily=[],places=catalogue}={}){
  const html=f.context.aiPlanningHeroHTML();
  assert(html.includes('id="ai-hero-backdrop"')&&html.includes('src="'+escape(photo.image)+'"'));
  assert(html.includes(photo.photoReference)&&html.includes(photo.licenseUrl));assert(html.includes('拍摄于 '+photo.photoTakenAt));
- assert(html.includes('一句话，让 AI 为你规划河南周末游'));assert.equal((html.match(/class="ai-hero-agent"/g)||[]).length,5);
- assert(html.includes('id="ai-hero-vision"')&&html.includes('id="ai-hero-form"'),'The camera and existing confirmation entry remain in the cover');
+ assert(html.includes('周末去河南，一句话就出发。'));assert(!html.includes('class="ai-hero-agent"'),'First screen shows no agent list');
+ assert(!html.includes('id="ai-hero-vision"'),'Photo recognition leaves the first screen');assert(html.includes('id="ai-hero-form"'),'The planning entry remains in the cover');
+ assert(html.includes('data-home-popular')&&html.includes('data-home-spots'),'Hero offers only the two secondary entries');
  assert(!html.includes('images.unsplash.com')&&!html.includes('picsum.photos'),'Existing audited Henan scenery keeps its identity and licence');
 }
 {
@@ -61,4 +62,4 @@ function fixture({daily=[],places=catalogue}={}){
  }
  assert(!/transition:\s*(?:all|box-shadow|background|border)/.test(css),'The focus halo fades through opacity instead of animating paint properties');
 }
-console.log('沉浸式 AI 首屏：真实本地照片/拍摄日期与许可、日切同步、缺图诚实占位、原始入口保留、移动断点及减少动效验证通过。');
+console.log('沉浸式 AI 首屏：真实本地照片/拍摄日期与许可、日切同步、缺图诚实占位、分层首屏、移动断点及减少动效验证通过。');

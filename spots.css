@@ -13,6 +13,8 @@ body[data-view="spots"]{height:auto;min-height:100dvh}
 .spots-sub{color:var(--muted);line-height:1.6;margin:0}
 .spots-summary{font-size:14px;line-height:1.6;color:var(--muted);background:#fff;border:1px solid var(--line);border-radius:999px;padding:8px 14px}
 .spots-dims{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px}
+.spots-cities{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px}
+.spots-filter-label{align-self:center;font-size:12px;color:var(--muted);letter-spacing:.12em}
 .spots-chip{display:inline-flex;align-items:center;gap:6px;padding:7px 12px;border:1px solid var(--line);border-radius:999px;background:#fff;color:var(--ink);font:inherit;font-size:14px;line-height:1.4;cursor:pointer}
 .spots-chip b{font-weight:600}
 .spots-chip.active{border-color:var(--blue);color:var(--blue);background:#fdf6f3}

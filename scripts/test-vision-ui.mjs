@@ -107,13 +107,17 @@ function fixture({protocol='https:',width=4000,height=3000,readerPending=false}=
 {
   const f=fixture({protocol:'file:'});f.open();await f.upload();assert.equal(f.requests.length,0);assert.match(f.get('vision-status').textContent,/离线页面无法识别/);
 }
-// Bind the real Hero's new camera entry without replacing its planning submit.
+// The camera entry moved off the first screen into the plan layer; the Hero
+// itself no longer carries it, and the layer entry still opens the dialog
+// without touching planning.
 {
   const f=fixture();const nodes=f.nodes;
-  for(const id of ['ai-hero-form','ai-hero-input','ai-hero-submit','ai-hero-status','ai-hero-vision'])nodes.set(id,{value:'',setAttribute(){}});
+  for(const id of ['ai-hero-form','ai-hero-input','ai-hero-submit','ai-hero-status'])nodes.set(id,{value:'',setAttribute(){}});
   Object.assign(f.context,{esc:value=>String(value),cfg:{},activeView:'gallery',setTimeout:()=>0,clearTimeout(){},addEventListener(){},openBrief(){throw Error('Photo recognition cannot call planning')}});
-  vm.runInContext(hero,f.context);assert(f.context.aiPlanningHeroHTML().includes('id="ai-hero-vision"'));f.context.bindAIPlanningHero();nodes.get('ai-hero-vision').onclick();assert(f.get('vision-dialog').open);assert.equal(f.requests.length,0);
+  vm.runInContext(hero,f.context);assert(!f.context.aiPlanningHeroHTML().includes('id="ai-hero-vision"'));
+  const showcase=readFileSync(new URL('../showcase.js',import.meta.url),'utf8');
+  assert(showcase.includes('data-home-vision'),'Plan layer keeps the photo recognition entry');
 }
 assert(css.includes('@media (max-width: 767px)'));assert(css.includes('font-size: 16px'));assert(css.includes('min-height: 44px'));
 assert(!/localStorage|sessionStorage|indexedDB/.test(source.replace(/\/\/[^\n]*/g,'')),'Photo data must not enter persistent browser storage');
-console.log('图片识别 UI：真实上传/1024px JPEG 压缩、本地库加点、未知地点、安全文本、友好失败/限流/未配置、取消/迟到/防重复、离线与 Hero 入口通过。');
+console.log('图片识别 UI：真实上传/1024px JPEG 压缩、本地库加点、未知地点、安全文本、友好失败/限流/未配置、取消/迟到/防重复、离线与表单层入口通过。');
