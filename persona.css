@@ -1,0 +1,64 @@
+/* 后台人物画像（仅管理员）：深色仪表盘，沿用 persona-admin-v2 打磨版。
+   只在 persona 视图下生效，不影响用户端浅色主题。 */
+body:not([data-view="persona"]) .persona-view{display:none}
+body[data-view="persona"] .workspace,body[data-view="persona"] .routebar,body[data-view="persona"] .mobile-nav{display:none}
+body[data-view="persona"]{height:auto;min-height:100dvh;background:#05080f;color:rgba(255,255,255,.85)}
+.persona-view{max-width:960px;margin:0 auto;padding:24px 20px 64px}
+.persona-view .page{max-width:960px;margin:0 auto}
+.persona-view .head{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
+.persona-view .head h1{font-size:22px;font-weight:600;color:#fff}
+.persona-view .badge{display:inline-block;font-size:11px;font-weight:500;color:#fbbf24;background:rgba(251,191,36,.1);border:1px solid rgba(251,191,36,.35);border-radius:999px;padding:4px 10px}
+.persona-view .head p{width:100%;font-size:13px;line-height:1.8;color:rgba(255,255,255,.6);margin-top:6px}
+.persona-view .k{font-size:11px;font-weight:600;letter-spacing:.3em;color:#7dd3fc;text-transform:uppercase}
+.persona-view h2{font-size:16px;font-weight:600;color:#fff;margin:28px 0 12px}
+.persona-view h2 .no{color:#7dd3fc;margin-right:8px;font-size:12px;letter-spacing:.2em}
+.persona-view .persona-refresh{margin-left:auto;padding:8px 16px;border-radius:999px;border:1px solid #2c4a6b;background:#16324a;color:rgba(255,255,255,.85);font-size:13px;font-weight:500;cursor:pointer}
+.persona-view .persona-refresh:hover{border-color:#7dd3fc}
+.persona-view .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px}
+.persona-view .stat{background:#0d1828;border:1px solid rgba(255,255,255,.12);border-radius:14px;padding:16px;box-shadow:0 1px 0 rgba(125,211,252,.06),0 10px 26px rgba(0,0,0,.32)}
+.persona-view .stat b{display:block;font-size:26px;font-weight:600;font-variant-numeric:tabular-nums;color:#fff}
+.persona-view .stat span{font-size:12px;color:rgba(255,255,255,.6);line-height:1.6;display:block;margin-top:4px}
+.persona-view .stat .bar{height:4px;background:#1c2a42;border-radius:2px;margin-top:10px;overflow:hidden}
+.persona-view .stat .bar i{display:block;height:100%;background:#7dd3fc;border-radius:2px}
+.persona-view .tblwrap{background:#0d1828;border:1px solid rgba(255,255,255,.12);border-radius:14px;overflow:hidden;box-shadow:0 1px 0 rgba(125,211,252,.06),0 10px 26px rgba(0,0,0,.32)}
+.persona-view table{width:100%;border-collapse:collapse;font-size:13px}
+.persona-view th,.persona-view td{padding:12px 14px;border-bottom:1px solid rgba(255,255,255,.12);text-align:left;line-height:1.6}
+.persona-view thead th{font-size:11px;font-weight:600;letter-spacing:.14em;color:rgba(255,255,255,.6);background:rgba(255,255,255,.02)}
+.persona-view tbody tr{cursor:pointer}
+.persona-view tbody tr:hover{background:rgba(125,211,252,.05)}
+.persona-view tbody tr.sel{background:rgba(14,116,144,.22)}
+.persona-view tbody tr:last-child td{border-bottom:none}
+.persona-view td .id{font-weight:600;color:#fff;font-variant-numeric:tabular-nums}
+.persona-view td .sub{font-size:12px;color:rgba(255,255,255,.6)}
+.persona-view .pill{display:inline-block;font-size:12px;font-weight:500;border-radius:999px;padding:3px 10px;background:rgba(125,211,252,.12);color:#7dd3fc;white-space:nowrap}
+.persona-view .conf{font-variant-numeric:tabular-nums;font-weight:600}
+.persona-view .detail{background:#0d1828;border:1px solid rgba(255,255,255,.12);border-radius:16px;padding:22px;margin-top:14px;box-shadow:0 1px 0 rgba(125,211,252,.06),0 12px 30px rgba(0,0,0,.35)}
+.persona-view .detail h3{font-size:18px;font-weight:600;color:#fff}
+.persona-view .detail h3 span{font-size:12px;color:rgba(255,255,255,.6);font-weight:400;margin-left:8px}
+.persona-view .detail .meta{font-size:12.5px;color:rgba(255,255,255,.6);line-height:1.9;margin-top:8px}
+.persona-view .detail .meta b{color:rgba(255,255,255,.85);font-weight:600}
+.persona-view .wrow{margin-top:14px}
+.persona-view .wrow .wl{display:flex;justify-content:space-between;font-size:12.5px;color:rgba(255,255,255,.6);margin-bottom:6px}
+.persona-view .wrow .wl b{color:rgba(255,255,255,.85);font-variant-numeric:tabular-nums}
+.persona-view .wbar{height:6px;background:#1c2a42;border-radius:3px;overflow:hidden}
+.persona-view .wbar i{display:block;height:100%;background:linear-gradient(90deg,#0369a1,#7dd3fc);border-radius:3px}
+.persona-view .detail p{font-size:13.5px;line-height:1.9;color:rgba(255,255,255,.85);margin-top:16px}
+.persona-view .detail p b{color:#7dd3fc}
+.persona-view .row{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}
+.persona-view .row button{padding:10px 16px;border-radius:999px;border:1px solid #2c4a6b;background:#16324a;color:rgba(255,255,255,.85);font-size:13px;font-weight:500;cursor:pointer}
+.persona-view .row button:hover{border-color:#7dd3fc}
+.persona-view .preview{margin-top:16px;border-top:1px solid rgba(255,255,255,.12);padding-top:16px}
+.persona-view .preview h4{font-size:13px;font-weight:600;color:#fff;margin-bottom:10px}
+.persona-view .preview .pr{display:flex;gap:12px;align-items:center;padding:10px 0;border-bottom:1px solid rgba(255,255,255,.12)}
+.persona-view .preview .pr:last-child{border-bottom:none}
+.persona-view .preview .rk{font-size:12px;color:#7dd3fc;font-variant-numeric:tabular-nums;min-width:28px}
+.persona-view .preview .pn{font-size:14px;font-weight:500;color:#fff}
+.persona-view .preview .pr small{display:block;font-size:12px;color:rgba(255,255,255,.6);margin-top:2px}
+.persona-view .note{font-size:12px;color:rgba(255,255,255,.38);line-height:1.9;margin-top:28px;border-top:1px solid rgba(255,255,255,.12);padding-top:18px}
+.persona-view .note b{color:rgba(255,255,255,.6);font-weight:600}
+.persona-view .persona-gate{max-width:640px;margin:60px auto;text-align:center}
+.persona-view .persona-gate h2{font-size:20px;margin:10px 0}
+.persona-view .persona-gate p{font-size:14px;line-height:1.9;color:rgba(255,255,255,.6)}
+.persona-view .persona-empty{font-size:13.5px;color:rgba(255,255,255,.6);line-height:1.9}
+.persona-view :focus-visible{outline:2px solid #7dd3fc;outline-offset:3px;border-radius:6px}
+@media (max-width:640px){.persona-view th:nth-child(4),.persona-view td:nth-child(4){display:none}}
