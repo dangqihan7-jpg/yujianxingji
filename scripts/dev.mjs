@@ -12,7 +12,30 @@ for(const name of (await readdir(new URL('../drizzle/',import.meta.url))).filter
  if(db.prepare('SELECT name FROM local_migrations WHERE name = ?').get(name))continue;
  db.exec('BEGIN');try{db.exec(await readFile(new URL('../drizzle/'+name,import.meta.url),'utf8'));db.prepare('INSERT INTO local_migrations (name) VALUES (?)').run(name);db.exec('COMMIT')}catch(e){db.exec('ROLLBACK');throw e}
 }
-const DB={prepare(query){const statement=db.prepare(query);let args=[];const prepared={bind(...values){args=values;return prepared},async first(){return statement.get(...args)||null},async all(){return {results:statement.all(...args)}},async run(){return {meta:{changes:Number(statement.run(...args).changes)}}}};return prepared}};
+const DB={
+ prepare(query){
+  const statement=db.prepare(query);
+  let args=[];
+  const prepared={
+   bind(...values){args=values;return prepared},
+   async first(){return statement.get(...args)||null},
+   async all(){return {results:statement.all(...args)}},
+   run(){return {meta:{changes:Number(statement.run(...args).changes)}}}
+  };
+  return prepared;
+ },
+ async batch(statements){
+  db.exec('BEGIN');
+  try{
+   const results=statements.map(statement=>statement.run());
+   db.exec('COMMIT');
+   return results;
+  }catch(error){
+   db.exec('ROLLBACK');
+   throw error;
+  }
+ }
+};
 const keys=['AMAP_JS_KEY','AMAP_SECURITY_JS_CODE','AMAP_WEB_SERVICE_KEY','LLM_API_KEY','LLM_BASE_URL','LLM_MODEL','LLM_MAX_TOKENS','LLM_PUBLIC_DEMO','LLM_DAILY_LIMIT','LLM_CLIENT_DAILY_LIMIT','STANDALONE_AUTH','XF_VISION_APPID','XF_VISION_APIKEY','XF_VISION_APISECRET','XF_VISION_DOMAIN','XF_ASR_APPID','XF_ASR_APIKEY','XF_ASR_APISECRET','XF_TTI_APPID','XF_TTI_APIKEY','XF_TTI_APISECRET','POSTER_CLIENT_DAILY_LIMIT','POSTER_GUEST_DAILY_LIMIT','POSTER_DAILY_LIMIT'];
 const env={DB,...Object.fromEntries(keys.filter(k=>process.env[k]).map(k=>[k,process.env[k]]))};
 const port=Number(process.env.TRAVEL_DEV_PORT)||8787;

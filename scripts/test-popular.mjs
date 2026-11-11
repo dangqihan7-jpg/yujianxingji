@@ -15,17 +15,30 @@ function makeDb(){
  }};
 }
 function adapter(sql){
- return {prepare(query){
-  const statement=sql.prepare(query);
-  return {
-   async all(){return {results:statement.all()}},
-   bind(...args){return {
-    async first(){return statement.get(...args)||null},
-    async all(){return {results:statement.all(...args)}},
-    async run(){const r=statement.run(...args);return {meta:{changes:Number(r.changes)}}}
-   }}
-  };
- }};
+ return {
+  prepare(query){
+   const statement=sql.prepare(query);
+   return {
+    async all(){return {results:statement.all()}},
+    bind(...args){return {
+     async first(){return statement.get(...args)||null},
+     async all(){return {results:statement.all(...args)}},
+     run(){return {meta:{changes:Number(statement.run(...args).changes)}}}
+    }}
+   };
+  },
+  async batch(statements){
+   sql.exec('BEGIN');
+   try{
+    const results=statements.map(statement=>statement.run());
+    sql.exec('COMMIT');
+    return results;
+   }catch(error){
+    sql.exec('ROLLBACK');
+    throw error;
+   }
+  }
+ };
 }
 const db=await makeDb();await db.init();
 const DB=adapter(db.sql);
@@ -116,6 +129,94 @@ await post('/api/trips/trip_r5/review',{worthMoreStop:'不存在的地点'},'bob
  const back=await (await get('/api/trips/trip_r1/review',null,'alice')).json();
  assert.equal(back.review.worthMoreStop,'龙门石窟','real review must survive demo clear');
 }
+// 真实加入：按当前登录用户的草稿去重，演示模式只叠加当前会话的种子。
+{
+ const stop=(id,name,category='scenic',source='curated')=>({place:{id,name,category,source,location:null,city:'洛阳'},day:1,duration:60});
+ const longmen=stop('hn-longmen','龙门石窟');
+ const whitehorse=stop('hn-whitehorse','白马寺');
+ const laojun=stop('hn-laojunshan','老君山');
+ const external=stop('amap-external','目录之外的观景台','scenic','amap');
+ const lodging=stop('amap-hotel','白马寺酒店','stay','amap');
+ const submit=(user,revision,stops)=>post('/api/draft',{revision,draft:{days:1,start:'09:00',stops}},user);
+ const save=async(user,revision,stops)=>{
+  const response=await submit(user,revision,stops);
+  assert.equal(response.status,200,'valid draft must save');
+  return (await response.json()).revision;
+ };
+ const getPlace=(board,place)=>board.items.find(item=>item.id===place.place.id);
+ const counts=item=>[item.added,item.addedReal,item.addedDemo];
+ const members=()=>db.sql.prepare('SELECT user_id, spot_name, updated_at FROM trip_spot_members ORDER BY user_id, spot_name').all();
+
+ assert.equal((await submit(null,0,[longmen])).status,401,'anonymous draft must not count');
+ assert.deepEqual(members(),[]);
+ let aliceRevision=await save('alice',0,[longmen,external,lodging]);
+ assert.deepEqual(members().map(row=>row.spot_name),['龙门石窟']);
+ const aliceBoard=await popular();
+ assert.deepEqual(counts(getPlace(aliceBoard,longmen)),[1,1,0]);
+ assert.deepEqual(aliceBoard.items.map(item=>item.name),['龙门石窟','云台山'],'external and lodging stops must stay off the board');
+ aliceRevision=await save('alice',aliceRevision,[longmen,external,lodging]);
+ assert.deepEqual(counts(getPlace(await popular(),longmen)),[1,1,0],'saving the same places must not add another member');
+
+ const bobRevision=await save('bob',0,[longmen]);
+ assert.deepEqual(counts(getPlace(await popular(),longmen)),[2,2,0]);
+ const beforeConflict=members();
+ assert.equal((await submit('bob',0,[whitehorse])).status,409);
+ assert.deepEqual(members(),beforeConflict,'a stale draft must leave the membership table untouched');
+
+ // 同一版本并发替换草稿，只有保存成功的请求能改变地点成员。
+ const replacements=[whitehorse,laojun];
+ const originalNow=Date.now;
+ let results;
+ try{
+  Date.now=()=>bobRevision+1;
+  results=await Promise.all(replacements.map(stop=>submit('bob',bobRevision,[stop])));
+ }finally{
+  Date.now=originalNow;
+ }
+ assert.deepEqual(results.map(response=>response.status).sort(),[200,409]);
+ const winner=results.findIndex(response=>response.status===200);
+ const newBobRevision=(await results[winner].json()).revision;
+ const replacementBoard=await popular();
+ assert.deepEqual(counts(getPlace(replacementBoard,longmen)),[1,1,0]);
+ assert.deepEqual(counts(getPlace(replacementBoard,replacements[winner])),[1,1,0],'a place with only real additions must appear');
+ assert.equal(getPlace(replacementBoard,replacements[1-winner]),undefined,'the rejected replacement must not contribute');
+ await save('bob',newBobRevision,[]);
+
+ // 草稿写入失败时，同一事务内的成员更新也回滚，原版本仍可继续保存。
+ const beforeFailure=members();
+ db.sql.exec(`CREATE TEMP TRIGGER reject_draft_update BEFORE UPDATE ON travel_drafts
+  WHEN NEW.user_id = 'alice' BEGIN SELECT RAISE(ABORT, 'test draft write failure'); END`);
+ assert.equal((await submit('alice',aliceRevision,[whitehorse])).status,503);
+ db.sql.exec('DROP TRIGGER reject_draft_update');
+ assert.deepEqual(members(),beforeFailure);
+ const savedAlice=await (await get('/api/draft')).json();
+ assert.equal(savedAlice.revision,aliceRevision);
+ assert.deepEqual(savedAlice.draft.stops.map(stop=>stop.place.name),['龙门石窟','目录之外的观景台','白马寺酒店']);
+
+ await post('/api/demo/reviews/seed',{sessionId:'demo_real_adds'});
+ const real=await popular();
+ assert.deepEqual(counts(getPlace(real,longmen)),[1,1,0]);
+ assert.equal(getPlace(real,longmen).score,7);
+ assert.equal(getPlace(real,longmen).demo,false);
+ assert.deepEqual(counts(getPlace(await popular('demo_other_session'),longmen)),[1,1,0]);
+ const mixed=await popular('demo_real_adds');
+ const mixedLongmen=getPlace(mixed,longmen);
+ assert.deepEqual(counts(mixedLongmen),[87,1,86]);
+ assert.equal(mixedLongmen.score,96);
+ assert.equal(mixedLongmen.demo,true);
+ assert.equal(mixed.demo,true);
+ assert.deepEqual(counts(getPlace(mixed,whitehorse)),[47,0,47]);
+ const publicResponse=await (await call('/api/popular?demo=demo_real_adds')).text();
+ assert.doesNotMatch(publicResponse,/user_id|username|alice|bob/,'public board must only expose aggregate counts');
+
+ await post('/api/demo/reviews/clear',{sessionId:'demo_real_adds'});
+ const afterClear=getPlace(await popular('demo_real_adds'),longmen);
+ assert.deepEqual(counts(afterClear),[1,1,0]);
+ assert.equal(afterClear.demo,false);
+ assert.equal(afterClear.score,7);
+ await save('alice',aliceRevision,[]);
+ assert.deepEqual(counts(getPlace(await popular(),longmen)),[0,0,0],'removing the last member must zero the count');
+}
 db.sql.close();
 
 // ---------- 前端：演示热门轮播接线存在 ----------
@@ -127,4 +228,4 @@ assert(showcaseSrc.includes('模拟加入数'),'demo copy must mention the demo 
 const uiCss=await readFile(new URL('../ui.css',import.meta.url),'utf8');
 assert(uiCss.includes('#hero-popular-info'),'ui.css must style the popular info line');
 
-console.log('Passed: popular board (real+demo aggregation, demo isolation, no invented places), demo adds seed/clear idempotence, demo hero wiring (popular fetch, rank line, demo label).');
+console.log('Passed: popular board (current draft members, conflict and rollback, real+demo aggregation, demo isolation, no invented places), demo adds seed/clear idempotence, demo hero wiring (popular fetch, rank line, demo label).');

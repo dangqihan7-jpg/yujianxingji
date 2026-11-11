@@ -156,7 +156,10 @@ function spotsCardHTML(p){
  const dur=spotsDurationFor(p);
  let popLine;
  if(!spotsPopular)popLine='<p class="spots-pop-line">正在读取热门分…</p>';
- else if(pop)popLine='<p class="spots-pop-line">热门第 '+rank+' 名 · 热门分 '+pop.score+'（'+pop.worth+' 人复盘值得多待 · '+pop.added+' 次加入行程）'+(pop.demo?' · 演示数据':'')+'</p>';
+ else if(pop){
+  const added=pop.addedDemo>0?'加入行程合计 '+pop.added:pop.added+' 人的当前行程草稿含此地点';
+  popLine='<p class="spots-pop-line">热门第 '+rank+' 名 · 热门分 '+pop.score+'（'+pop.worth+' 人复盘值得多待 · '+added+'）'+(pop.demo?' · 演示数据':'')+'</p>';
+ }
  else popLine='<p class="spots-pop-line">暂未进入热门榜前 8 名。</p>';
  return '<div class="spots-page spots-card">'
  +'<nav class="spots-crumb"><button data-spots-back>‹ 返回总览</button><span class="spots-crumb-sep">/</span><span>景点卡片</span></nav>'

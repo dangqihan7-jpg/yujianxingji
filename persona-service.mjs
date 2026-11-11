@@ -6,8 +6,7 @@
 // 无信号的用户先按群体基线推，画像记为“周末随性派”并标 baseline，不编演示用户。
 // 推流分 = 画像匹配 +3（兴趣命中）+ 复盘信号 ≥2 人 +1 + 热度分；
 // 热度分与 /api/popular 同口径（复盘“值得多待”×3 + 加入行程×1），
-// 但后台只用真实复盘：真实“加入行程”计数还没有，added 恒为 0，
-// 演示种子加入数不计入后台热度（见 heatNote）。
+// 后台热度来自真实复盘与当前行程草稿中的去重登录用户数。
 // 维度正则与景点页 SPOT_DIMS 同款（实算：文化 43、山水 38、美食 2、沉浸 9、
 // 亲子 6；8 个地点不命中任何维度）。
 export const PERSONA_DIMS=[
@@ -78,21 +77,26 @@ function lastSignalText(signals){
  if(interest)return '需求填了「'+(DIM_NAMES[interest]||interest)+'」';
  return '尚未留下需求或行为信号';
 }
-// 热度：只用真实复盘（与 /api/popular 不传 demo 时同口径）。
-// added 恒为 0——真实“加入行程”计数还没有，演示种子加入数不计入后台热度。
+// 热度采用 /api/popular 的真实数据口径。
 async function personaHeatByPlace(env){
+ if(!env.DB)return new Map();
+ const [rows,addedByName]=await Promise.all([
+  env.DB.prepare('SELECT user_id, payload FROM trip_reviews').all(),
+  readTripSpotCounts(env.DB)
+ ]);
  const worth=new Map();
- if(env.DB){
-  const rows=await env.DB.prepare('SELECT user_id, payload FROM trip_reviews').all();
-  for(const row of rows.results||[]){
-   let saved;try{saved=JSON.parse(row.payload)}catch{continue}
-   const place=personaPlaceByName(saved.worthMoreStop);if(!place)continue;
-   if(!worth.has(place.id))worth.set(place.id,new Set());
-   worth.get(place.id).add(row.user_id);
-  }
+ for(const row of rows.results||[]){
+  let saved;try{saved=JSON.parse(row.payload)}catch{continue}
+  const place=personaPlaceByName(saved.worthMoreStop);if(!place)continue;
+  if(!worth.has(place.id))worth.set(place.id,new Set());
+  worth.get(place.id).add(row.user_id);
  }
  const out=new Map();
- for(const [id,users] of worth)out.set(id,{worth:users.size,added:0,addedSource:'none',score:users.size*3});
+ for(const place of CATALOG){
+  const worthCount=worth.get(place.id)?.size||0;
+  const added=addedByName.get(place.name)||0;
+  if(worthCount||added)out.set(place.id,{worth:worthCount,added,addedSource:'real',score:worthCount*POPULAR_WORTH_WEIGHT+added*POPULAR_ADD_WEIGHT});
+ }
  return out;
 }
 export function personaTop3(personaKey,learningWeights,heatByPlace){
@@ -101,7 +105,7 @@ export function personaTop3(personaKey,learningWeights,heatByPlace){
  const ranked=CATALOG.map(place=>{
   const match=dim&&dim.test(place)?3:0;
   const signal=learningWeights?.get?.(place.category)?1:0;
-  const heat=heatByPlace.get(place.id)||{worth:0,added:0,addedSource:'none',score:0};
+  const heat=heatByPlace.get(place.id)||{worth:0,added:0,addedSource:'real',score:0};
   return {id:place.id,name:place.name,city:place.city,theme:place.theme||'',match,signal,heat:heat.score,heatWorth:heat.worth,heatAdded:heat.added,addedSource:heat.addedSource,total:match+signal+heat.score};
  }).sort((a,b)=>b.total-a.total||b.heat-a.heat||a.name.localeCompare(b.name,'zh-CN'));
  return ranked.slice(0,3);
@@ -194,7 +198,7 @@ export async function adminPersonasEndpoint(request,env){
   distribution,
   dimCounts,
   baseline:{questionnaire:QUESTIONNAIRE_BASELINE,note:'群体基线来自问卷终稿 231 份（宿舍组 45.45%、对象或一位朋友 43.29%、“感兴趣”86.58%）；无信号的新用户先按基线推，画像记为“周末随性派”并标 baseline。'},
-  heatNote:'热度分当前只含复盘“值得多待”×3；真实“加入行程”计数尚未建立，added 为 0（演示种子加入数不计入后台热度），正式上线后补真实计数再计入。',
+  heatNote:'热度分 = 真实复盘“值得多待”去重人数 × 3 + 当前行程草稿含该地点的去重登录用户数 × 1。',
   users
  });
 }

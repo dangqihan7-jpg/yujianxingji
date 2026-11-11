@@ -10,14 +10,27 @@ import worker,{CATALOG,computePersonaFromSignals,personaDimsOf,personaTop3} from
 const sql=new DatabaseSync(':memory:');
 for(const name of (await readdir(new URL('../drizzle/',import.meta.url))).filter(n=>n.endsWith('.sql')).sort())
   sql.exec(await readFile(new URL('../drizzle/'+name,import.meta.url),'utf8'));
-const DB={prepare(query){const statement=sql.prepare(query);return {
- async all(){return {results:statement.all()}},
- bind(...args){return {
-  async first(){return statement.get(...args)||null},
-  async all(){return {results:statement.all(...args)}},
-  async run(){const r=statement.run(...args);return {meta:{changes:Number(r.changes)}}}
- }}
-}}};
+const DB={
+ prepare(query){const statement=sql.prepare(query);return {
+  async all(){return {results:statement.all()}},
+  bind(...args){return {
+   async first(){return statement.get(...args)||null},
+   async all(){return {results:statement.all(...args)}},
+   run(){const r=statement.run(...args);return {meta:{changes:Number(r.changes)}}}
+  }}
+ }},
+ async batch(statements){
+  sql.exec('BEGIN');
+  try{
+   const results=statements.map(statement=>statement.run());
+   sql.exec('COMMIT');
+   return results;
+  }catch(error){
+   sql.exec('ROLLBACK');
+   throw error;
+  }
+ }
+};
 const standaloneEnv={DB,STANDALONE_AUTH:'true'};
 const platformEnv={DB};
 const call=(path,body,env,headers={})=>worker.fetch(new Request('https://persona.test'+path,{method:body?'POST':'GET',headers:{'Content-Type':'application/json',...headers},...(body?{body:JSON.stringify(body)}:{})}),env);
@@ -74,6 +87,14 @@ await postDraft(bob.cookie,{days:2,start:'09:00',stops:[
 await postReview(bob.cookie,'trip_b1',{worthMoreStop:'云台山'});
 // carol：无行程、无复盘 → 群体基线“周末随性派”。
 
+// 平台用户的当前草稿同样计入真实热度。演示种子仅用于带演示会话的热门榜。
+const platformDraft=await data(await call('/api/draft',{revision:0,draft:{days:1,start:'09:00',stops:[
+ {place:{id:'hn-longmen',name:'龙门石窟',category:'scenic',source:'curated',location:null},day:1,duration:place('hn-longmen').duration}
+]}},platformEnv,{'oai-authenticated-user-id':'persona-platform-user'}));
+assert.equal(platformDraft.status,200);
+const sessionId='persona-demo';
+assert.equal((await call('/api/demo/reviews/seed',{sessionId},platformEnv)).status,200);
+
 const adminPath='/api/admin/personas';
 const getAdmin=async (env,headers={})=>data(await call(adminPath,null,env,headers));
 
@@ -97,8 +118,7 @@ assert.equal(admin.body.distribution.length,6);
 assert.equal(admin.body.distribution.reduce((n,d)=>n+d.count,0),3);
 assert.deepEqual(admin.body.baseline.questionnaire,{n:231,dorm:45.45,partner:43.29,interested:86.58});
 assert.deepEqual(admin.body.dimCounts,{culture:43,nature:38,food:2,immersive:9,family:6,none:8});
-assert(admin.body.heatNote.includes('真实“加入行程”计数尚未建立'));
-assert(admin.body.heatNote.includes('added 为 0'));
+assert(admin.body.heatNote.includes('当前行程草稿含该地点的去重登录用户数'));
 
 const aliceRow=admin.body.users.find(u=>u.username==='alice');
 assert.equal(aliceRow.persona.key,'culture');
@@ -114,12 +134,21 @@ assert.equal(aliceRow.signals.behavior.durationAdjusts,1);
 assert.deepEqual(aliceRow.signals.behavior.worthStops,['龙门石窟']);
 assert.deepEqual(aliceRow.signals.behavior.overtimeStops,['白马寺']);
 assert.equal(aliceRow.lastSignal,'复盘标「龙门石窟」值得多待');
-// 推流前 3 按规则算出：龙门石窟 画像匹配 +3（文化命中）、复盘信号 +1（景点类 2 人）、热度 3（1 人值得多待×3）= 7
+// 龙门石窟：文化匹配 +3、复盘信号 +1、热度 +5（1 人值得多待、2 人草稿含该地点）。
 assert.equal(aliceRow.top3.length,3);
-assert.equal(aliceRow.top3[0].name,'龙门石窟');
-assert.deepEqual({match:aliceRow.top3[0].match,signal:aliceRow.top3[0].signal,heat:aliceRow.top3[0].heat,total:aliceRow.top3[0].total},{match:3,signal:1,heat:3,total:7});
-assert.equal(aliceRow.top3[0].heatAdded,0);
-assert.equal(aliceRow.top3[0].addedSource,'none');
+const longmen=aliceRow.top3[0];
+assert.equal(longmen.name,'龙门石窟');
+assert.deepEqual({match:longmen.match,signal:longmen.signal,heat:longmen.heat,total:longmen.total},{match:3,signal:1,heat:5,total:9});
+assert.equal(longmen.heatWorth,1);
+assert.equal(longmen.heatAdded,2);
+assert.equal(longmen.addedSource,'real');
+const whitehorse=aliceRow.top3.find(t=>t.name==='白马寺');
+assert.deepEqual({worth:whitehorse?.heatWorth,added:whitehorse?.heatAdded,heat:whitehorse?.heat,addedSource:whitehorse?.addedSource},{worth:0,added:1,heat:1,addedSource:'real'});
+const popular=(await data(await call('/api/popular',null,platformEnv))).body.items.find(t=>t.name===longmen.name);
+assert.equal(popular.addedReal,longmen.heatAdded);
+assert.equal(popular.score,longmen.heat);
+const demoPopular=(await data(await call('/api/popular?demo='+sessionId,null,platformEnv))).body.items.find(t=>t.name===longmen.name);
+assert(demoPopular.added>longmen.heatAdded);
 assert(aliceRow.top3.every(t=>t.match===0||t.match===3));
 
 const bobRow=admin.body.users.find(u=>u.username==='bobuser');
@@ -155,7 +184,7 @@ for(const path of ['/api/popular','/api/learning-signals','/api/catalog']){
  assert(!text.includes('置信度'),'user-facing '+path+' must not leak persona scores');
 }
 // 推流前 3 的纯函数与服务端一致（同一规则，不写死）
-assert.equal(personaTop3('culture',new Map([['scenic',{bonus:1}]]),new Map([['hn-longmen',{worth:1,added:0,addedSource:'none',score:3}]]))[0].name,'龙门石窟');
+assert.equal(personaTop3('culture',new Map([['scenic',{bonus:1}]]),new Map([['hn-longmen',{worth:1,added:2,addedSource:'real',score:5}]]))[0].name,'龙门石窟');
 
 // ---------- 前端接线存在 ----------
 const html=await readFile(new URL('../app.html',import.meta.url),'utf8');

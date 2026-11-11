@@ -5,6 +5,13 @@ export const modelUsage=sqliteTable("model_usage",{
  updatedAt:integer("updated_at").notNull()
 });
 export const travelDrafts=sqliteTable("travel_drafts",{userId:text("user_id").primaryKey(),payload:text("payload").notNull(),updatedAt:integer("updated_at").notNull()});
+export const tripSpotMembers=sqliteTable("trip_spot_members",{
+ userId:text("user_id").notNull(),
+ spotName:text("spot_name").notNull(),
+ updatedAt:integer("updated_at").notNull()
+},table=>[
+ primaryKey({columns:[table.userId,table.spotName]})
+]);
 export const users=sqliteTable("users",{
  id:text("id").primaryKey(),
  username:text("username").notNull().unique(),

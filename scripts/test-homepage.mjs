@@ -7,8 +7,8 @@ import worker,{HTML,CATALOG} from '../worker/index.js';
 // 点开始规划 / 看看热门才进；闭环四步条只在行程总览页顶部。
 // 城市带入、多城不抢填、热门回落、演示标注、表单挂接都在这里验。
 const POPULAR_ITEMS=[
- {id:'hn-longmen',name:'龙门石窟',city:'洛阳',worth:2,added:86,score:92,demo:true,worthReal:0,worthDemo:2},
- {id:'hn-laojunshan',name:'老君山',city:'洛阳',worth:1,added:74,score:77,demo:true,worthReal:0,worthDemo:1}
+ {id:'hn-longmen',name:'龙门石窟',city:'洛阳',worth:2,added:87,addedReal:1,addedDemo:86,score:93,demo:true,worthReal:0,worthDemo:2},
+ {id:'hn-laojunshan',name:'老君山',city:'洛阳',worth:1,added:74,addedReal:0,addedDemo:74,score:77,demo:true,worthReal:0,worthDemo:1}
 ];
 class MockNode{
  constructor(selector){this.selector=selector;this.value=selector==='#days'?'3':selector==='#start'?'09:00':selector==='#city'?'河南':selector==='#maxhours'?'8':selector==='#restmins'?'30':selector==='#travelmode'?'driving':'';this.innerHTML='';this.textContent='';this.style={};this.dataset={};this.hidden=false;this.open=false;this.isConnected=true;this.children=[];this.parentNode=null;this.scrolled=false;this.classList={add(){},toggle(){},remove(){},contains(){return false}};this.label={textContent:''}}
@@ -67,7 +67,7 @@ const click=(fixture,selector,payload={})=>fixture.get('#gallery').onclick({targ
  assert.equal(f.run('aiHeroScenery().id'),'hn-longmen','Hero cover uses popular #1');
  assert.equal(f.get('#ai-hero-backdrop').dataset.place,'hn-longmen');
  assert.match(f.get('#hero-daily-label').textContent,/热门轮播 · 演示模式 · 演示数据/);
- assert.match(f.get('#hero-popular-info').textContent,/热门第 1 名 · 2 人复盘值得多待 · 86 次加入行程（演示数据）/);
+ assert.match(f.get('#hero-popular-info').textContent,/热门第 1 名 · 2 人复盘值得多待 · 加入行程合计 87（演示数据）/);
 }
 {
  const f=buildFixture({popularItems:[]});

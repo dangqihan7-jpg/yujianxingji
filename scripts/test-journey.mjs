@@ -1,11 +1,34 @@
 import assert from 'node:assert/strict';
 import {DatabaseSync} from 'node:sqlite';
-import {readFile} from 'node:fs/promises';
+import {readdir,readFile} from 'node:fs/promises';
 import vm from 'node:vm';
 import worker,{HTML,CATALOG,validateDraft} from '../worker/index.js';
 
-const sql=new DatabaseSync(':memory:');sql.exec(await readFile(new URL('../drizzle/0000_smiling_sphinx.sql',import.meta.url),'utf8'));
-const DB={prepare(query){const statement=sql.prepare(query);return {bind(...args){return {async first(){return statement.get(...args)||null},async run(){const r=statement.run(...args);return {meta:{changes:Number(r.changes)}}}}}}}};
+const sql=new DatabaseSync(':memory:');
+const migrations=new URL('../drizzle/',import.meta.url);
+for(const name of (await readdir(migrations)).filter(name=>name.endsWith('.sql')).sort()){
+ sql.exec(await readFile(new URL(name,migrations),'utf8'));
+}
+const DB={
+ prepare(query){
+  const statement=sql.prepare(query);
+  return {bind(...args){return {
+   first(){return statement.get(...args)||null},
+   run(){return {meta:{changes:Number(statement.run(...args).changes)}}}
+  }}};
+ },
+ async batch(statements){
+  sql.exec('BEGIN');
+  try{
+   const results=statements.map(statement=>statement.run());
+   sql.exec('COMMIT');
+   return results;
+  }catch(error){
+   sql.exec('ROLLBACK');
+   throw error;
+  }
+ }
+};
 const draft={version:2,city:'洛阳',days:2,start:'09:00',mode:'transit',maxHours:6,restMinutes:30,presetId:'luoyang',decision:{intent:{city:'洛阳',days:2,budget:300,requiredIds:['hn-longmen']},expenses:{tickets:100},records:[{id:'experience-fixture',task:'洛阳两日',startedAt:1000000,endedAt:1000300,edits:2,rating:4,source:'rules',stops:1,days:2,unresolved:1,feedback:'测试反馈'}]},stops:[{place:{...CATALOG.find(p=>p.id==='hn-longmen'),routing:{id:'B1',name:'龙门石窟入口',location:[112.47,34.56],address:'洛阳',confirmed:true}},day:1,duration:180,lockedDay:1}]};
 const call=(user,body,options={})=>worker.fetch(new Request('https://fixture.test/api/draft',{method:body?'POST':'GET',headers:{...(user?{'oai-authenticated-user-id':user}:{}),...options.headers},...(body?{body:JSON.stringify(body)}:{})}),{DB});
 assert.equal((await call(null)).status,401);

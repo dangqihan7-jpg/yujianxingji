@@ -73,7 +73,11 @@ function scheduleDailyHeroRefresh(now=Date.now()){
   heroDailyTimer=setTimeout(()=>{heroDailyTimer=0;refreshDailyHeroPhotos();scheduleDailyHeroRefresh()},Math.max(25,delay));
 }
 function selectHeroPhoto(index){if(!Number.isInteger(index)||index<0||index>=heroPlaces.length)return;heroPhotoIndex=index;updateHeroPhoto();scheduleHeroRotation()}
-function heroPopularInfo(item){if(!item)return '';return '热门第 '+item.rank+' 名 · '+item.worth+' 人复盘值得多待 · '+item.added+' 次加入行程'+(item.demo?'（演示数据）':'')}
+function heroPopularInfo(item){
+  if(!item)return '';
+  const added=item.addedDemo>0?'加入行程合计 '+item.added:item.added+' 人的当前行程草稿含此地点';
+  return '热门第 '+item.rank+' 名 · '+item.worth+' 人复盘值得多待 · '+added+(item.demo?'（演示数据）':'');
+}
 // 热门轮播：热门层按 /api/popular 前 5 名排；取不到数据或可上轮播的
 // 热门地点不足 2 个时，恢复现有日期轮换，一字不动。
 // 照片筛选沿用 heroPhotoHasPublicMetadata（完整出处与授权才上轮播），
@@ -96,7 +100,7 @@ function restoreDailyHero(){
   rebuildHeroSlides();
 }
 // 热门轮播：首屏封面与热门层都接 /api/popular 前 5 名。
-// 演示开时传 demo 会话（演示复盘 + 演示加入数），平时只看真实复盘；
+// 演示开时传 demo 会话，在真实复盘和草稿人数上合并该会话的演示数据。
 // 取不到数据或可上轮播的热门地点不足 2 个时，恢复现有日期轮换，一字不动。
 // 照片筛选沿用 heroPhotoHasPublicMetadata（完整出处与授权才上轮播），
 // 热门但没图的地点只进榜、不上轮播。首屏封面用热门第 1 名，

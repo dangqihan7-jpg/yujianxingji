@@ -99,6 +99,9 @@ async function authEndpoint(request,env,action){
   }
   fail('接口不存在或方法不支持',404);
 }
+function draftSpotNames(stops){
+  return new Set(stops.filter(({place})=>place.source==='curated'&&place.category!=='stay').map(({place})=>place.name));
+}
 async function draftEndpoint(request,env){
   // 平台模式沿用平台注入的可信身份；独立模式只认会话 cookie，客户端提交的平台头一律忽略。
   const user=await currentUser(request,env);
@@ -114,9 +117,28 @@ async function draftEndpoint(request,env){
     const origin=request.headers.get('Origin');if(origin&&origin!==new URL(request.url).origin)fail('保存请求来源不正确',403);
     const raw=await readBody(request),draft=savedDraft(raw.draft),previous=raw.revision;
     if(!Number.isSafeInteger(previous)||previous<0)fail('保存版本不正确');
+    const conflict=()=>fail('另一处页面已经修改了行程，请导出当前修改并重新打开网站',409);
+    const db=env.DB;
+    const row=await db.prepare('SELECT payload, updated_at FROM travel_drafts WHERE user_id = ?').bind(userId).first();
+    if((row?.updated_at??0)!==previous)conflict();
+    const oldNames=draftSpotNames(row?JSON.parse(row.payload).stops:[]);
+    const newNames=draftSpotNames(draft.stops);
     const revision=Math.max(Date.now(),previous+1);
-    const result=await env.DB.prepare('INSERT INTO travel_drafts (user_id, payload, updated_at) VALUES (?, ?, ?) ON CONFLICT(user_id) DO UPDATE SET payload = excluded.payload, updated_at = excluded.updated_at WHERE travel_drafts.updated_at = ?').bind(userId,JSON.stringify(draft),revision,previous).run();
-    if(result.meta?.changes!==1)fail('另一处页面已经修改了行程，请导出当前修改并重新打开网站',409);
+    const save=db.prepare('INSERT INTO travel_drafts (user_id, payload, updated_at) VALUES (?, ?, ?) ON CONFLICT(user_id) DO UPDATE SET payload = excluded.payload, updated_at = excluded.updated_at WHERE travel_drafts.updated_at = ?').bind(userId,JSON.stringify(draft),revision,previous);
+
+    // 同一事务内，成员差分和草稿保存检查同一旧版本。并发保存抢先更新时，两者都跳过。
+    const revisionMatches='COALESCE((SELECT updated_at FROM travel_drafts WHERE user_id = ?), 0) = ?';
+    const membership=[];
+    for(const name of newNames){
+      if(oldNames.has(name))continue;
+      membership.push(db.prepare('INSERT INTO trip_spot_members (user_id, spot_name, updated_at) SELECT ?, ?, ? WHERE '+revisionMatches+' ON CONFLICT(user_id, spot_name) DO NOTHING').bind(userId,name,revision,userId,previous));
+    }
+    for(const name of oldNames){
+      if(newNames.has(name))continue;
+      membership.push(db.prepare('DELETE FROM trip_spot_members WHERE user_id = ? AND spot_name = ? AND '+revisionMatches).bind(userId,name,userId,previous));
+    }
+    const result=membership.length?(await db.batch([...membership,save])).at(-1):await save.run();
+    if(result.meta?.changes!==1)conflict();
     return json({revision});
   }catch(e){if(e.status)throw e;console.error('draft_storage_unavailable');fail('行程保存暂不可用，当前修改仍在页面中，请先导出',503)}
 }
@@ -531,23 +553,30 @@ async function learningSignalsEndpoint(request,env){
  const signals=await collectLearningSignals(env,extraRows);
  return json({demo:true,signals,weighting:{bonus:LEARNING_BONUS,threshold:LEARNING_SIGNAL_THRESHOLD},note:'学习版·演示：复盘汇总信号；生成行程时这类地点可小幅加权（+'+LEARNING_BONUS+'，仅影响同分候选顺序），可在需求确认里关闭。'});
 }
-// 热门轮播（演示范围）：热门分 ＝ 复盘“值得多待” ×3 ＋ 加入行程 ×1。
-// 真实复盘（trip_reviews）与演示数据（demo_reviews / demo_adds）分开汇总再合并，
-// 演示行绝不混进真实计数；不传 demo 参数时只含真实复盘。
-// 真实“加入行程”计数现在还没有，added 目前只来自演示加入数（固定种子），
-// 正式上线前必须补真实计数并换掉种子数。只返回 henan.json 目录里的地点，
-// 没数据的地点不出现、不编数；按热门分降序，同分按地点名排。
+// 热门分 ＝ 复盘“值得多待” ×3 ＋ 加入行程 ×1。真实加入数按当前草稿的用户去重。
+// 传入 demo 会话时合并该会话的演示数据。仅返回有信号的目录地点，按分数降序、同分按名称排序。
 function popularPlaceByName(name){
  const trimmed=String(name||'').trim();
  if(!trimmed)return null;
  return CATALOG.find(p=>p.name===trimmed)||CATALOG.find(p=>trimmed.includes(p.name)||p.name.includes(trimmed))||null;
+}
+async function readTripSpotCounts(db){
+ const counts=new Map();
+ if(!db)return counts;
+ const {results}=await db.prepare('SELECT spot_name, COUNT(DISTINCT user_id) AS added FROM trip_spot_members GROUP BY spot_name').all();
+ for(const row of results||[]){
+  const place=popularPlaceByName(row.spot_name);
+  if(place?.name===row.spot_name&&place.category!=='stay')counts.set(place.name,Number(row.added));
+ }
+ return counts;
 }
 async function popularEndpoint(request,env){
  if(request.method!=='GET')fail('方法不支持',405);
  const demoSession=new URL(request.url).searchParams.get('demo');
  if(demoSession!=null&&!DEMO_SESSION_ID.test(demoSession))fail('演示会话编号不正确',400);
  const byId=new Map();
- const entryFor=place=>{if(!byId.has(place.id))byId.set(place.id,{place,worthReal:new Set(),worthDemo:new Set(),addedDemo:0});return byId.get(place.id)};
+ const entryFor=place=>{if(!byId.has(place.id))byId.set(place.id,{place,worthReal:new Set(),worthDemo:new Set(),addedReal:0,addedDemo:0});return byId.get(place.id)};
+ for(const [name,added] of await readTripSpotCounts(env.DB))entryFor(popularPlaceByName(name)).addedReal=added;
  if(env.DB){
   const real=await env.DB.prepare('SELECT user_id, payload FROM trip_reviews').all();
   for(const row of real.results||[]){
@@ -567,13 +596,15 @@ async function popularEndpoint(request,env){
    entryFor(place).addedDemo+=row.adds;
   }
  }
- const items=[...byId.values()].map(({place,worthReal,worthDemo,addedDemo})=>{
+ const items=[...byId.values()].map(({place,worthReal,worthDemo,addedReal,addedDemo})=>{
   const worth=worthReal.size+worthDemo.size;
-  return {id:place.id,name:place.name,city:place.city,worth,added:addedDemo,score:worth*POPULAR_WORTH_WEIGHT+addedDemo*POPULAR_ADD_WEIGHT,demo:worthDemo.size>0||addedDemo>0,worthReal:worthReal.size,worthDemo:worthDemo.size};
+  const added=addedReal+addedDemo;
+  return {id:place.id,name:place.name,city:place.city,worth,added,score:worth*POPULAR_WORTH_WEIGHT+added*POPULAR_ADD_WEIGHT,demo:worthDemo.size>0||addedDemo>0,worthReal:worthReal.size,worthDemo:worthDemo.size,addedReal,addedDemo};
  }).filter(item=>item.worth>0||item.added>0)
   .sort((a,b)=>b.score-a.score||a.name.localeCompare(b.name,'zh-CN'))
   .slice(0,POPULAR_LIMIT);
- return json({demo:demoSession!=null,items,weights:{worth:POPULAR_WORTH_WEIGHT,added:POPULAR_ADD_WEIGHT},note:demoSession!=null?'演示模式 · 以下含演示数据：热门分 ＝ 复盘“值得多待” ×3 ＋ 加入行程 ×1；加入次数目前为演示种子数，正式上线前须换成真实计数。':'热门分 ＝ 复盘“值得多待” ×3 ＋ 加入行程 ×1；加入次数目前只有演示种子，正式上线前须补真实计数。'});
+ const note='热门分 ＝ 复盘“值得多待” ×3 ＋ 加入行程 ×1。真实加入数为当前行程草稿包含该地点的登录用户数，每人计一次。';
+ return json({demo:demoSession!=null,items,weights:{worth:POPULAR_WORTH_WEIGHT,added:POPULAR_ADD_WEIGHT},note:demoSession!=null?'演示模式 · 含演示数据。'+note:note});
 }
 // 闭环改革二期：演示模式。演示复盘只进 demo_reviews，与真实复盘严格隔离，
 // 答辩现场匿名可用。一套固定模拟复盘（4 行）：2 名演示用户标景点类“值得多待”
@@ -586,8 +617,7 @@ const DEMO_SEED_ROWS=[
  {userLabel:'演示用户丙',tripId:'demo_trip_c',payload:{worthMoreStop:'西工小街',chosenPlan:'洛阳一日 · 美食线'}},
  {userLabel:'演示用户丁',tripId:'demo_trip_d',payload:{actualCost:486,overtimeStop:'龙门石窟',chosenPlan:'洛阳一日 · 景点线'}}
 ];
-// 热门轮播（演示范围）：演示加入数固定种子（演示数据，非真实计数）。
-// 真实“加入行程”计数现在还没有，正式上线前必须补真实计数并换掉这组种子数。
+// 演示加入数为会话内的固定种子，真实加入数来自 trip_spot_members。
 const DEMO_SEED_ADDS=[
  {spotName:'龙门石窟',adds:86},
  {spotName:'老君山',adds:74},

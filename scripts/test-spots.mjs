@@ -162,6 +162,7 @@ assert.equal(run('spotsPopularDemo'),true,'Demo on must load demo popular data')
 assert(run('spotsPopular.items.some(x=>x.demo)'),'Demo popular items must be flagged demo');
 run("openSpotsCard('hn-longmen')");
 assert(get('#spots').innerHTML.includes('演示数据'),'Card must label demo scores in demo mode');
+assert(get('#spots').innerHTML.includes('加入行程合计 86'),'Card must show the combined count in demo mode');
 assert(get('#spots').innerHTML.includes('演示模式'),'Card must carry the demo-mode note');
 run("setSpotsLayer('overview')");
 assert(get('#spots').innerHTML.includes('热门第 1 名'),'Overview list must show the demo rank badge');
@@ -172,6 +173,7 @@ assert.equal(run('spotsPopularDemo'),false,'Demo off must load real popular data
 assert(!run('spotsPopular.items.some(x=>x.demo)'),'Real popular must not contain demo rows');
 run("openSpotsCard('hn-longmen')");
 assert(get('#spots').innerHTML.includes('热门分 3'),'Card must show the real score when demo is off');
+assert(get('#spots').innerHTML.includes('0 人的当前行程草稿含此地点'),'Card must describe real draft membership');
 assert(!get('#spots').innerHTML.includes('演示数据'),'Card must not label real scores as demo');
 // 取消值得多待：补一个其他字段后才能全量替换成功
 await call('/api/trips/'+encodeURIComponent(tripId)+'/review',{actualCost:500,worthMoreStop:'龙门石窟'},'alice');
