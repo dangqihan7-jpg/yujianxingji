@@ -17,7 +17,7 @@ let checks=0,calls=[];
 function database(){
  const sql=new DatabaseSync(':memory:');opened.push(sql);
  for(const migration of migrations)sql.exec(migration);
- const DB={prepare(query){const statement=sql.prepare(query);let args=[];const prepared={bind(...values){args=values;return prepared},async first(){return statement.get(...args)||null},async run(){return {meta:{changes:Number(statement.run(...args).changes)}}}};return prepared}};
+ const DB={prepare(query){const statement=sql.prepare(query);let args=[];const prepared={bind(...values){args=values;return prepared},async first(){return statement.get(...args)||null},async all(){return {results:statement.all(...args)}},async run(){return {meta:{changes:Number(statement.run(...args).changes)}}}};return prepared}};
  return {sql,DB};
 }
 const envOf=DB=>({...config,DB});
@@ -55,6 +55,34 @@ await check('normal two-day question uses one direct X2.5 call and public, compl
  assert.match(payload.messages[0].content,/河南周末游行程助手/);assert.match(payload.messages[0].content,/3\s*[-–—至到~～]\s*5|三.{0,3}五/);assert.match(payload.messages[0].content,/不知道|不确定|未知/);assert.match(payload.messages[0].content,/官方信息为准/);
  const user=payload.messages[1].content;for(const text of ['第一天有几个景点','龙门石窟','白马寺','洛邑古城','洛阳'])assert(user.includes(text));assert.match(user,/scenicCount["\s:：]*2/,'景点数必须由程序根据当前分日行程计算');
  const rows=usage(sql);assert.equal(rows.length,2);assert(rows.every(row=>row.calls===1&&row.usage_key.includes(':ask:')));assert(!JSON.stringify(rows).includes('192.0.2.1'));
+});
+await check('an off-itinerary place sends catalogue and real review evidence with source labels',async()=>{
+ const {sql,DB}=database(),userId='REVIEW_ACCOUNT_PRIVATE_SENTINEL';
+ seedUser(sql,userId);
+ sql.prepare('INSERT INTO trip_reviews VALUES (?,?,?,?,?)').run(
+  userId,'REVIEW_TRIP_PRIVATE_SENTINEL',
+  JSON.stringify({worthMoreStop:'红旗渠',overtimeStop:'红旗渠',actualCost:123.45,chosenPlan:'REVIEW_PLAN_PRIVATE_SENTINEL'}),1,1
+ );
+ upstream=()=>resultResponse('红旗渠可以了解太行山间的水利工程（地点资料）。有一人认为值得多待，也提及超时（用户复盘 1 人）。这站没有排进当前行程。');
+ const text=await success(await post(envOf(DB),body('红旗渠值得多待吗？')));
+ assert.match(text,/地点资料/);assert.match(text,/用户复盘 1 人/);assert.equal(calls.length,1);
+ const {messages}=JSON.parse(calls[0].options.body),prompt=JSON.parse(messages[1].content);
+ assert(prompt.trip.schedule.every(day=>day.stops.every(stop=>stop.name!=='红旗渠')));
+ assert(prompt.retrieved.some(row=>row.kind==='place'&&row.name==='红旗渠'&&row.source==='地点资料'));
+ const review=prompt.retrieved.find(row=>row.kind==='review'&&row.name==='红旗渠');
+ assert.equal(review?.source,'用户复盘 1 人');assert.match(review.text,/123\.45/);
+ assert.match(messages[0].content,/逐字照抄.*source 来源标签/);
+ assert.doesNotMatch(messages[1].content,/PRIVATE_SENTINEL/);
+});
+await check('an unmatched off-itinerary place sends no invented place facts',async()=>{
+ const {DB}=database(),question='赤霞秘境值得去吗？';
+ upstream=()=>resultResponse('行程里没有这项。我不知道赤霞秘境的情况。');
+ const text=await success(await post(envOf(DB),body(question)));
+ assert.match(text,/行程里没有这项|不知道/);assert.equal(calls.length,1);
+ const {messages}=JSON.parse(calls[0].options.body),prompt=JSON.parse(messages[1].content);
+ assert.equal(prompt.question,question);assert.deepEqual(prompt.retrieved,[]);
+ assert.doesNotMatch(JSON.stringify(prompt.trip),/赤霞秘境/);
+ assert.match(messages[0].content,/行程外地点且没有匹配资料.*不能用自身知识补充/);
 });
 await check('planning and Q&A share Spark wire options, with private context stripped and absent budget explicit',async()=>{
  const {DB}=database(),input=body('第二天会不会太赶？');input.trip.budget=800;input.trip.mode='driving';input.trip.start='09:00';

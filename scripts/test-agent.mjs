@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
-import {readFile} from 'node:fs/promises';
+import {DatabaseSync} from 'node:sqlite';
+import {readFile,readdir} from 'node:fs/promises';
 import worker,{CATALOG,applyAgentDefaults,agentSelectRules,agentPlanRules,parseIntentRules,agentContext} from '../worker/index.js';
 
 // ---------- 规则智能体核心 ----------
@@ -156,6 +157,53 @@ try{
  assert.equal(confirmedRules.agents[0].source,'confirmed');assert(confirmedRules.agents.slice(1).every(a=>a.source==='rules'));
  assert.equal(confirmedRules.source,'agent-rules','confirmed conditions plus rule fallback must not claim any model participation');assert.equal(confirmedRules.agent.modelCalls,0);
 }finally{globalThis.fetch=fetchOriginal}
+
+// 选点请求带真实复盘证据，按地点引用来源。空证据保持原请求，v3 和检查器沿用原逻辑。
+{
+ const sql=new DatabaseSync(':memory:');
+ try{
+  const migrations=new URL('../drizzle/',import.meta.url);
+  for(const file of (await readdir(migrations)).filter(name=>name.endsWith('.sql')).sort()){
+   sql.exec(await readFile(new URL(file,migrations),'utf8'));
+  }
+  const DB={prepare(query){return {async all(){return {results:sql.prepare(query).all()}}}}};
+  const requests=[];
+  globalThis.fetch=async(url,options)=>{
+   const [system,user]=JSON.parse(options.body).messages;
+   if(system.content.includes('行程规划智能体'))requests.push({system:system.content,user:JSON.parse(user.content)});
+   return mockAgent()(url,options);
+  };
+  const planWithReviews=async()=>{
+   const response=await post('/api/agent',{text:'洛阳两天，必去龙门石窟'},{...modelEnv,AMAP_WEB_SERVICE_KEY:undefined,DB});
+   assert.equal(response.status,200);
+   return response.json();
+  };
+  const baseline=await planWithReviews();
+  assert.equal(baseline.agents[1].source,'ai');
+  assert.deepEqual(Object.keys(requests[0].user),['text','intent','requiredIds','excludedIds','catalog']);
+  assert.doesNotMatch(requests[0].system,/复盘证据/);
+
+  const insert=sql.prepare('INSERT INTO trip_reviews (user_id, trip_id, payload, created_at, updated_at) VALUES (?, ?, ?, ?, ?)');
+  insert.run('REVIEW_PRIVATE_USER_A','trip-a',JSON.stringify({worthMoreStop:'龙门石窟',overtimeStop:'龙门石窟',actualCost:240}),1,1);
+  const oneReview=await planWithReviews();
+  const {reviewEvidence,...unchanged}=requests[1].user;
+  assert.deepEqual(unchanged,requests[0].user);
+  assert(reviewEvidence.some(item=>item.kind==='review'&&item.name==='龙门石窟'&&item.source==='用户复盘 1 人'));
+  assert.doesNotMatch(JSON.stringify(requests[1]),/REVIEW_PRIVATE_USER_A/);
+  assert.match(requests[1].system,/同分候选优先选有复盘证据/);
+  assert.match(requests[1].system,/rationale.*地点名.*来源标签/);
+  assert.deepEqual(oneReview.learningApplied.applied,[]);
+  assert.deepEqual(oneReview.stops,baseline.stops);
+  assert.deepEqual(oneReview.audit,baseline.audit);
+  assert.equal(oneReview.timeline.find(step=>step.key==='audit').detail,baseline.timeline.find(step=>step.key==='audit').detail);
+
+  insert.run('REVIEW_PRIVATE_USER_B','trip-b',JSON.stringify({worthMoreStop:'龙门石窟'}),2,2);
+  const twoReviews=await planWithReviews();
+  assert.match(requests[2].system,/复盘学习.*2 名用户.*复盘证据/);
+  assert.deepEqual(twoReviews.learningApplied.applied.map(({users,bonus})=>({users,bonus})),[{users:2,bonus:1}]);
+ }finally{globalThis.fetch=fetchOriginal;sql.close()}
+}
+
 // 空输入与超长输入
 assert.equal((await post('/api/agent',{text:''})).status,400);
 assert.equal((await post('/api/agent',{text:'x'.repeat(601)})).status,400);
