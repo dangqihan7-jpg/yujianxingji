@@ -81,12 +81,14 @@ const mockAgent=(overrides={})=>async(url,options={})=>{
  if(sys.includes('冲突校验智能体'))return new Response(JSON.stringify({choices:[{message:{content:JSON.stringify(overrides.audit||{cuts:[{id:luoyangAllowed[3],reason:'与其他地点兴趣重叠且导致超时'}],note:'去掉一处以满足每天时长'})}}]}));
  if(sys.includes('日程编排智能体'))return new Response(JSON.stringify({choices:[{message:{content:JSON.stringify(overrides.schedule||{dayPlan:luoyangAllowed.map((id,i)=>({id,day:i<3?1:2}))})}}]}));
  if(sys.includes('行程规划智能体'))return new Response(JSON.stringify({choices:[{message:{content:JSON.stringify(overrides.recommend||{selections:luoyangAllowed.map(id=>({id,duration:180})),rationale:[{decision:'选择：龙门石窟',reason:'必去'}],unresolved:[]})}}]}));
+ overrides.onIntentPrompt?.(sys);
  return new Response(JSON.stringify({choices:[{message:{content:JSON.stringify({fields:{city:'洛阳',days:2,mode:null,maxHours:null,restMinutes:null,budget:200,avoidCrossCity:null,interests:['culture'],requiredIds:['hn-longmen'],excludedIds:[],excludedModes:[]},unresolved:[]})}}]}));
 };
 try{
  // 全 AI：一句话入口（含交通核算）
  for(const id of luoyangAllowed){const p=CATALOG.find(x=>x.id===id);p.routing={location:[112.45,34.62],address:'洛阳',confirmed:true}}
- globalThis.fetch=mockAgent();
+ let intentPrompt;
+ globalThis.fetch=mockAgent({onIntentPrompt:prompt=>{intentPrompt=prompt}});
  const r=await post('/api/agent',{text:'洛阳两天，人均预算200，必去龙门石窟'},modelEnv);
  for(const id of luoyangAllowed){const p=CATALOG.find(x=>x.id===id);delete p.routing}
  assert.equal(r.status,200);const b=await r.json();
@@ -99,6 +101,17 @@ try{
  assert(b.defaulted.some(s=>s.includes('智能体决定')));
  assert.equal(b.agent.modelCalls,5,'perceive+decide+schedule+traffic+audit = 5 model calls');
  assert(b.draft&&b.draft.stops.length===b.stops.length);
+ assert.match(intentPrompt,/未提到的兴趣不得加入/);
+ const interestKeywords={
+  culture:'古都、古城、博物、文化、历史、石窟、寺',
+  nature:'山水、自然、峡谷、爬山、登山、云海、金顶、茶园、茶乡、森林、瀑布、湖景',
+  food:'美食、小吃、吃',
+  immersive:'武侠、演艺、演出、戏剧、电影、沉浸、夜游、互动',
+  family:'亲子、带娃、孩子、儿童、动物、乐园'
+ };
+ for(const [interest,keywords] of Object.entries(interestKeywords)){
+  assert(intentPrompt.includes(interest+'（'+keywords+'）'),'missing rules keywords for '+interest);
+ }
  // operation 入口：需求理解复用已确认条件；地点推荐 → 日程编排 → 交通核算 → 冲突校验按实际 source 执行（本例交通核算回退规则）。
  globalThis.fetch=mockAgent({audit:{cuts:[],note:'无'}});
  const r2=await post('/api/agent',seed,modelEnv);
