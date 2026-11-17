@@ -95,14 +95,60 @@ function askCoverAnswer(question,context){
  return (missing.length?missing.map(stop=>stop.name).join('、')+'当前没有封面，卡片显示照片占位，不是实景照片。':'当前所问的行程目录地点均已配置封面，但这不代表照片加载情况已经核实。')+(unknown?'另有非目录地点的封面情况未核实。':'以上只按本站目录是否配置图片判断，不据此推断景区开放状态。')+'问答不会替你添加照片或修改行程。';
 }
 function askSensitiveFallback(){return '相关费用、营业与预约未核实、供参考。行程里没有这项已确认信息。我不知道这些地点当前的票价、营业时间或预约政策，也没有可核实的价格范围。行程中的站点和停留时间不代表这些信息已经确认。请以官方信息为准。'}
-function askGuardAnswer(value,question,context){
+// Keep verified citations in the reply. Remove them only from the text checked
+// for model assertions: an arbitrary source label does not verify a claim.
+function askPolicyText(answer,retrieved){
+ const references=new Set(retrieved.flatMap(item=>[...item.text.matchAll(/(?:^|\n)资料参考：(https?:\/\/\S+)/g)].map(match=>match[1])));
+ const withoutReferences=answer.replace(/资料参考\s*[：:]\s*(https?:\/\/[^\s。！？；，、\])）】>]+)/g,
+  (match,url)=>references.has(url)?'':match);
+ const labelPattern=/[\[【（(]([^\]】）)\n]+)[\]】）)]/g;
+ const citedBy=label=>retrieved.filter(item=>item.source===label||(item.kind==='place'&&
+  label.replace(/^地点(?:资料)?[\s：:·]+/,'')===item.name&&label.startsWith('地点')));
+ const clauses=/(?:[^。！？!?；;，,\n]|,(?=\s*\d))+|[。！？!?；;，,\n]/g;
+ let blockSources=[];
+ return withoutReferences.split('\n').map(line=>{
+  if(!line.trim()){blockSources=[];return ''}
+  const leadingLabel=line.trimStart().match(/^[\[【（(]([^\]】）)\n]+)[\]】）)]/);
+  if(leadingLabel)blockSources=citedBy(leadingLabel[1].trim());
+  return (line.match(/[^。！？!?]+[。！？!?]?/g)||[]).map(sentence=>{
+   const inlineSources=[...sentence.matchAll(labelPattern)].flatMap(match=>citedBy(match[1].trim()));
+   const sources=inlineSources.length?inlineSources:blockSources;
+   const prose=sentence.replace(labelPattern,(match,label)=>citedBy(label.trim()).length?'':match);
+   if(!sources.length)return prose;
+   return prose.replace(clauses,part=>{
+    const clause=part.trim().replace(/^[：:“「\s]+|[”」\s]+$/g,'');
+    if(!clause||!ASK_POLICY.test(clause))return part;
+    if(sources.some(item=>item.text.includes(clause)))return '';
+    // A reminder to check official information makes no policy assertion.
+    if(sources.some(item=>item.kind==='place')&&askOfficialReminder(clause))return '';
+    // Survey figures describe the survey, never a site's current price.
+    if(sources.some(item=>item.kind==='survey'&&askSurveyQuote(clause,item.text)))return '';
+    return part;
+   });
+  }).join('');
+ }).join('\n');
+}
+function askOfficialReminder(clause){
+ const subject='(?:具体|实际|相关)?(?:票务(?:政策|安排)?|门票(?:价格)?|票价|营业时间|开放(?:时间|范围|区域|政策)?|预约(?:要求|政策|规则|安排)?)';
+ const topics=subject+'(?:[、和及与/／]'+subject+')*';
+ const notice='(?:以(?:景区|园区|场馆)?(?:当日)?(?:官方(?:公告|信息|安排)?|当日公告)为准|(?:未核实|待核实|另行确认|提前确认))';
+ const verify='(?:出发前|出行前|游览前|行前)?(?:先|提前|另行|再)?(?:核实|确认|查询|查看)';
+ return new RegExp('^(?:'+topics+'(?:请|建议|需)?'+notice+'|(?:请|建议|需)?'+verify+topics+'|'+topics+'(?:请|建议|需)?'+verify+')$').test(clause);
+}
+function askSurveyQuote(clause,evidence){
+ const values=[...clause.matchAll(/\d+(?:\.\d+)?%/g)].map(match=>match[0]);
+ if(ASK_POLICY.test(clause.replace(/费用明细|花费没数|花费不明确|花费没底|费用不清楚/g,'')))return false;
+ return values.length>0&&values.every(value=>evidence.includes(value));
+}
+function askGuardAnswer(value,question,context,retrieved){
  let answer=value.trim().replace(/[\u0000-\u0008\u000b\u000c\u000e-\u001f\u007f]/g,'');
  // This prefix identifies repository-backed help in the UI; a model reply
  // must never impersonate that source, even when it repeats the label.
  answer=answer.replace(/^(?:站内功能说明[：:]\s*)+/, '').trim();
  if(!answer)answer='行程里没有这项可确认的说明。我只能根据你提供的行程回答问题。你可以继续询问某一天的地点或分日安排。';
  const count=askCountRequest(question,context),cover=askCoverAnswer(question,context);
- if(ASK_EXCLUDED.test(answer)||ASK_CONTACT_CLAIM.test(answer))return askExcludedFallback(answer);
+ const policyText=askPolicyText(answer,retrieved);
+ if(ASK_EXCLUDED.test(policyText)||ASK_CONTACT_CLAIM.test(policyText))return askExcludedFallback(answer);
  // Counts always come from that exact day's facts, never another day's number
  // somewhere in a model reply. The upstream still performs one direct Q&A call.
  if(count){
@@ -113,13 +159,14 @@ function askGuardAnswer(value,question,context){
  }else if(cover&&!ASK_POLICY.test(question)){answer=cover;
  }else if(/(?:几点|什么时候).*(?:出发|开始)|(?:出发|行程开始|每天开始).*(?:几点|什么时候)/.test(question)){
   answer=context.start?'当前行程设置的每天开始时间为'+context.start+'。这是你选择的排程设置，不代表景区营业时间。你可以在规划页调整每天开始时间。':'这份行程没有提供每天的开始时间，我不知道你准备几点出发。可以先在规划页设置每天开始时间。之后再根据地点与交通安排调整。';
- }else if(ASK_POLICY.test(question)||ASK_POLICY.test(answer)||/几点|什么时候.*(?:开|关)/.test(question)){
+ }else if(ASK_POLICY.test(question)||ASK_POLICY.test(policyText)||/几点|什么时候.*(?:开|关)/.test(question)){
   // There are no verified price, opening or reservation facts in this snapshot.
   // Broad grounding beats a blacklist: Chinese amounts, implied ranges and
   // discounts must not become claims with a disclaimer attached afterwards.
   answer=askSensitiveFallback();
  }
- const needsOfficial=ASK_POLICY.test(question)||ASK_POLICY.test(answer)||/几点.*(?:开|关)/.test(question);
+ const needsOfficial=ASK_POLICY.test(question)||ASK_POLICY.test(answer)||/几点.*(?:开|关)/.test(question)
+  ||retrieved.some(item=>answer.includes(item.source))||/资料参考[：:]|[\[【]地点[\s：:·]/.test(answer);
  const sentences=(answer.match(/[^。！？!?]+[。！？!?]?/g)||[]).map(s=>s.trim()).filter(Boolean).filter(s=>!/^请以官方信息为准[。！？!?]?$/.test(s));
  const limit=needsOfficial?4:5;const parts=[];let remaining=250;
  for(const sentence of sentences.slice(0,limit)){
@@ -155,7 +202,7 @@ async function askEndpoint(request,env){
   try{while(true){const {done,value}=await reader.read();if(done)break;size+=value.byteLength;if(size>32000){await reader.cancel();throw Error()}content+=decoder.decode(value,{stream:true})}content+=decoder.decode()}finally{reader.releaseLock()}
   signal.throwIfAborted();const data=JSON.parse(content),choice=data.choices?.[0],answer=choice?.message?.content;
   if(data.error||(data.code!=null&&data.code!==0)||choice?.message?.tool_calls?.length||(choice?.finish_reason&&choice.finish_reason!=='stop')||typeof answer!=='string'||!answer.trim()||answer.length>1800)throw Error();
-  return json({answer:askGuardAnswer(answer,question,context)});
+  return json({answer:askGuardAnswer(answer,question,context,retrieved)});
  }catch{
   if(request.signal.aborted)fail('行程问答已取消',408);
   fail('行程问答服务暂时不可用，请稍后重试',502);
