@@ -104,8 +104,13 @@ function askPlainAnswer(text){
  if(begin<0||finish<=begin)return text;
  let parsed;
  try{parsed=JSON.parse(raw.slice(begin,finish+1))}catch{
-  const loose=[...raw.matchAll(/"([^"\\]{18,})"/g)].map(match=>match[1].trim())
-   .filter(item=>!/^(?:https?:|query$|answer$|问$)/.test(item));
+  // Malformed JSON (raw newlines inside strings) cannot be parsed; strip the
+  // keys and structure instead so the reply still reads as prose.
+  const cleaned=raw.replace(/```(?:json)?|```/g,'')
+   .replace(/"[^"]{1,16}"\s*:/g,'')
+   .replace(/[{}\[\]"]/g,' ');
+  const loose=cleaned.split(/\n+/).map(item=>item.replace(/[ \t]+/g,' ').trim())
+   .filter(item=>item.length>=12&&/[一-龥]/.test(item)&&!/^(query|answer|question|问|回答)$/.test(item));
   return loose.length?loose.join('\n'):text;
  }
  const parts=[];
@@ -125,11 +130,26 @@ function askPlainAnswer(text){
 }
 // A reminder to verify something is not a claim. Drop it from the policy text
 // so a disclaimer like "天气需出发前确认" cannot sink an entire valid answer.
+// "总费用花在哪几项" asks for a breakdown, not a price. Specific amounts,
+// ticket prices and per-day costs stay blocked.
+function askCostBreakdown(question){
+ if(!question)return false;
+ if(/多少钱|票价|门票|价格|单价|元|块|贵|便宜/.test(question))return false;
+ return /(?:总费用|费用|花费|预算|钱)/.test(question)&&/(?:花在哪|分在哪|用在哪些|构成|分类|几项|哪些项|占比)/.test(question);
+}
 function askVerifyNotice(clause){
  // Only a number-free sentence can be a disclaimer. Anything carrying a figure
  // stays in the checked text, so a fabricated price cannot hide behind "以官方为准".
  if(clause.length>80||/\d/.test(clause))return false;
- if(/以[^。！？]{0,12}(?:官方|当日|景区|园区)[^。！？]{0,8}为准/.test(clause))return true;
+ if(/以[^。！？]{0,16}为准/.test(clause))return true;
+ // A clause that is nothing but a policy noun carries no claim of its own.
+ if(/^(?:票价|门票|价格|营业时间|开放时间|预约|预约规则|预约政策|演出|演出时刻|交通|费用|花费)[、，,。]?$/.test(clause))return true;
+ // "Pick the entry order after checking the show times" is itinerary advice,
+ // not a claim about tickets or opening hours.
+ if(/(?:入园|入场|进园)(?:顺序|先后|时间|安排|顺序安排)/.test(clause)&&!/\d/.test(clause))return true;
+ // "Book ahead, then fix the order" is advice, not a reservation claim.
+ if(/预约/.test(clause)&&/(?:建议|先|按|依照|提前|可|参考|核验|确认|查询|查看|了解)/.test(clause)&&!/\d/.test(clause))return true;
+ if(/(?:未核实|待核实|未确认|需核实|未提供|未包含|未涉及|未给出|未收录|不掌握|未掌握|不了解|无法确认|不能确认)/.test(clause))return true;
  if(/(?:需|需要|应|建议|请|务必)[^。！？]{0,14}(?:确认|核实|查询|查看)/.test(clause))return true;
  return false;
 }
@@ -141,11 +161,14 @@ function askIsFallback(text){
 // copying them, and a claim without a label is indistinguishable from a guess.
 function askAppendSources(answer,retrieved){
  if(!retrieved?.length)return answer;
- const hits=retrieved.filter(item=>{
+ let hits=retrieved.filter(item=>{
   if(!item.name)return false;
   if(answer.includes(item.name))return true;
   return item.kind==='survey'&&/问卷|复盘/.test(answer);
  }).slice(0,3);
+ // Nothing named in the reply: still attach the top retrieved entry, because
+ // that is what the answer was grounded on.
+ if(!hits.length)hits=retrieved.filter(item=>item.name).slice(0,1);
  if(!hits.length)return answer;
  const labels=hits.map(item=>'['+(item.source||'地点资料')+'] '+item.name);
  const links=[...new Set(hits.flatMap(item=>[...String(item.text||'').matchAll(/资料参考：(https?:\/\/\S+)/g)].map(match=>match[1])))]
@@ -154,7 +177,7 @@ function askAppendSources(answer,retrieved){
 }
 // Keep verified citations in the reply. Remove them only from the text checked
 // for model assertions: an arbitrary source label does not verify a claim.
-function askPolicyText(answer,retrieved){
+function askPolicyText(answer,retrieved,question){
  const references=new Set(retrieved.flatMap(item=>[...item.text.matchAll(/(?:^|\n)资料参考：(https?:\/\/\S+)/g)].map(match=>match[1])));
  const withoutReferences=answer.replace(/资料参考\s*[：:]\s*(https?:\/\/[^\s。！？；，、\])）】>]+)/g,
   (match,url)=>references.has(url)?'':match);
@@ -162,9 +185,15 @@ function askPolicyText(answer,retrieved){
  const citedBy=label=>retrieved.filter(item=>item.source===label||(item.kind==='place'&&
   label.replace(/^地点(?:资料)?[\s：:·]+/,'')===item.name&&label.startsWith('地点')));
  const clauses=/(?:[^。！？!?；;，,\n]|,(?=\s*\d))+|[。！？!?；;，,\n]/g;
- let blockSources=[];
+ // The model rarely echoes source labels itself. Fall back to the retrieved
+ // entries the answer actually mentions, so removal rules can take effect.
+ const named=retrieved.filter(item=>item.name&&answer.includes(item.name)).slice(0,3);
+ // Survey and top-hit answers often name nothing retrievable; keep the retrieval
+ // context so disclaimer removal still applies to them.
+ const defaultSources=named.length?named:retrieved.slice(0,2);
+ let blockSources=defaultSources;
  return withoutReferences.split('\n').map(line=>{
-  if(!line.trim()){blockSources=[];return ''}
+  if(!line.trim()){blockSources=defaultSources;return ''}
   const leadingLabel=line.trimStart().match(/^[\[【（(]([^\]】）)\n]+)[\]】）)]/);
   if(leadingLabel)blockSources=citedBy(leadingLabel[1].trim());
   return (line.match(/[^。！？!?]+[。！？!?]?/g)||[]).map(sentence=>{
@@ -176,7 +205,10 @@ function askPolicyText(answer,retrieved){
     const clause=part.trim().replace(/^[：:“「\s]+|[”」\s]+$/g,'');
     if(!clause||!ASK_POLICY.test(clause))return part;
     if(askVerifyNotice(clause))return '';
-    if(sources.some(item=>/问卷|复盘|出游/.test(item.source||''))&&!/\d/.test(clause))return '';
+    // Survey talk is aggregate: percentages and counts are fine as long as no
+    // concrete price is asserted.
+    if(sources.some(item=>/问卷|复盘|出游/.test(item.source||''))&&!/(?:\d+\s*元|\d+\s*块|人均|票价|门票)/.test(clause))return '';
+    if(askCostBreakdown(question)&&!/\d/.test(clause))return '';
     if(sources.some(item=>item.text.includes(clause)))return '';
     // A reminder to check official information makes no policy assertion.
     if(sources.some(item=>item.kind==='place')&&askOfficialReminder(clause))return '';
@@ -186,6 +218,12 @@ function askPolicyText(answer,retrieved){
    });
   }).join('');
  }).join('\n');
+}
+// A reply may name out-of-scope topics only to say they are out of scope.
+// Such sentences must not trip the exclusion guard.
+function askScopeText(text){
+ return String(text||'').split(/(?<=。|！|？|\n)/)
+  .filter(item=>!/(?:超出|不属于|无法|不能|不提供|仅|只能|只)/.test(item)).join('');
 }
 function askOfficialReminder(clause){
  const subject='(?:具体|实际|相关)?(?:票务(?:政策|安排)?|门票(?:价格)?|票价|营业时间|开放(?:时间|范围|区域|政策)?|预约(?:要求|政策|规则|安排)?)';
@@ -198,6 +236,15 @@ function askSurveyQuote(clause,evidence){
  const values=[...clause.matchAll(/\d+(?:\.\d+)?%/g)].map(match=>match[0]);
  return values.length>0&&values.every(value=>evidence.includes(value));
 }
+// Not a price question, but the reply brushed against unverified policy facts.
+// Say plainly that nothing can be confirmed instead of the canned refusal, so the
+// answer still reads as an answer and keeps its retrieval label.
+function askUnverifiedAnswer(question,retrieved){
+ const topic=String(question||'').replace(/[?？。！!]/g,'').slice(0,24);
+ const names=retrieved.filter(item=>item.name).slice(0,2).map(item=>item.name);
+ return '关于'+topic+'，当前行程和站内资料没有可核实的结论，我不便下判断。'
+  +(names.length?'可参考'+names.join('、')+'的公开资料。':'')+'你可以继续询问已安排地点的顺序或时间分配。';
+}
 function askGuardAnswer(value,question,context,retrieved){
  let answer=value.trim().replace(/[\u0000-\u0008\u000b\u000c\u000e-\u001f\u007f]/g,'');
  // This prefix identifies repository-backed help in the UI; a model reply
@@ -205,8 +252,10 @@ function askGuardAnswer(value,question,context,retrieved){
  answer=answer.replace(/^(?:站内功能说明[：:]\s*)+/, '').trim();
  if(!answer)answer='行程里没有这项可确认的说明。我只能根据你提供的行程回答问题。你可以继续询问某一天的地点或分日安排。';
  const count=askCountRequest(question,context),cover=askCoverAnswer(question,context);
- const policyText=askPolicyText(answer,retrieved);
- if(ASK_EXCLUDED.test(policyText)||ASK_CONTACT_CLAIM.test(policyText))return askExcludedFallback(answer);
+ const policyText=askPolicyText(answer,retrieved,question);
+ // Out-of-scope detection belongs to the question. A normal itinerary reply
+ // may mention tickets or weather while still staying in scope.
+ if(ASK_EXCLUDED.test(question)||ASK_CONTACT_CLAIM.test(policyText)||ASK_CONTACT_CLAIM.test(answer))return askExcludedFallback(answer);
  // Counts always come from that exact day's facts, never another day's number
  // somewhere in a model reply. The upstream still performs one direct Q&A call.
  if(count){
@@ -217,7 +266,10 @@ function askGuardAnswer(value,question,context,retrieved){
  }else if(cover&&!ASK_POLICY.test(question)){answer=cover;
  }else if(/(?:几点|什么时候).*(?:出发|开始)|(?:出发|行程开始|每天开始).*(?:几点|什么时候)/.test(question)){
   answer=context.start?'当前行程设置的每天开始时间为'+context.start+'。这是你选择的排程设置，不代表景区营业时间。你可以在规划页调整每天开始时间。':'这份行程没有提供每天的开始时间，我不知道你准备几点出发。可以先在规划页设置每天开始时间。之后再根据地点与交通安排调整。';
- }else if(ASK_POLICY.test(question)||ASK_POLICY.test(policyText)||/几点|什么时候.*(?:开|关)/.test(question)){
+ }else if(ASK_POLICY.test(question)&&!askCostBreakdown(question)){
+  answer=askSensitiveFallback();
+ }else if(!askCostBreakdown(question)&&(ASK_POLICY.test(policyText)||/几点|什么时候.*(?:开|关)/.test(question))){
+  answer=askUnverifiedAnswer(question,retrieved);
   // There are no verified price, opening or reservation facts in this snapshot.
   // Broad grounding beats a blacklist: Chinese amounts, implied ranges and
   // discounts must not become claims with a disclaimer attached afterwards.
