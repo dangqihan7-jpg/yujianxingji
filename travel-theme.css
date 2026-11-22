@@ -548,7 +548,7 @@ summary:focus-visible {
 .folio-stop-number { background: #174d4c; color: #9dffe5; border-color: #45b297; box-shadow: 0 0 14px #00d4aa24; }
 .folio-stop p, .folio-stop .folio-tip, .folio-leg, .folio-empty, .folio-day-footer { color: #a3c0d0; }
 .folio-day-footer { border-color: #2c4a5f; }
-.folio-day-footer button { color: #88e9cf; }
+.folio-day-footer button[data-edit-day] { background: #eff6f7; color: #193944; }
 .folio-day-cover { border-radius: 12px 12px 0 0; }
 .folio-proof { color: #98b8c9; border-color: #27475c; }
 .folio-proof b { color: #d0ecef; }
