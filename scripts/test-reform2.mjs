@@ -78,6 +78,9 @@ assert.equal(boosted.body.learningApplied.applied[0].users,2);
 assert.equal(boosted.body.learningApplied.applied[0].bonus,1);
 assert.deepEqual(boosted.body.stops.map(s=>s.id),['hn-xigong','hn-longmen'],'food bonus must lift the tied food place into the two picks');
 assert(boosted.body.learningApplied.note.includes('加权 +1'),'learning note must state the bonus');
+assert(boosted.body.learningApplied.note.includes('规则路径小幅加权'),'rules-only ranking must say the weighting came from the rule path');
+assert(!boosted.body.learningApplied.note.includes('告诉模型'),'rules-only ranking must not claim the signals reached a model');
+assert.equal(boosted.body.learningApplied.mode,'weight','rules path mode must stay weight');
 // 规则回退分支（operation:'select' + engine:'rules'）同样加权并返回 learningApplied
 {
  const seed={operation:'select',city:'洛阳',days:1,start:'09:00',mode:'driving',maxHours:8,restMinutes:30,stops:[],decision:{intent:{city:'洛阳',days:1,interests:[],requiredIds:[],excludedIds:[],budget:null},expenses:{}}};
@@ -85,6 +88,8 @@ assert(boosted.body.learningApplied.note.includes('加权 +1'),'learning note mu
  assert.equal(r.status,200);
  assert.equal(r.body.learningApplied.applied[0].category,'food');
  assert(r.body.stops.some(s=>s.id==='hn-xigong'),'rules branch must also apply the weight');
+ assert(r.body.learningApplied.note.includes('规则路径小幅加权'),'rules branch note must describe rule weighting');
+ assert(!r.body.learningApplied.note.includes('告诉模型'),'rules branch note must not claim the model saw the signals');
 }
 
 // ---------- API：1 名用户不生效；无信号时开关开/关排序一致 ----------

@@ -6,7 +6,7 @@ import worker,{CATALOG,computePersonaFromSignals,personaDimsOf,personaTop3} from
 // 后台人物画像进站测试：画像只在服务端算、只在后台看。
 // 未登录 401、非管理员 403；管理员可见六类画像、分布与推流前 3；
 // 用户端响应（热门/学习信号/目录）一律不含画像名、分数与理由；
-// 管理员判定：env ADMIN_USERNAME 优先，未指定时认注册最早的账号。
+// 管理员判定：只认 env ADMIN_USERNAME；未配置时不再把最早注册账号当管理员。
 const sql=new DatabaseSync(':memory:');
 for(const name of (await readdir(new URL('../drizzle/',import.meta.url))).filter(n=>n.endsWith('.sql')).sort())
   sql.exec(await readFile(new URL('../drizzle/'+name,import.meta.url),'utf8'));
@@ -31,7 +31,7 @@ const DB={
   }
  }
 };
-const standaloneEnv={DB,STANDALONE_AUTH:'true'};
+const standaloneEnv={DB,STANDALONE_AUTH:'true',ADMIN_USERNAME:'alice',REGISTER_RATE_LIMIT_DISABLED:'1'};
 const platformEnv={DB};
 const call=(path,body,env,headers={})=>worker.fetch(new Request('https://persona.test'+path,{method:body?'POST':'GET',headers:{'Content-Type':'application/json',...headers},...(body?{body:JSON.stringify(body)}:{})}),env);
 const data=async r=>({status:r.status,body:await r.json()});
@@ -108,11 +108,11 @@ assert.equal((await getAdmin(standaloneEnv,{Cookie:carol.cookie})).status,403);
 assert.equal((await data(await call('/api/auth/me',null,standaloneEnv,{Cookie:alice.cookie}))).body.user.isAdmin,true);
 assert.equal((await data(await call('/api/auth/me',null,standaloneEnv,{Cookie:bob.cookie}))).body.user.isAdmin,false);
 
-// 管理员（首个注册账号）可见全部
+// 管理员（env ADMIN_USERNAME=alice）可见全部
 const admin=await getAdmin(standaloneEnv,{Cookie:alice.cookie});
 assert.equal(admin.status,200);
 assert.equal(admin.body.admin.username,'alice');
-assert.equal(admin.body.admin.via,'first-user');
+assert.equal(admin.body.admin.via,'env:ADMIN_USERNAME');
 assert.equal(admin.body.totalUsers,3);
 assert.equal(admin.body.distribution.length,6);
 assert.equal(admin.body.distribution.reduce((n,d)=>n+d.count,0),3);
@@ -164,6 +164,15 @@ assert.equal(carolRow.lastSignal,'尚未留下需求或行为信号');
 // 无信号用户的推流前 3 只按热度与复盘信号排，不编画像匹配
 assert(carolRow.top3.every(t=>t.match===0));
 
+// ---------- 未配置 ADMIN_USERNAME：不再回退首位注册用户 ----------
+// 修复前：没配 env 时最早注册的 alice 自动成为管理员；修复后必须 403 / isAdmin=false。
+const noAdminEnv={DB,STANDALONE_AUTH:'true',REGISTER_RATE_LIMIT_DISABLED:'1'};
+assert.equal((await getAdmin(noAdminEnv)).status,401,'anonymous stays 401 without ADMIN_USERNAME');
+assert.equal((await getAdmin(noAdminEnv,{Cookie:alice.cookie})).status,403,'earliest user must not become admin without ADMIN_USERNAME');
+assert.equal((await data(await call('/api/auth/me',null,noAdminEnv,{Cookie:alice.cookie}))).body.user.isAdmin,false,'isAdmin must stay false without ADMIN_USERNAME');
+assert.equal((await getAdmin({...noAdminEnv,ADMIN_USERNAME:''},{Cookie:alice.cookie})).status,403,'empty ADMIN_USERNAME must deny admin access');
+assert.equal((await getAdmin({...noAdminEnv,ADMIN_USERNAME:'   '},{Cookie:alice.cookie})).status,403,'blank ADMIN_USERNAME must deny admin access');
+
 // ---------- ADMIN_USERNAME 覆盖 ----------
 // env 指定 bobuser 为管理员：bob 可见，alice 被拒；指定不存在的账号：谁都进不去。
 const adminEnvBob={DB,STANDALONE_AUTH:'true',ADMIN_USERNAME:'bobuser'};
@@ -203,4 +212,4 @@ assert(!/U-00\d/.test(personaSrc),'persona.js must not ship demo user ids');
 assert(!personaSrc.includes('演示分布'),'persona.js must not ship demo distribution');
 
 sql.close();
-console.log('Passed: persona admin (401/403 gating, first-user and ADMIN_USERNAME admin rules, real-signal scoring, rule-computed top 3, baseline for signal-less users, no persona leakage to user-facing APIs, frontend wiring).');
+console.log('Passed: persona admin (401/403 gating, env-only ADMIN_USERNAME rules incl. unset/empty denial, real-signal scoring, rule-computed top 3, baseline for signal-less users, no persona leakage to user-facing APIs, frontend wiring).');

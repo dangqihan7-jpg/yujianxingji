@@ -45,6 +45,33 @@ function sessionCookieHeader(token,request,maxAge){
   const secure=new URL(request.url).protocol==='https:';
   return SESSION_COOKIE+'='+encodeURIComponent(token)+'; HttpOnly; Path=/; SameSite=Lax; Max-Age='+maxAge+(secure?'; Secure':'');
 }
+// 注册限流：进程内滑动窗口，单 IP 10 分钟 5 次、每小时 15 次。
+// key 只用“固定盐 + 客户端 IP”的 SHA-256 前缀，不保留明文 IP；窗口过期即清，
+// 避免批量注册把内存拖爆。自动化压测可置 REGISTER_RATE_LIMIT_DISABLED=1 关闭。
+const REGISTER_LIMIT_WINDOWS=[[10*60*1000,5],[60*60*1000,15]];
+const REGISTER_LIMIT_SALT='yujianxingji/register/v1';
+const registerAttempts=new Map();
+async function clientFingerprint(request){
+ const headerIp=request.headers.get('CF-Connecting-IP')||request.headers.get('X-Real-IP')||(request.headers.get('X-Forwarded-For')||'').split(',')[0]||'';
+ const identity=String(headerIp).trim()||'unknown';
+ const digest=new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(REGISTER_LIMIT_SALT+'|'+identity)));
+ return Array.from(digest.slice(0,16),b=>b.toString(16).padStart(2,'0')).join('');
+}
+function pruneRegisterAttempts(now){
+ const horizon=now-REGISTER_LIMIT_WINDOWS[1][0];
+ for(const [key,times] of registerAttempts){
+  const kept=times.filter(t=>t>horizon);
+  if(kept.length)registerAttempts.set(key,kept);else registerAttempts.delete(key);
+ }
+ if(registerAttempts.size>2000){const keys=[...registerAttempts.keys()];for(const key of keys.slice(0,keys.length-1000))registerAttempts.delete(key)}
+}
+async function enforceRegisterRateLimit(request,env){
+ if(env.REGISTER_RATE_LIMIT_DISABLED==='1')return;
+ const now=Date.now(),key=await clientFingerprint(request),horizon=now-REGISTER_LIMIT_WINDOWS[1][0];
+ const times=(registerAttempts.get(key)||[]).filter(t=>t>horizon);
+ for(const [windowMs,limit] of REGISTER_LIMIT_WINDOWS)if(times.filter(t=>t>now-windowMs).length>=limit)fail('注册过于频繁，请稍后再试',429);
+ times.push(now);registerAttempts.set(key,times);pruneRegisterAttempts(now);
+}
 async function currentUser(request,env){
   if(standaloneAuth(env)){
     const token=sessionTokenFrom(request);
@@ -84,6 +111,7 @@ async function authEndpoint(request,env,action){
   if(!validUsername(username))fail('用户名为 3–32 个字符，可用中文、字母、数字、下划线和连字符');
   if(!validPassword(raw.password))fail('密码至少 8 个字符，最多 72 个字符');
   if(action==='register'){
+    await enforceRegisterRateLimit(request,env);
     const exists=await env.DB.prepare('SELECT id FROM users WHERE username = ?').bind(username).first();
     if(exists)fail('用户名已被注册',409);
     const id='u_'+randomHex(12),now=Date.now();
@@ -539,9 +567,12 @@ async function computeLearningWeights(env,extraRows=[]){
  for(const s of list)weights.set(s.category,{bonus:LEARNING_BONUS,users:s.users,label:s.label,places:s.places});
  return {signals:list,weights};
 }
-function learningAppliedBody(data,enabled,modelOn){
+function learningAppliedBody(data,enabled,modelOn,rulesPath=false){
  const applied=data.signals.map(s=>({category:s.category,label:s.label,users:s.users,places:s.places,bonus:LEARNING_BONUS,demo:!!s.demo}));
- return {enabled,mode:modelOn?'prompt':'weight',applied,note:!enabled?'复盘学习已关闭，本次未应用加权。':!applied.length?'学习版：本次暂无复盘信号，未应用加权。':modelOn?'学习版：已把复盘信号告诉模型（'+applied.map(a=>a.label+'类 '+a.users+' 人').join('、')+'），请优先考虑这类地点。':'学习版：复盘里 '+applied.map(a=>a.users+' 个人觉得'+a.label+'类地方值得多待').join('、')+'，这类地点在候选里排前了（加权 +'+LEARNING_BONUS+'，仅影响同分候选顺序）。'};
+ // 只有候选真的由规则选出（未把信号喂进模型 prompt）时，才允许说“规则路径小幅加权”，
+ // 避免把规则加权说成“已告诉模型”。真实信号条目的 demo:false 保持原样。
+ const detail=applied.map(a=>a.users+' 个人觉得'+a.label+'类地方值得多待').join('、');
+ return {enabled,mode:modelOn&&!rulesPath?'prompt':'weight',applied,note:!enabled?'复盘学习已关闭，本次未应用加权。':!applied.length?'学习版：本次暂无复盘信号，未应用加权。':rulesPath?'学习版：已应用真实复盘学习信号（规则路径小幅加权 +'+LEARNING_BONUS+'）：复盘里 '+detail+'，候选顺序按此小幅加权，仅影响同分候选顺序。':modelOn?'学习版：已把复盘信号告诉模型（'+applied.map(a=>a.label+'类 '+a.users+' 人').join('、')+'），请优先考虑这类地点。':'学习版：复盘里 '+detail+'，这类地点在候选里排前了（加权 +'+LEARNING_BONUS+'，仅影响同分候选顺序）。'};
 }
 // 闭环改革一期：v3 学习信号（演示）。只汇总、不改排序；加权发生在 /api/agent 生成候选时。
 async function learningSignalsEndpoint(request,env){
@@ -999,7 +1030,7 @@ async function fourAgentPlan({context,forceRules,inputText,request,env,run,useLe
  const draft=context
   ?{...context.draft,days:fields.days,mode:fields.mode,maxHours:fields.maxHours,restMinutes:fields.restMinutes,decision:{...context.draft.decision,intent:fields},stops:finalStops}
   :{days:fields.days,start:'09:00',mode:fields.mode,maxHours:fields.maxHours,restMinutes:fields.restMinutes,city:fields.city,presetId:null,stops:finalStops,decision:validateDecisionState({intent:fields},finalStops)};
- const learningApplied=(()=>{const base=learningAppliedBody(learningData,useLearning,modelOn);if(rulesLearningApplied.length)base.applied=rulesLearningApplied.map(a=>({...a,places:learningData.signals.find(x=>x.category===a.category)?.places||[],demo:!!learningData.signals.find(x=>x.category===a.category)?.demo}));return base})();
+ const learningApplied=(()=>{const rulesPath=agents.some(a=>a.name==='地点推荐'&&a.source==='rules');const base=learningAppliedBody(learningData,useLearning,modelOn,rulesPath);if(rulesLearningApplied.length)base.applied=rulesLearningApplied.map(a=>({...a,places:learningData.signals.find(x=>x.category===a.category)?.places||[],demo:!!learningData.signals.find(x=>x.category===a.category)?.demo}));return base})();
  const body={source,provider,intent:fields,defaulted:withDefaults.defaulted,agents,stops:stops.map(s=>({id:s.id,day:s.day,duration:s.duration})),rationale,unresolved,audit,traffic,learningApplied,timeline:buildAgentTimeline({agents,auditRounds,audit,traffic,fallbackReason,source,marks,selectionsCount:selections.length}),
   draft,agent:{status:aiCount?'completed':'fallback',version:2,steps:agents.map(agentStep),modelCalls:run.modelCalls,toolCalls:0,mapCalls:0,limits:AGENT_LIMITS},
   note:(aiCount?'多智能体协作完成规划，AI 与规则的执行来源见各步骤；':'本次规则候选按需求理解 → 地点推荐 → 日程编排 → 交通核算 → 冲突校验流程生成；')+'确认后才会应用，费用仍需核算'};
@@ -1019,7 +1050,7 @@ async function agentBodyForRaw({raw,context,inputText='',request,env,run,demoRow
   // agentRuleResult 的 applied 条目不带 demo 标记，在此按信号补上（含演示数据的类标 demo:true）。
   if(result.learningApplied?.applied?.length)result.learningApplied.applied=result.learningApplied.applied.map(a=>({...a,demo:!!learningData.signals.find(x=>x.category===a.category)?.demo}));
   const agents=[{name:'需求理解',source:'confirmed',provider:null},...['地点推荐','日程编排','交通核算','冲突校验'].map(name=>({name,source:'rules',provider:null}))];
-  return {...result,source:'agent-rules',agents,learningApplied:result.learningApplied||learningAppliedBody(learningData,useLearning,false),timeline:buildAgentTimeline({agents,auditRounds:1,audit:result.audit,traffic:{days:[]},fallbackReason:result.fallback?.reason,source:'agent-rules',marks:{},selectionsCount:result.stops.length}),rationale:[{decision:'规则候选',reason:result.fallback?.reason||'模型未参与，全部步骤由规则完成'}],agent:{...result.agent,version:2,steps:agents.map(agentStep),toolCalls:0,mapCalls:0}};
+  return {...result,source:'agent-rules',agents,learningApplied:result.learningApplied||learningAppliedBody(learningData,useLearning,false,true),timeline:buildAgentTimeline({agents,auditRounds:1,audit:result.audit,traffic:{days:[]},fallbackReason:result.fallback?.reason,source:'agent-rules',marks:{},selectionsCount:result.stops.length}),rationale:[{decision:'规则候选',reason:result.fallback?.reason||'模型未参与，全部步骤由规则完成'}],agent:{...result.agent,version:2,steps:agents.map(agentStep),toolCalls:0,mapCalls:0}};
  }
  return fourAgentPlan({context,forceRules,inputText,request,env,run,useLearning,extraLearningRows:demoRows});
 }
