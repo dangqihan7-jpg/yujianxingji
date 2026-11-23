@@ -9,7 +9,7 @@ for(const name of (await readdir(new URL('../drizzle/',import.meta.url))).filter
   sql.exec(await readFile(new URL('../drizzle/'+name,import.meta.url),'utf8'));
 const DB={prepare(query){const statement=sql.prepare(query);return {bind(...args){return {async first(){return statement.get(...args)||null},async run(){const r=statement.run(...args);return {meta:{changes:Number(r.changes)}}}}}}}};
 
-const standaloneEnv={DB,STANDALONE_AUTH:'true'};
+const standaloneEnv={DB,STANDALONE_AUTH:'true',REGISTER_RATE_LIMIT_DISABLED:'1'};
 const platformEnv={DB};
 const post=(path,body,env,headers={})=>worker.fetch(new Request('https://auth.test'+path,{method:'POST',headers:{'Content-Type':'application/json',...headers},body:JSON.stringify(body)}),env);
 const get=(path,env,headers={})=>worker.fetch(new Request('https://auth.test'+path,{headers}),env);
@@ -74,6 +74,24 @@ const logout=await data(await post('/api/auth/logout',{},standaloneEnv,{Cookie:l
 assert.equal(logout.status,200);
 assert(logout.headers.get('set-cookie').includes('Max-Age=0'));
 assert.equal((await data(await get('/api/auth/me',standaloneEnv,{Cookie:loginCookie}))).status,401);
+
+// 注册限流：同一 IP 10 分钟 5 次，第 6 次 429；换 IP 不计入；REGISTER_RATE_LIMIT_DISABLED 可关闭。
+const limitedEnv={DB,STANDALONE_AUTH:'true'};
+const limitedIp={'X-Forwarded-For':'203.0.113.7'};
+for(let i=1;i<=5;i++){
+ const r=await data(await post('/api/auth/register',{username:'限流账号'+i,password:'password123'},limitedEnv,limitedIp));
+ assert.equal(r.status,200,'第 '+i+' 次注册应通过');
+}
+const blocked=await data(await post('/api/auth/register',{username:'限流账号6',password:'password123'},limitedEnv,limitedIp));
+assert.equal(blocked.status,429,'第 6 次注册必须被限流');
+assert(blocked.body.error.includes('注册过于频繁'),'限流提示必须是中文明确文案');
+const otherIp=await data(await post('/api/auth/register',{username:'换IP账号',password:'password123'},limitedEnv,{'X-Forwarded-For':'198.51.100.9'}));
+assert.equal(otherIp.status,200,'不同 IP 不应共享同一窗口');
+const disabledEnv={DB,STANDALONE_AUTH:'true',REGISTER_RATE_LIMIT_DISABLED:'1'};
+for(let i=1;i<=8;i++){
+ const r=await data(await post('/api/auth/register',{username:'免限流账号'+i,password:'password123'},disabledEnv,limitedIp));
+ assert.equal(r.status,200,'关闭限流后第 '+i+' 次注册应通过');
+}
 
 // 平台模式：认证接口未启用，平台头仍有效
 assert.equal((await data(await get('/api/auth/me',platformEnv))).status,404);

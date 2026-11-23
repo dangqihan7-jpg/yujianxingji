@@ -110,17 +110,13 @@ export function personaTop3(personaKey,learningWeights,heatByPlace){
  }).sort((a,b)=>b.total-a.total||b.heat-a.heat||a.name.localeCompare(b.name,'zh-CN'));
  return ranked.slice(0,3);
 }
-// 管理员判定：env 指定 ADMIN_USERNAME 时只认该用户名；未指定时认
-// 注册最早的账号（created_at 最早，相同取 id 最小）。平台模式下
-// users 表没有独立账号，判定一律不通过（后台画像只在独立账号部署可用）。
+// 管理员判定：只认 env ADMIN_USERNAME，未配置或为空时一律不通过。
+// 不再回退到“最早注册的账号”，避免任何新部署默认把首位注册者升成管理员。
+// 平台模式下 users 表没有独立账号，判定同样不通过（后台画像只在独立账号部署可用）。
 export async function resolveAdmin(env){
- if(!env.DB)return null;
- if(env.ADMIN_USERNAME){
-  const row=await env.DB.prepare('SELECT id, username, created_at FROM users WHERE username = ?').bind(env.ADMIN_USERNAME).first();
-  return row?{id:row.id,username:row.username,via:'env:ADMIN_USERNAME'}:null;
- }
- const row=await env.DB.prepare('SELECT id, username, created_at FROM users ORDER BY created_at ASC, id ASC LIMIT 1').bind().first();
- return row?{id:row.id,username:row.username,via:'first-user'}:null;
+ if(!env.DB||!env.ADMIN_USERNAME)return null;
+ const row=await env.DB.prepare('SELECT id, username, created_at FROM users WHERE username = ?').bind(env.ADMIN_USERNAME).first();
+ return row?{id:row.id,username:row.username,via:'env:ADMIN_USERNAME'}:null;
 }
 export async function isAdminUser(user,env){
  if(!user||!env.DB)return false;

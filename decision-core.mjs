@@ -1,11 +1,15 @@
 const DECISION_CITIES=['河南',...CITY_GUIDES.map(c=>c.name)];
 const EXPENSE_KEYS=['tickets','food','lodging','transport','other'];
+// 条件冲突属于请求方输入问题：带 status=400，服务端统一返回 400 而不是未捕获的 500。
+const invalidCondition=message=>{const error=Error(message);error.status=400;return error};
+const placeLabel=id=>{const places=typeof CATALOG!=='undefined'?CATALOG:[];return places.find(p=>p.id===id)?.name||id};
 export function validateIntent(raw={}){
  if(!raw||typeof raw!=='object'||Array.isArray(raw))throw Error('旅行条件格式不正确');
  const nullable=(key,valid)=>raw[key]==null||raw[key]===''?null:valid(raw[key])?raw[key]:(()=>{throw Error('旅行条件 '+key+' 不正确')})();
  const ids=key=>Array.isArray(raw[key])?[...new Set(raw[key].filter(v=>typeof v==='string'&&v.length<=100))].slice(0,15):[];
  const excludedIds=ids('excludedIds'),requiredIds=ids('requiredIds');
- if(requiredIds.some(id=>excludedIds.includes(id)))throw Error('同一地点不能同时设为必去和排除');
+ const bothIds=requiredIds.filter(id=>excludedIds.includes(id));
+ if(bothIds.length)throw invalidCondition('地点 ['+bothIds.map(placeLabel).join('、')+'] 同时出现在必去和排除列表中，请先调整条件');
  const excludedModes=Array.isArray(raw.excludedModes)?[...new Set(raw.excludedModes.filter(v=>['driving','walking','transit'].includes(v)))]:[];
  const mode=nullable('mode',v=>['driving','walking','transit'].includes(v));if(mode&&excludedModes.includes(mode))throw Error('出行方式与排除条件冲突');
  return {city:nullable('city',v=>DECISION_CITIES.includes(v)),days:nullable('days',v=>[1,2,3,4,5,7].includes(v)),mode,maxHours:nullable('maxHours',v=>[6,8,10].includes(v)),restMinutes:nullable('restMinutes',v=>[0,30,60].includes(v)),budget:nullable('budget',v=>Number.isFinite(v)&&v>=0&&v<=100000),avoidCrossCity:typeof raw.avoidCrossCity==='boolean'?raw.avoidCrossCity:null,interests:Array.isArray(raw.interests)?[...new Set(raw.interests.filter(v=>['culture','nature','food','immersive','family'].includes(v)))].slice(0,5):[],requiredIds,excludedIds,excludedModes};
@@ -79,8 +83,9 @@ export function auditDecision(draft,traffic=[]){
  const state=validateDecisionState(draft.decision||{},draft.stops),intent=state.intent,cap=(draft.maxHours||8)*60,rest=draft.restMinutes??30;
  const daily=Array.from({length:draft.days},(_,i)=>{const stops=draft.stops.filter(s=>s.day===i+1),t=traffic.find(t=>t.day===i+1),hasTraffic=stops.length<2||!!t,cities=[...new Set(stops.map(s=>s.place.city).filter(Boolean))];const visit=stops.reduce((n,s)=>n+s.duration,0),travel=t?.minutes??null,knownMinutes=visit+(stops.length?rest:0)+(travel||0),conflicts=[],pending=[];
   if(knownMinutes>cap)conflicts.push('已知安排超过上限 '+Math.ceil(knownMinutes-cap)+' 分钟');
-  if(intent.city&&intent.city!=='河南'&&cities.some(c=>c!==intent.city))conflicts.push('目的地条件为 '+intent.city+'，当天含其他城市');
-  if(intent.avoidCrossCity&&cities.length>1)conflicts.push('不跨城条件与当天 '+cities.join('、')+' 冲突');
+  const foreignCities=intent.city&&intent.city!=='河南'?cities.filter(c=>c!==intent.city):[];
+  if(foreignCities.length)conflicts.push('目的地条件为 '+intent.city+'，第 '+(i+1)+' 天含 '+foreignCities.join('、'));
+  if(intent.avoidCrossCity&&cities.length>1)conflicts.push('第 '+(i+1)+' 天同时出现 '+cities.join('、')+' 多个城市，与不跨城条件冲突');
   if(draft.mode==='transit'&&cities.length>1)pending.push('城际公共交通尚未核算');
   if(!hasTraffic)pending.push('站间交通待核算');if(stops.some(s=>s.place.city==null))pending.push('部分地点所属城市待确认');
   for(const stop of stops)pending.push(...(CATALOG.find(p=>p.id===stop.place.id)?.planningNotes||[]));
@@ -88,6 +93,19 @@ export function auditDecision(draft,traffic=[]){
   if(first&&previous){if(!previous.place.city||!first.place.city)pending.push('与上一个游览日之间的交通与城市待确认');else if(previous.place.city!==first.place.city)pending.push('第 '+previousDay+' 天至第 '+(i+1)+' 天的 '+previous.place.city+' → '+first.place.city+' 城际交通尚未核算');}
   return {day:i+1,stops:stops.length,cities,visit,travel,knownMinutes,hasTraffic,conflicts,pending,status:conflicts.length?'conflict':pending.length?'pending':stops.length?'checked':'empty'};
  });
+ // 不跨城是全程约束：目的地填“河南”这类未限定单城时，跨天换城同样算冲突，
+ // 否则同日多城会被分日优化拆开，检查页反而显示 0 冲突。文案写明日期与城市。
+ if(intent.avoidCrossCity){
+  const tripCities=[...new Set(daily.flatMap(d=>d.cities))];
+  if(tripCities.length>1)for(let i=1;i<daily.length;i++){
+   const previousCities=daily.slice(0,i).flatMap(d=>d.cities),dayCities=daily[i].cities;
+   const movedCities=dayCities.filter(c=>!previousCities.includes(c));
+   if(movedCities.length){
+    daily[i].conflicts.push('第 '+(i+1)+' 天由 '+(previousCities.join('、')||'未标明城市')+' 换到 '+movedCities.join('、')+'，与不跨城条件冲突');
+    daily[i].status='conflict';
+   }
+  }
+ }
  const missing=EXPENSE_KEYS.filter(k=>state.expenses[k]==null),subtotal=EXPENSE_KEYS.reduce((n,k)=>n+Math.round((state.expenses[k]||0)*100),0)/100,budget={target:intent.budget,subtotal,missing,status:intent.budget!=null&&subtotal>intent.budget?'conflict':intent.budget==null||missing.length?'pending':'checked'};
  const missingRequired=intent.requiredIds.filter(id=>!draft.stops.some(s=>s.place.id===id)).map(id=>({id,name:CATALOG.find(p=>p.id===id)?.name||id}));
  const excludedPresent=draft.stops.filter(s=>intent.excludedIds.includes(s.place.id)).map(s=>({id:s.place.id,name:s.place.name})),modeConflict=intent.excludedModes.includes(draft.mode);

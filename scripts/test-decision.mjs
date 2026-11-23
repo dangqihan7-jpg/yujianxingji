@@ -53,4 +53,43 @@ run("activeStudy=null;trafficCache.set(trafficKey(),{queriedAt:Date.now()-180000
 await run('openBrief()');for(const [id,value] of Object.entries({briefcity:'洛阳',briefdays:'2',briefmode:'transit',briefhours:'6',briefrest:'30',briefbudget:'300'}))get('#'+id).value=value;get('#briefcross').checked=true;
 run("decisionState.expenses={tickets:1,food:1,lodging:1,transport:1,other:1}");await run('openBrief()');await run('buildCandidate()');await get('#applycandidate').onclick();assert.equal(run('Object.values(decisionState.expenses).filter(v=>v==null).length'),5,'New candidate must not reuse old travel cost assumptions');assert.equal(run('trip.every(s=>s.place.city===\'洛阳\')'),true);
 context.fetch=async(path,options={})=>path==='/api/config'?new Response(JSON.stringify({mapConfigured:false,persistenceConfigured:true})):path==='/api/draft'?new Response(JSON.stringify({error:'sign in'}),{status:401}):worker.fetch(new Request('https://fixture.test'+path,options),{});await run('init()');assert.equal(run('saveBooting'),false);assert.equal(run('cfg.persistenceConfigured'),false,'Anonymous visitors must be able to use the rule workflow without overwriting account drafts');
+// ---------- P0-1：必去与排除同时选中同一地点，必须 400 而不是 500 ----------
+const byId=id=>CATALOG.find(p=>p.id===id);
+const callJson=(path,body)=>worker.fetch(new Request('https://fixture.test'+path,{method:'POST',headers:{'Content-Type':'application/json','oai-authenticated-user-id':'fixture'},body:JSON.stringify(body)}),{});
+const clashingIntent={city:'洛阳',days:1,requiredIds:['hn-longmen'],excludedIds:['hn-longmen']};
+const clashingDraft={days:1,start:'09:00',mode:'driving',maxHours:8,restMinutes:30,stops:[{place:byId('hn-longmen'),day:1,duration:120}],decision:{intent:clashingIntent}};
+{
+ const planResponse=await callJson('/api/plan',clashingDraft);
+ assert.equal(planResponse.status,400,'必去/排除交集必须是 400，不能是 500');
+ const body=await planResponse.json();
+ assert(body.error.includes('龙门石窟'),'错误提示必须点出冲突地点名');
+ assert(body.error.includes('必去和排除'),'错误提示必须说明必去与排除冲突');
+ const agentResponse=await callJson('/api/agent',{operation:'select',city:'洛阳',days:1,start:'09:00',mode:'driving',maxHours:8,restMinutes:30,stops:[],decision:{intent:clashingIntent}});
+ assert.equal(agentResponse.status,400,'/api/agent 的确认条件入口同样返回 400');
+ assert((await agentResponse.json()).error.includes('龙门石窟'));
+ assert.throws(()=>validateIntent(clashingIntent),error=>error.status===400&&error.message.includes('龙门石窟'),'规则核心入口抛出带 status 的 400 错误');
+ assert.equal(validateIntent({city:'洛阳',days:1,excludedIds:['hn-longmen']}).excludedIds.length,1,'只排除不设必去时不应报错');
+}
+// ---------- P0-2：河南 + 不跨城，同日/跨日多城都必须报冲突并写明日期与城市 ----------
+{
+ const luoyang=byId('hn-longmen'),zhengzhou=byId('hn-shaolin');
+ const crossIntent=validateIntent({city:'河南',days:2,avoidCrossCity:true});
+ const sameDay=auditDecision({days:2,start:'09:00',mode:'driving',maxHours:8,restMinutes:30,stops:[{place:luoyang,day:1,duration:120},{place:zhengzhou,day:1,duration:120}],decision:{intent:crossIntent}});
+ const sameDayConflict=sameDay.daily[0].conflicts.find(c=>c.includes('不跨城'));
+ assert(sameDayConflict,'河南同日多城必须标冲突');
+ assert(sameDayConflict.includes('第 1 天')&&sameDayConflict.includes('洛阳')&&sameDayConflict.includes('郑州'),'冲突必须写明日期与城市名');
+ assert.equal(sameDay.daily[0].status,'conflict');assert(sameDay.conflicts>=1);
+ const crossDay=auditDecision({days:2,start:'09:00',mode:'driving',maxHours:8,restMinutes:30,stops:[{place:luoyang,day:1,duration:120},{place:zhengzhou,day:2,duration:120}],decision:{intent:crossIntent}});
+ const crossDayConflict=crossDay.daily[1].conflicts.find(c=>c.includes('不跨城'));
+ assert(crossDayConflict,'河南跨日换城同样违反不跨城，必须标冲突');
+ assert(crossDayConflict.includes('第 2 天')&&crossDayConflict.includes('郑州'),'跨日冲突必须写明日期与目标城市');
+ assert.equal(crossDay.daily[1].status,'conflict','跨日冲突必须把当天状态标为 conflict，不能停留在 pending');
+ assert(crossDay.conflicts>=1,'跨城行程不能再显示 0 冲突');
+ const free=auditDecision({days:2,start:'09:00',mode:'driving',maxHours:8,restMinutes:30,stops:[{place:luoyang,day:1,duration:120},{place:zhengzhou,day:1,duration:120}],decision:{intent:validateIntent({city:'河南',days:2})}});
+ assert.equal(free.daily[0].conflicts.length,0,'未勾选不跨城时不得凭空造冲突');
+ const cityIntent=validateIntent({city:'洛阳',days:1});
+ const wrongCity=auditDecision({days:1,start:'09:00',mode:'driving',maxHours:8,restMinutes:30,stops:[{place:zhengzhou,day:1,duration:120}],decision:{intent:cityIntent}});
+ const cityConflict=wrongCity.daily[0].conflicts.find(c=>c.includes('目的地条件为 洛阳'));
+ assert(cityConflict&&cityConflict.includes('第 1 天')&&cityConflict.includes('郑州'),'指定城市条件仍须写明日期与冲突城市');
+}
 console.log('Passed: intent extraction and validation, honest unknown budget/traffic, locked-date planning, authenticated model contract, partial reordering, real experience recording and atomic imports. Model responses in this test are mocked.');
