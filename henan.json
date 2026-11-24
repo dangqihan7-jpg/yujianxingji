@@ -1695,7 +1695,9 @@
       ],
       "description": "在鲁山看伏牛山峰林，安排一天体验山地风景。",
       "visitTip": "尧山与中原大佛参观区域不同；索道、步道、天气与返程另确认。",
+      "image": "/assets/hn-yaoshan.jpg",
       "reference": "https://www.pds.gov.cn/upload/files/2021/6/2/平顶山市国民经济和社会发展第十二个五年规划纲要.pdf",
+      "credit": "Nyx Ning / Wikimedia Commons · CC BY-SA 3.0 · 拍摄于 2013-10-13 · 已缩放；缩略图裁切显示",
       "contentCheckedAt": "2026-10-11",
       "location": [
         112.270149,
@@ -1707,7 +1709,12 @@
       "locationNote": "参考高德景区或片区点位，具体交通入口需确认。",
       "planningNotes": [
         "尧山的往返交通、景区内部交通与天气需另行确认。"
-      ]
+      ],
+      "photoTakenAt": "2013-10-13",
+      "photoReference": "https://commons.wikimedia.org/wiki/File:%E6%B2%B3%E5%8D%97_%E5%B0%A7%E5%B1%B1_%E7%9F%B3%E4%BA%BA%E5%B1%B1_-_panoramio.jpg",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0/",
+      "photoSource": "wikimedia",
+      "photoYear": 2013
     },
     {
       "id": "hn-erlangshan",
@@ -1797,7 +1804,9 @@
       ],
       "description": "沿开放的湖岸步道散步，把城市休闲留给湖边的晚风。",
       "visitTip": "水库工程、水位和岸线开放会影响景观，不保证满水或季节鸟群。",
+      "image": "/assets/hn-baigui.jpg",
       "reference": "https://www.pds.gov.cn/contents/1027/49790.html",
+      "credit": "Windmemories / Wikimedia Commons · CC BY-SA 4.0 · 拍摄于 2025-05-12",
       "contentCheckedAt": "2026-10-11",
       "location": [
         113.162419,
@@ -1806,7 +1815,12 @@
       "district": "新华区",
       "address": "平顶山市新华区 · 长安大道1号",
       "locationReference": "https://www.amap.com/place/B0FFITSEUS",
-      "locationNote": "参考高德景区或片区点位，具体交通入口需确认。"
+      "locationNote": "参考高德景区或片区点位，具体交通入口需确认。",
+      "photoTakenAt": "2025-05-12",
+      "photoReference": "https://commons.wikimedia.org/wiki/File:20250512_Baiguishan_Reservoir.jpg",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+      "photoSource": "wikimedia",
+      "photoYear": 2025
     },
     {
       "id": "hn-junxian",
@@ -1936,7 +1950,9 @@
       ],
       "description": "在淇县山地景区看自然与文化景观，按体力选择游线。",
       "visitTip": "景区活动和开放区域以当日公告为准，不与云梦山共用门票。",
+      "image": "/assets/hn-guling.jpg",
       "reference": "https://www.henan.gov.cn/2020/07-24/1745005.html",
+      "credit": "山海风 / Wikimedia Commons · CC BY-SA 3.0 · 拍摄于 2008-07-06 · 已缩放；缩略图裁切显示",
       "contentCheckedAt": "2026-10-11",
       "location": [
         114.123483,
@@ -1948,7 +1964,12 @@
       "locationNote": "参考高德景区或片区点位，具体交通入口需确认。",
       "planningNotes": [
         "古灵山的往返交通、景区内部交通与天气需另行确认。"
-      ]
+      ],
+      "photoTakenAt": "2008-07-06",
+      "photoReference": "https://commons.wikimedia.org/wiki/File:%E5%8F%A4%E7%81%B5%E5%B1%B1%E5%B1%B1%E9%97%A8_-_panoramio.jpg",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0/",
+      "photoSource": "wikimedia",
+      "photoYear": 2008
     },
     {
       "id": "hn-baoquan",
