@@ -110,6 +110,9 @@ const call=(path,body,env={})=>worker.fetch(new Request('https://ux.test'+path,b
  assert.equal(requests.filter(r=>r.path.startsWith('/api/auth/login')).length,0,'Invalid auth submit must be caught client-side');
  assert.equal(get('#authuser').attrs['aria-invalid'],'true');
 
+ // Logout must send POST /api/auth/logout with a JSON body so the server clears the session cookie (never GET 405).
+ assert(script.includes("api('/api/auth/logout',{})"),'Logout button handler must POST to /api/auth/logout');
+
  // Duplicate photo date prevention on Henan Museum credit.
  const creditHtml=vm.runInContext("spotsCreditHTML(CATALOG.find(p=>p.id==='hn-henan-museum'))",context);
  assert.equal((creditHtml.match(/拍摄于 2024-11-20/g)||[]).length,1,'Photo date must not repeat when credit already includes it');
