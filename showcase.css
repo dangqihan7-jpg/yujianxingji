@@ -20,37 +20,43 @@ body{background:var(--paper);min-height:100dvh}body[data-view="gallery"],body[da
 
 @media (hover:hover) and (pointer:fine){.side-route:hover{background:#1f373e;border-color:#d6a77477}.side-route:hover img{transform:scale(1.04)}.feature-cta:hover{background:#f2d6af}}
 
-/* 闭环改革一期：出行复盘 */
-.review-section{margin-top:22px;border:1px solid #dbe7eb;border-radius:11px;padding:20px 22px;background:#fff}
-.review-heading{display:flex;justify-content:space-between;gap:16px;align-items:flex-start}
-.review-heading h3{font-family:"Songti SC",serif;font-weight:500;font-size:22px;color:#214b59}
-.review-heading p{font-size:13px;color:#6e8790;line-height:1.8;margin-top:6px}
-.review-heading .primary{background:var(--blue);color:#fff;border-color:var(--blue);padding:11px 17px;font-size:14px;border-radius:7px}
-.review-summary{font-size:13px;color:#537b87;line-height:1.9;margin-top:12px}
+/* 闭环改革一期：出行复盘（统一深曜石磨砂玻璃视觉） */
+.review-section{margin-top:26px;border:1px solid rgba(255,255,255,.1);border-radius:16px;padding:24px 26px;background:linear-gradient(160deg,rgba(18,34,50,.88),rgba(11,22,35,.92));box-shadow:0 18px 46px rgba(0,0,0,.28),inset 0 1px 0 rgba(255,255,255,.06)}
+.review-heading{display:flex;justify-content:space-between;gap:16px;align-items:flex-start;flex-wrap:wrap}
+.review-heading h3{font-family:"Songti SC",serif;font-weight:500;font-size:23px;letter-spacing:.03em;color:#f2f8fc}
+.review-heading p{font-size:13.5px;color:#9bb5c6;line-height:1.8;margin-top:6px}
+.review-heading .primary{background:linear-gradient(135deg,#28d1af,#1cb094);color:#04241e;border:1px solid rgba(130,247,221,.45);padding:11px 20px;font-size:14px;font-weight:700;border-radius:10px;box-shadow:0 8px 24px rgba(34,197,166,.2)}
+.review-summary{font-size:13.5px;color:#b8d0de;line-height:1.85;margin-top:14px;padding-top:14px;border-top:1px solid rgba(255,255,255,.08)}
 #review .dialog-content>form{display:grid;gap:14px}
-#review .dialog-content label{display:block;font-size:14px;color:#376a78;margin-bottom:6px}
-#review .dialog-content input,#review .dialog-content select{width:100%;padding:10px 12px;border:1px solid #d3e0e5;border-radius:7px;font-size:14px;background:#fff}
-#review .statusline{font-size:13px;color:#708a96;line-height:1.7}
+#review .dialog-content label{display:block;font-size:13.5px;color:#b8d0de;margin-bottom:6px}
+#review .dialog-content input,#review .dialog-content select{width:100%;padding:10px 12px;border:1px solid rgba(255,255,255,.14);border-radius:10px;font-size:14px;background:#0a1929;color:#eef6fa}
+#review .statusline{font-size:12.5px;color:#8fa8b9;line-height:1.75}
 
 /* 首页嵌套层：一次只看一层，每层单独一屏。 */
 .home-layers{width:100%}
 .home-layer[hidden]{display:none}
-.home-layer-head{display:flex;align-items:center;gap:16px;max-width:1280px;margin:0 auto 18px}
-.home-layer-head h2{color:#eff4f4;font-size:24px;font-weight:500;line-height:1.5}
-.home-layer-kicker{margin:0;color:#9aafb7;font-size:13px;letter-spacing:.2em}
-.home-back{flex:none;min-height:44px;padding:10px 16px;border:1px solid #abc9dc2e;border-radius:24px;color:#e2fff6;background:#0c1b2c9c;font-family:inherit;font-size:14px;line-height:1.5}
+.home-plan-layer{padding:24px 4% 96px}
+.home-popular-layer{padding:16px 4% 88px}
+.home-popular-layer .home-layer-head{margin-bottom:14px}
+.home-layer-head{display:flex;align-items:center;gap:16px;max-width:1280px;margin:0 auto 20px}
+.home-layer-head h2{font-family:"Songti SC",serif;color:#f3f9fc;font-size:28px;font-weight:500;letter-spacing:.04em;line-height:1.4}
+.home-layer-kicker{margin:0;color:#d9b37c;font-size:12px;font-weight:600;letter-spacing:.22em}
+.home-back{flex:none;min-height:42px;padding:9px 18px;border:1px solid rgba(255,255,255,.15);border-radius:999px;color:#e6f4f8;background:rgba(16,31,46,.72);backdrop-filter:blur(12px);font-family:inherit;font-size:13.5px;line-height:1.5;box-shadow:inset 0 1px 0 rgba(255,255,255,.08)}
+.home-back:hover{background:rgba(26,48,68,.88);border-color:rgba(217,179,124,.4)}
 .home-back:focus-visible{outline:3px solid #abffe8;outline-offset:3px}
-.home-plan-note{max-width:1280px;margin:0 auto 18px;color:rgba(255,255,255,.85);font-size:14px;line-height:1.9}
-.home-plan-host{max-width:min(1280px,100%);margin:0 auto;background:#fffefb;color:#193944;border:1px solid var(--line);border-radius:14px}
-.home-plan-extras{max-width:1280px;margin:18px auto 0;display:grid;gap:12px}
+.home-plan-note{max-width:1280px;margin:0 auto 20px;color:#a5becf;font-size:14px;line-height:1.85}
+.home-plan-host{max-width:min(1280px,100%);margin:0 auto;background:linear-gradient(165deg,rgba(17,31,47,.9),rgba(10,20,33,.94));color:#eaf4f9;border:1px solid rgba(255,255,255,.11);border-radius:20px;box-shadow:0 28px 80px rgba(0,0,0,.42),inset 0 1px 0 rgba(255,255,255,.08);backdrop-filter:blur(22px);-webkit-backdrop-filter:blur(22px)}
+.home-plan-extras{max-width:1280px;margin:20px auto 0;display:grid;gap:12px}
 .home-plan-extras .demo-mode,.home-plan-extras .group-entry{margin-top:0}
 .home-plan-links{display:flex;gap:12px;flex-wrap:wrap}
-.home-plan-links .quiet{color:#dae6e7;font-size:14px}
+.home-plan-links .quiet{color:#cfe2ec;font-size:13.5px;border:1px solid rgba(255,255,255,.12);border-radius:999px;padding:8px 16px;background:rgba(16,30,45,.62)}
+.home-plan-links .quiet:hover{border-color:rgba(217,179,124,.4);color:#fff}
 /* 闭环四步条：只在行程总览页顶部，不在首页。 */
-.loop-strip{margin-bottom:22px}
-.loop-strip ol{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:0;padding:0;list-style:none}
-.loop-strip button{display:block;width:100%;min-height:44px;padding:14px 16px;text-align:left;border:1px solid #d7e3e6;border-radius:10px;background:#fff;color:#18343c;font-family:inherit}
-.loop-strip button b{display:block;font-size:14px;font-weight:600;line-height:1.6}
-.loop-strip button span{display:block;margin-top:4px;color:#4a6570;font-size:12px;line-height:1.7}
-.loop-strip button:focus-visible{outline:3px solid #1e6a79;outline-offset:2px}
-@media(max-width:760px){.loop-strip ol{grid-template-columns:1fr 1fr}.home-plan-host{border-radius:10px}}
+.loop-strip{margin-bottom:26px}
+.loop-strip ol{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:0;padding:0;list-style:none}
+.loop-strip button{display:block;width:100%;min-height:44px;padding:15px 18px;text-align:left;border:1px solid rgba(255,255,255,.09);border-radius:14px;background:linear-gradient(160deg,rgba(18,34,50,.85),rgba(11,22,35,.9));color:#eaf4f9;font-family:inherit;box-shadow:0 10px 26px rgba(0,0,0,.2),inset 0 1px 0 rgba(255,255,255,.06)}
+.loop-strip button:hover{border-color:rgba(217,179,124,.42);background:linear-gradient(160deg,rgba(24,44,64,.92),rgba(14,27,42,.95))}
+.loop-strip button b{display:block;font-size:14px;font-weight:600;line-height:1.55;color:#f0cf99;letter-spacing:.03em}
+.loop-strip button span{display:block;margin-top:5px;color:#9eb7c7;font-size:12px;line-height:1.65}
+.loop-strip button:focus-visible{outline:3px solid #26c9a8;outline-offset:2px}
+@media(max-width:760px){.home-plan-layer,.home-popular-layer{padding:18px 14px 40px}.loop-strip ol{grid-template-columns:1fr 1fr}.home-plan-host{border-radius:16px}}
