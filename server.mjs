@@ -1084,7 +1084,39 @@ async function agentEndpoint(request,env){
  });
  return new Response(stream,{headers:{'Content-Type':'text/event-stream; charset=utf-8','Cache-Control':'no-cache, no-store, no-transform','X-Accel-Buffering':'no','X-Content-Type-Options':'nosniff'}});
 }
-async function mapProxy(url,env){if(!env.AMAP_JS_KEY||!env.AMAP_SECURITY_JS_CODE)fail('高德地图尚未配置',503);const path=url.pathname.slice('/_AMapService'.length);if(!/^\/(v3\/(place\/(text|around|detail)|assistant\/inputtips|geocode\/(geo|regeo)|direction\/(walking|driving|transit\/integrated))|v4\/map\/styles|v5\/direction\/(walking|driving))$/.test(path))fail('不支持此地图请求',404);if(url.searchParams.get('key')!==env.AMAP_JS_KEY)fail('地图请求密钥不匹配',403);const target=new URL(path,path==='/v4/map/styles'?'https://webapi.amap.com':'https://restapi.amap.com');target.search=url.search;target.searchParams.set('jscode',env.AMAP_SECURITY_JS_CODE);const r=await fetch(target,{signal:AbortSignal.timeout(12000)});return new Response(r.body,{status:r.status,headers:{'Content-Type':r.headers.get('Content-Type')||'application/json','Cache-Control':'no-store'}})}
+function parseAnchor(value){if(typeof value!=='string'||!value)return null;const parts=value.split(',').map(Number);return coordinates(parts)?parts:null}
+function cityAnchor(city,anchorParam){const explicit=parseAnchor(anchorParam);if(explicit)return explicit;const all=CATALOG.filter(p=>p.city===city&&coordinates(p.location));const urban=all.filter(p=>!(p.planningNotes&&p.planningNotes.length));const pool=urban.length?urban:all;if(!pool.length)return null;return [pool.reduce((s,p)=>s+p.location[0],0)/pool.length,pool.reduce((s,p)=>s+p.location[1],0)/pool.length]}
+function approxKm(a,b){if(!coordinates(a)||!coordinates(b))return null;const lat=(a[1]+b[1])*Math.PI/360,dx=(a[0]-b[0])*111.32*Math.cos(lat),dy=(a[1]-b[1])*110.57;return Math.hypot(dx,dy)}
+function specialtyTerms(city){const guide=CITY_GUIDES.find(c=>c.name===city);if(!guide?.food||guide.food.includes('当地面食与时令小吃'))return [];return guide.food.split(/[、，,/\s]+/).map(s=>s.trim()).filter(Boolean)}
+function livePlaceKeywords(city,q,category){if(q)return q;if(category==='food'){const terms=specialtyTerms(city);return terms.length?terms.slice(0,3).join('|'):'河南菜|特色美食'}if(category==='stay')return '酒店';return ''}
+function rankLivePlaces(places,{category,q,city,anchor}){
+ if(q||places.length<2)return places;
+ const terms=category==='food'?specialtyTerms(city):[];
+ const foodBoost=/豫菜|河南菜|老字号|夜市|小吃|烩面|胡辣汤|水席|灌汤包|牛肉汤|羊肉汤|烧鸡|扁粉菜|卤面|胡辣/;
+ const foodNoise=/越南粉|PHO|披萨|汉堡|肯德基|麦当劳|必胜客|星巴克|瑞幸|奶茶|咖啡|寿司|日料|料理|萨莉亚|烤肉自助|牛排/i;
+ const stayBoost=/酒店|民宿|客栈|精品|度假|国际饭店|大饭店/;
+ const stayNoise=/洗浴|浴池|足浴|汗蒸|棋牌|钟点房|招待所|旅社|长途汽车站|汽车站|劳务|公寓出租/;
+ const score=p=>{
+  let s=0;
+  if(p.image)s+=3;
+  const rating=Number(p.rating);
+  if(Number.isFinite(rating)&&rating>=3.5)s+=Math.min(5,rating)*1.1;
+  const km=anchor&&p.location?approxKm(anchor,p.location):null;
+  if(category==='stay'){
+   if(km!=null)s+=km<=4?8:km<=10?5:km<=20?1:-8;
+   if(stayBoost.test(p.name))s+=3;
+   if(stayNoise.test(p.name+' '+(p.address||'')))s-=7;
+  }else if(category==='food'){
+   if(km!=null)s+=km<=6?4:km<=15?2:km>25?-3:0;
+   if(terms.some(t=>p.name.includes(t)))s+=6;
+   else if(foodBoost.test(p.name))s+=4;
+   if(foodNoise.test(p.name))s-=6;
+  }
+  return s;
+ };
+ return places.map((p,i)=>({p,i,s:score(p)})).sort((a,b)=>b.s-a.s||a.i-b.i).map(x=>x.p);
+}
+async function mapProxy(url,env){if(!env.AMAP_JS_KEY||!env.AMAP_SECURITY_JS_CODE)fail('高德地图尚未配置',503);const path=url.pathname.slice('/_AMapService'.length);if(path==='/v3/log/init'){if(url.searchParams.get('key')!==env.AMAP_JS_KEY)fail('地图请求密钥不匹配',403);const cb=url.searchParams.get('callback')||'';const body=/^[A-Za-z_$][A-Za-z0-9_$.]{0,63}$/.test(cb)?`/**/typeof ${cb}==='function'&&${cb}({status:'1',info:'OK'});`:'/* ok */';return new Response(body,{status:200,headers:{'Content-Type':'application/javascript; charset=utf-8','Cache-Control':'no-store','X-Content-Type-Options':'nosniff'}})}if(!/^\/(v3\/(place\/(text|around|detail)|assistant\/inputtips|geocode\/(geo|regeo)|direction\/(walking|driving|transit\/integrated))|v4\/map\/styles|v5\/direction\/(walking|driving))$/.test(path))fail('不支持此地图请求',404);if(url.searchParams.get('key')!==env.AMAP_JS_KEY)fail('地图请求密钥不匹配',403);const target=new URL(path,path==='/v4/map/styles'?'https://webapi.amap.com':'https://restapi.amap.com');target.search=url.search;target.searchParams.set('jscode',env.AMAP_SECURITY_JS_CODE);const r=await fetch(target,{signal:AbortSignal.timeout(12000)});return new Response(r.body,{status:r.status,headers:{'Content-Type':r.headers.get('Content-Type')||'application/json','Cache-Control':'no-store'}})}
 export default {async fetch(request,env={}){try{const url=new URL(request.url);if(url.pathname.startsWith('/_AMapService/')){if(request.method!=='GET')fail('方法不支持',405);return await mapProxy(url,env)}if(url.pathname==='/api/share')return await shareCreateEndpoint(request,env);
 if(url.pathname.startsWith('/api/share/'))return await shareReadEndpoint(request,env,url.pathname.slice('/api/share/'.length));
 if(url.pathname==='/s'||url.pathname.startsWith('/s/'))return await shareReadEndpoint(request,env,url.pathname.slice('/s/'.length),true);
@@ -1093,7 +1125,7 @@ if(url.pathname==='/api/auth/register')return await authEndpoint(request,env,'re
 if(url.pathname==='/api/auth/login')return await authEndpoint(request,env,'login');
 if(url.pathname==='/api/auth/logout')return await authEndpoint(request,env,'logout');
 if(url.pathname==='/api/auth/me')return await authEndpoint(request,env,'me');if(url.pathname==='/api/catalog')return json({cities:CITY_GUIDES.map(c=>c.name),cityGuides:CITY_GUIDES,places:CATALOG,routes:PRESETS});if(url.pathname==='/api/config')return json({mapConfigured:!!(env.AMAP_JS_KEY&&env.AMAP_SECURITY_JS_CODE),mapKey:env.AMAP_JS_KEY||null,placesConfigured:!!(env.AMAP_WEB_SERVICE_KEY||(env.AMAP_JS_KEY&&env.AMAP_SECURITY_JS_CODE)),webServiceConfigured:!!env.AMAP_WEB_SERVICE_KEY,persistenceConfigured:!!env.DB,aiConfigured:modelConfigured(env),planningMode:'agent',agentLimits:AGENT_LIMITS,publicAiDemo:env.LLM_PUBLIC_DEMO==='true',authMode:standaloneAuth(env)?'standalone':'platform'});
-if(url.pathname==='/api/places'){const city=text(url.searchParams.get('city')||'郑州',30),q=text(url.searchParams.get('q')||''),category=url.searchParams.get('category')||'all';if(!city||!['all','scenic','food','stay'].includes(category))fail('城市或分类不正确');if(!DECISION_CITIES.includes(city))fail('请选择河南目录中的城市');if(!env.AMAP_WEB_SERVICE_KEY||city==='河南')return json({city,source:'curated',places:CATALOG.filter(p=>(city==='河南'||p.city===city)&&(category==='all'||p.category===category)&&(!q||(p.name+p.address+p.city+p.theme+' '+(p.aliases||[]).join(' ')).includes(q)))});const d=await upstream('/v3/place/text',{city,citylimit:'true',keywords:q,types:category==='all'?Object.values(categoryCodes).join('|'):categoryCodes[category],offset:20,page:1,extensions:'all',output:'json'},env);return json({city,source:'amap',places:(d.pois||[]).map(p=>normalized(p,category==='all'?null:category))})}
+if(url.pathname==='/api/places'){const city=text(url.searchParams.get('city')||'郑州',30),q=text(url.searchParams.get('q')||''),category=url.searchParams.get('category')||'all';if(!city||!['all','scenic','food','stay'].includes(category))fail('城市或分类不正确');if(!DECISION_CITIES.includes(city))fail('请选择河南目录中的城市');if(!env.AMAP_WEB_SERVICE_KEY||city==='河南')return json({city,source:'curated',places:CATALOG.filter(p=>(city==='河南'||p.city===city)&&(category==='all'||p.category===category)&&(!q||(p.name+p.address+p.city+p.theme+' '+(p.aliases||[]).join(' ')).includes(q)))});const types=category==='all'?Object.values(categoryCodes).join('|'):categoryCodes[category];const keywords=livePlaceKeywords(city,q,category);let d=await upstream('/v3/place/text',{city,citylimit:'true',keywords,types,offset:20,page:1,extensions:'all',output:'json'},env);if(!q&&keywords&&!(d.pois||[]).length)d=await upstream('/v3/place/text',{city,citylimit:'true',keywords:'',types,offset:20,page:1,extensions:'all',output:'json'},env);const anchor=cityAnchor(city,url.searchParams.get('anchor'));const list=rankLivePlaces((d.pois||[]).map(p=>normalized(p,category==='all'?null:category)),{category,q,city,anchor});return json({city,source:'amap',places:list})}
 if(url.pathname==='/api/place'){const id=text(url.searchParams.get('id')||'',100);if(!/^[\w-]{1,100}$/.test(id))fail('地点 ID 不正确');if(id.startsWith('hn-')){const p=CATALOG.find(p=>p.id===id);if(!p)fail('地点不存在',404);return json(p)}const d=await upstream('/v3/place/detail',{id,extensions:'all',output:'json'},env);if(!d.pois?.length)fail('地点不存在',404);return json(normalized(d.pois[0]))}
 if(url.pathname==='/api/intent'&&request.method==='POST')return await intentEndpoint(request,env);
 if(url.pathname==='/api/agent'&&request.method==='POST')return await agentEndpoint(request,env);

@@ -543,7 +543,10 @@
         "登封少林寺"
       ],
       "photoSource": "wikimedia",
-      "photoYear": 2024
+      "photoYear": 2024,
+      "planningNotes": [
+        "嵩山少林寺位于登封，距郑州市区较远，往返车程与景区内步行时间需另行核算。"
+      ]
     },
     {
       "id": "hn-only-henan",
@@ -568,7 +571,10 @@
       "credit": "只有河南·戏剧幻城门票-去哪儿网门票预订 · 来源未核 CC 授权，公开使用前请核对",
       "photoCaption": "郑州·只有河南·戏剧幻城实景照片",
       "photoCheckedAt": "2026-10-26",
-      "photoSource": "drive-v2"
+      "photoSource": "drive-v2",
+      "planningNotes": [
+        "只有河南·戏剧幻城位于中牟县，往返郑州市区车程及剧场排期需另行核算。"
+      ]
     },
     {
       "id": "hn-longmen",
@@ -810,7 +816,10 @@
       "visitTip": "当天以山水游览为主，景区内部车程和步道时间另外预留。",
       "photoTakenAt": "2018-05-20",
       "photoSource": "wikimedia",
-      "photoYear": 2018
+      "photoYear": 2018,
+      "planningNotes": [
+        "云台山位于修武县，往返焦作市区、景区交通车及步道耗时需另行核算。"
+      ]
     },
     {
       "id": "hn-chenjiagou",
@@ -913,7 +922,10 @@
         "林州红旗渠"
       ],
       "photoSource": "wikimedia",
-      "photoYear": 2026
+      "photoYear": 2026,
+      "planningNotes": [
+        "红旗渠位于林州市，距安阳市区较远，往返车程与景区步行时间需另行核算。"
+      ]
     },
     {
       "id": "hn-dikeng",
@@ -1083,7 +1095,10 @@
       "credit": "郑州银基动物王国门票,郑州银基动物王国门票预订,郑州银基动物王国门票价格,去哪儿网门票 · 来源未核 CC 授权，公开使用前请核对",
       "photoCaption": "郑州·银基动物王国实景照片",
       "photoCheckedAt": "2026-10-25",
-      "photoSource": "drive-v2"
+      "photoSource": "drive-v2",
+      "planningNotes": [
+        "银基动物王国位于新密市，距郑州市区较远，往返车程与园内排队时间需另行核算。"
+      ]
     },
     {
       "id": "hn-movie-town",
@@ -1096,7 +1111,7 @@
       "city": "郑州",
       "category": "scenic",
       "location": [
-        114.0,
+        114,
         34.78
       ],
       "address": "郑州市中牟县郑州国际文化创意产业园建业电影小镇",
@@ -1115,7 +1130,10 @@
       "credit": "河南景区精选（一景区一张） · 演示用图",
       "photoCaption": "郑州·建业电影小镇实景照片",
       "photoSource": "drive-精选",
-      "photoCheckedAt": "2026-10-28"
+      "photoCheckedAt": "2026-10-28",
+      "planningNotes": [
+        "建业电影小镇位于中牟县，往返郑州市区车程及演艺场次时间需另行核算。"
+      ]
     },
     {
       "id": "hn-fangte",
@@ -1147,7 +1165,10 @@
       "credit": "郑州方特欢乐世界 · 来源未核 CC 授权，公开使用前请核对",
       "photoCaption": "郑州·郑州方特欢乐世界实景照片",
       "photoCheckedAt": "2026-10-25",
-      "photoSource": "drive-v2"
+      "photoSource": "drive-v2",
+      "planningNotes": [
+        "郑州方特欢乐世界位于中牟县，往返郑州市区车程及项目排队时间需另行核算。"
+      ]
     },
     {
       "id": "hn-yingtian",

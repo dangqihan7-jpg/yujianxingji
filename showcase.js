@@ -52,7 +52,7 @@ function updateHeroPhoto(){
   $('#hero-toggle').textContent=heroAutoplay?'Ⅱ':'▶';$('#hero-toggle').setAttribute?.('aria-label',heroAutoplay?'暂停照片轮播':'播放照片轮播');$('#hero-toggle').setAttribute?.('aria-pressed',String(heroAutoplay));
   ensureHeroThumbnailVisible();
 }
-function heroSlidesHTML(){return heroPlaces.map((p,i)=>'<div class="hero-image '+(i===heroPhotoIndex?'is-active':'')+'" data-hero-slide aria-hidden="'+String(i!==heroPhotoIndex)+'">'+photoMediaHTML(p,{fetchpriority:i===heroPhotoIndex?'high':'low',loading:'eager'})+'</div>').join('')}
+function heroSlidesHTML(){const visible=typeof homeLayer!=='undefined'&&homeLayer==='popular';return heroPlaces.map((p,i)=>'<div class="hero-image '+(i===heroPhotoIndex?'is-active':'')+'" data-hero-slide aria-hidden="'+String(i!==heroPhotoIndex)+'">'+photoMediaHTML(p,{fetchpriority:visible&&i===heroPhotoIndex?'high':'low',loading:visible&&i===heroPhotoIndex?'eager':'lazy'})+'</div>').join('')}
 function heroThumbnailsHTML(){return heroPlaces.map((p,i)=>'<button data-hero-photo="'+i+'" class="hero-thumbnail '+(i===heroPhotoIndex?'is-active':'')+'" aria-label="查看'+esc(p.city+' · '+p.name)+'照片" aria-pressed="'+String(i===heroPhotoIndex)+'">'+photoMediaHTML(p,{compact:true,alt:''})+'<span>'+esc(p.name)+'</span></button>').join('')}
 function ensureHeroThumbnailVisible(){
   const nav=$('#hero-thumbnails'),button=nav?.querySelector?.('[data-hero-photo="'+heroPhotoIndex+'"]');if(!button||!nav.clientWidth)return;
@@ -105,18 +105,34 @@ function restoreDailyHero(){
 // 照片筛选沿用 heroPhotoHasPublicMetadata（完整出处与授权才上轮播），
 // 热门但没图的地点只进榜、不上轮播。首屏封面用热门第 1 名，
 // 没热门数据时回落到日期轮换选景（aiHeroScenery）。
-async function refreshPopularHero(){
-  try{
-    const data=await api('/api/popular'+(typeof demoOn==='function'&&demoOn()?'?demo='+encodeURIComponent(demoSessionId()):''));
-    const items=(data.items||[]).filter(item=>{const p=CATALOG.find(x=>x.id===item.id);return p&&heroPhotoHasPublicMetadata(p)}).slice(0,5);
-    if(items.length<2){if(heroPopular)restoreDailyHero();return}
-    heroPopular=items.map((item,i)=>({...item,rank:i+1}));
-    heroPopularHasDemo=heroPopular.some(item=>item.demo);
-    heroPlaces=heroPopular.map(item=>CATALOG.find(x=>x.id===item.id));heroPhotoIndex=0;
-    if(typeof setAIHeroCoverPlace==='function')setAIHeroCoverPlace(heroPlaces[0]);
-    if(typeof refreshAIHeroScenery==='function')refreshAIHeroScenery();
-    rebuildHeroSlides();
-  }catch{ if(heroPopular)restoreDailyHero(); }
+let popularHeroInFlight=null,popularHeroInFlightUrl='',popularHeroFetchedUrl='',popularHeroFetchedAt=0;
+async function refreshPopularHero({dedupe=false,force=false}={}){
+  const url='/api/popular'+(typeof demoOn==='function'&&demoOn()?'?demo='+encodeURIComponent(demoSessionId()):'');
+  if(!force&&popularHeroInFlight&&popularHeroInFlightUrl===url)return popularHeroInFlight;
+  if(dedupe&&!force&&popularHeroFetchedUrl===url&&Date.now()-popularHeroFetchedAt<3000){
+    if(heroPopular&&heroPlaces.length){
+      if(typeof setAIHeroCoverPlace==='function')setAIHeroCoverPlace(heroPlaces[0]);
+      if(typeof refreshAIHeroScenery==='function')refreshAIHeroScenery();
+      rebuildHeroSlides();
+    }
+    return;
+  }
+  const run=(async()=>{
+    try{
+      const data=await api(url);
+      popularHeroFetchedUrl=url;popularHeroFetchedAt=Date.now();
+      const items=(data.items||[]).filter(item=>{const p=CATALOG.find(x=>x.id===item.id);return p&&heroPhotoHasPublicMetadata(p)}).slice(0,5);
+      if(items.length<2){if(heroPopular)restoreDailyHero();return}
+      heroPopular=items.map((item,i)=>({...item,rank:i+1}));
+      heroPopularHasDemo=heroPopular.some(item=>item.demo);
+      heroPlaces=heroPopular.map(item=>CATALOG.find(x=>x.id===item.id));heroPhotoIndex=0;
+      if(typeof setAIHeroCoverPlace==='function')setAIHeroCoverPlace(heroPlaces[0]);
+      if(typeof refreshAIHeroScenery==='function')refreshAIHeroScenery();
+      rebuildHeroSlides();
+    }catch{ if(heroPopular)restoreDailyHero(); }
+  })().finally(()=>{if(popularHeroInFlight===run){popularHeroInFlight=null;popularHeroInFlightUrl=''}});
+  popularHeroInFlight=run;popularHeroInFlightUrl=url;
+  return run;
 }
 function initializeHeroSlideshow(){
   refreshDailyHeroPhotos();scheduleDailyHeroRefresh();
@@ -153,7 +169,7 @@ function showHomeLayer(layer){
  globalThis.scrollTo?.({top:0,behavior:'instant'});
 }
 function planExtrasHTML(){
- return '<section class="home-plan-extras" aria-label="演示、拼团与其他入口"><div class="demo-mode" data-demo-mode><span>演示模式：<b data-demo-state>'+(demoOn()?'已开启':'已关闭')+'</b></span><button class="quiet" data-demo-toggle>'+(demoOn()?'关闭演示模式':'开启演示模式')+'</button><button class="quiet" data-demo-clear>一键清空演示数据</button><small>开启后造一套模拟复盘：2 人觉得景点值得多待、1 人觉得美食值得多待，另 1 单含实际花费与超时站；另造 8 个地点的模拟加入数，热门层按热门分排，全程标演示数据。演示数据只存本次会话，不影响真实复盘；关闭只关开关，不自动清空。</small></div><div class="group-entry"><button class="quiet" data-open-group>宿舍拼团</button><small>和宿舍一起拼一趟周末游：建团、合偏好、发起人定冲突后生成拼团行程。</small></div><div class="home-plan-links"><button type="button" class="quiet" data-home-vision>拍照识景点</button><button type="button" class="quiet" data-open-sources>资料与照片来源</button></div></section>';
+ return '<section class="home-plan-extras" aria-label="演示、拼团与其他入口"><div class="group-entry"><button class="quiet" data-open-group>宿舍拼团</button><small>和宿舍一起拼一趟周末游：建团、合偏好、发起人定冲突后生成拼团行程。</small></div><div class="home-plan-links"><button type="button" class="quiet" data-home-vision>拍照识景点</button><button type="button" class="quiet" data-open-sources>资料与照片来源</button></div><details class="demo-mode-disclosure"'+(demoOn()?' open':'')+'><summary>演示模式与模拟数据（'+(demoOn()?'已开启':'可选体验')+'）</summary><div class="demo-mode" data-demo-mode><span>演示模式：<b data-demo-state>'+(demoOn()?'已开启':'已关闭')+'</b></span><button class="quiet" data-demo-toggle>'+(demoOn()?'关闭演示模式':'开启演示模式')+'</button><button class="quiet" data-demo-clear>一键清空演示数据</button><small>开启后造一套模拟复盘：2 人觉得景点值得多待、1 人觉得美食值得多待，另 1 单含实际花费与超时站；另造 8 个地点的模拟加入数，热门层按热门分排，全程标演示数据。演示数据只存本次会话，不影响真实复盘；关闭只关开关，不自动清空。</small></div></details></section>';
 }
 function loopStripHTML(){
  return '<nav class="loop-strip" aria-label="规划到出行的闭环四步"><ol><li><button type="button" data-loop-step="plan"><b>01 · 规划</b><span>确认旅行条件，让智能体生成候选</span></button></li><li><button type="button" data-loop-step="spots"><b>02 · 出行</b><span>去景点页看 3D 与沉浸式玩法</span></button></li><li><button type="button" data-loop-step="review"><b>03 · 复盘</b><span>走完回来记四件事</span></button></li><li><button type="button" data-loop-step="popular"><b>04 · 迭代</b><span>看热门怎么变，下一轮越用越准</span></button></li></ol></nav>';
@@ -195,7 +211,7 @@ function renderGallery(){
     </section>
     </div>`;
   bindPhotoMedia($('#gallery'));initializeHeroSlideshow();
-  refreshPopularHero();
+  refreshPopularHero({dedupe:true});
   if(typeof bindAIPlanningHero==='function')bindAIPlanningHero();
 }
 
@@ -250,7 +266,7 @@ function renderOverview(){
   }).join('')+'</div><div class="folio-proof"><div><b>规划依据</b><br>AI 智能体根据你的条件与工具结果规划；服务不可用时显示规则候选。</div><div><b>交通与资料</b><br>高德实时查询；实景照片、作者和许可可在地点详情与资料说明中查看。</div><div><b>出发前确认</b><br>营业时间、预约和景区内部交通尚未校验，请以官方当日信息为准。</div></div>'+reviewSectionHTML();bindPhotoMedia($('#overview'));refreshReviewSummary();
 }
 // 闭环改革一期：出行复盘。复盘按（账号，行程编号）保存；行程总览页展示，写复盘走对话框。
-let reviewCache={tripId:null,review:null,loaded:false};
+let reviewCache={tripId:null,review:null,loaded:false},reviewFetchingId=null;
 function reviewSectionHTML(){
  return '<section class="review-section" aria-label="出行复盘"><div class="review-heading"><div><h3>出行复盘</h3><p>走完回来记四件事，下一轮推荐会越用越准。复盘只保存在你的账号下，匿名访客请先登录。</p></div><button class="primary" data-overview-action="review" '+(!trip.length?'disabled':'')+'>写复盘</button></div><p id="reviewsummary" class="review-summary" role="status">正在读取复盘…</p></section>';
 }
@@ -266,9 +282,13 @@ function reviewSummaryHTML(review){
 async function refreshReviewSummary(){
  const box=$('#reviewsummary');if(!box)return;
  if(!trip.length){box.textContent='先加入地点，再写复盘。';return}
+ if(typeof cfg!=='undefined'&&cfg.authMode==='standalone'&&!authUser){box.textContent='请登录后查看或提交出行复盘。';return}
+ if(typeof activeView!=='undefined'&&activeView!=='overview')return;
  const id=getTripId();
  if(!reviewCache.loaded||reviewCache.tripId!==id){
-  try{const data=await api('/api/trips/'+encodeURIComponent(id)+'/review');reviewCache={tripId:id,review:data.review,loaded:true}}catch(e){const current=$('#reviewsummary');if(current)current.textContent='复盘暂不可用：'+e.message;return}
+  if(reviewFetchingId===id)return;
+  reviewFetchingId=id;
+  try{const data=await api('/api/trips/'+encodeURIComponent(id)+'/review');reviewCache={tripId:id,review:data.review,loaded:true}}catch(e){const current=$('#reviewsummary');if(current)current.textContent=e.status===401?'请登录后查看或提交出行复盘。':'复盘暂不可用：'+e.message;return}finally{if(reviewFetchingId===id)reviewFetchingId=null}
  }
  const current=$('#reviewsummary');if(current)current.innerHTML=esc(reviewSummaryHTML(reviewCache.review));
 }

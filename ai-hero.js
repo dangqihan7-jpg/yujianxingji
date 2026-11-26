@@ -97,11 +97,24 @@ function scheduleAIHeroPlaceholder(){
   },5000);
 }
 function refreshAIHeroLifecycle(){scheduleAIHeroPlaceholder();refreshAIHeroScenery()}
+function setAIHeroInvalid(invalid){
+  const input=aiHeroElement('ai-hero-input'),status=aiHeroElement('ai-hero-status');
+  const wrap=input?.closest?.('.ai-hero-input-wrap');
+  if(invalid){
+    input?.setAttribute?.('aria-invalid','true');
+    wrap?.setAttribute?.('data-invalid','true');
+    if(status){if(status.dataset)status.dataset.state='error';else status.setAttribute?.('data-state','error')}
+  }else{
+    input?.removeAttribute?.('aria-invalid');
+    wrap?.removeAttribute?.('data-invalid');
+    if(status){if(status.dataset)delete status.dataset.state;else status.removeAttribute?.('data-state')}
+  }
+}
 function updateAIHeroSubmit(){
   const form=aiHeroElement('ai-hero-form'),button=aiHeroElement('ai-hero-submit'),status=aiHeroElement('ai-hero-status');
   if(form)form.setAttribute?.('aria-busy',String(aiHeroBusy));
   if(button){button.disabled=aiHeroBusy;button.innerHTML=(aiHeroBusy?'正在识别需求…':'开始规划')+'<span aria-hidden="true">↗</span>'}
-  if(status)status.textContent=aiHeroBusy?'正在识别你的旅行需求…':aiHeroAvailability();
+  if(status){setAIHeroInvalid(false);status.textContent=aiHeroBusy?'正在识别你的旅行需求…':aiHeroAvailability()}
   if(typeof refreshSTTHero==='function')refreshSTTHero();
 }
 async function submitAIHero(event){
@@ -110,7 +123,8 @@ async function submitAIHero(event){
   const input=aiHeroElement('ai-hero-input');if(!input)return;
   captureAIHeroDraft();const text=aiHeroDraft.trim();
   if(aiHeroBusy||(typeof briefBusy!=='undefined'&&briefBusy))return;
-  if(!text){const status=aiHeroElement('ai-hero-status');if(status)status.textContent='先写下时间、预算或想去的地方吧';input.focus?.();scheduleAIHeroPlaceholder();return}
+  if(!text){const status=aiHeroElement('ai-hero-status');if(status)status.textContent='先写下时间、预算或想去的地方吧';setAIHeroInvalid(true);input.focus?.();scheduleAIHeroPlaceholder();return}
+  setAIHeroInvalid(false);
   if(typeof saveBooting!=='undefined'&&saveBooting){if(typeof toast==='function')toast('正在恢复已保存行程，请稍后操作');return}
   aiHeroBusy=true;updateAIHeroSubmit();scheduleAIHeroPlaceholder();
   try{await (typeof openBriefLayer==='function'?openBriefLayer(text):openBrief(text))}
@@ -120,7 +134,7 @@ async function submitAIHero(event){
 function bindAIPlanningHero(){
   const form=aiHeroElement('ai-hero-form'),input=aiHeroElement('ai-hero-input');if(!form||!input)return;
   input.value=aiHeroDraft;form.onsubmit=submitAIHero;
-  input.oninput=()=>{captureAIHeroDraft();if(!aiHeroBusy){const status=aiHeroElement('ai-hero-status');if(status)status.textContent=aiHeroAvailability()}scheduleAIHeroPlaceholder()};
+  input.oninput=()=>{captureAIHeroDraft();setAIHeroInvalid(false);if(!aiHeroBusy){const status=aiHeroElement('ai-hero-status');if(status)status.textContent=aiHeroAvailability()}scheduleAIHeroPlaceholder()};
   input.onfocus=scheduleAIHeroPlaceholder;input.onblur=scheduleAIHeroPlaceholder;
   // Enter remains a normal textarea newline, including Chinese IME composition.
   updateAIHeroSubmit();scheduleAIHeroPlaceholder();
