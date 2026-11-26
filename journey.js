@@ -76,7 +76,7 @@ async function checkTraffic(){
   try{const result=await jsTransport(stops.map(s=>exactLocation(s.place)),mode,cities[0]||$('#city').value);if(operation!==trafficOperation||key!==trafficKey()){toast('行程已改变，请为最新安排重新核算');return}result.queriedAt=Date.now();trafficCache.set(key,result);scheduleTrafficExpiry();renderTrip();renderMap();drawTraffic(result);toast('交通时间已加入当天安排，可继续调整');}
   catch(e){toast(e.message)}finally{trafficBusy=false;button.disabled=false;button.textContent='核算当天交通'}
 }
-function drawTraffic(result){if(!map||!result)return;const selectedCity=$('#city').value;if(selectedCity!=='河南'&&dayStops().some(s=>s.place.city&&s.place.city!==selectedCity))return;const path=result.legs.flatMap(l=>l.path);if(path.length){if(line)map.remove(line);line=new AMap.Polyline({path,strokeColor:'#147784',strokeWeight:5});map.add(line);map.setFitView([line,...markers]);}$('#routestatus').textContent='高德'+modeNames[result.mode]+' · '+Math.round(result.legs.reduce((n,l)=>n+l.distance,0)/100)/10+' km · 约 '+Math.ceil(result.legs.reduce((n,l)=>n+l.duration,0)/60)+' 分钟';}
+function drawTraffic(result){if(!map||!result)return;const selectedCity=$('#city').value;if(selectedCity!=='河南'&&dayStops().some(s=>s.place.city&&s.place.city!==selectedCity))return;const path=result.legs.flatMap(l=>l.path);if(path.length){if(line)map.remove(line);line=new AMap.Polyline({path,strokeColor:'#147784',strokeWeight:5});map.add(line);map.setFitView([line,...markers],false,[96,48,72,48]);}$('#routestatus').textContent='高德'+modeNames[result.mode]+' · '+Math.round(result.legs.reduce((n,l)=>n+l.distance,0)/100)/10+' km · 约 '+Math.ceil(result.legs.reduce((n,l)=>n+l.duration,0)/60)+' 分钟';}
 async function focusPlace(p){
   if(!p)return;p=trip.find(s=>s.place.id===p.id)?.place||p;const seq=++focusSeq;activePlace=p.id;
   if(p.city&&$('#city').value!==p.city){$('#city').value=p.city;$('#query').value='';await search();if(seq!==focusSeq)return}
@@ -296,7 +296,14 @@ async function restoreJourney(){
     if(!restoreInitialized){renderPhotoCredits();renderPresets();if(!trip.length)loadPreset('luoyang',true);restoreInitialized=true}
     cfg=await api('/api/config',undefined,requestOptions);
     await refreshAuth(requestOptions);
-    renderGallery();$('#draftinfo').textContent=cfg.persistenceConfigured?'行程自动保存到当前账号；也可以导出文件留存。':'离线展示不连接账号保存，请导出行程留存。';connectMap();
+    if(typeof activeView==='undefined'||activeView==='gallery')renderGallery();
+    $('#draftinfo').textContent=cfg.persistenceConfigured?'行程自动保存到当前账号；也可以导出文件留存。':'离线展示不连接账号保存，请导出行程留存。';connectMap();
+    if(cfg.authMode==='standalone'&&!authUser){
+      cfg.persistenceConfigured=false;saveBooting=false;saveBlocked=false;setHydrating(false);setRestoreStatus('ready');
+      saveStatus('登录后可自动保存行程，访客行程仅保留在本页。');
+      $('#draftinfo').textContent='登录后行程自动保存到你的账号；访客请导出文件留存。';
+      return;
+    }
     if(cfg.persistenceConfigured){
       phase='saved';const stored=await api('/api/draft',undefined,requestOptions);
       if(stored.draft){

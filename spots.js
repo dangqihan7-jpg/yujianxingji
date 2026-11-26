@@ -35,7 +35,7 @@ function spotPosition(p){
  const n=spotDimsOf(p).length;
  return{x,y:0.4+n*0.55,z,r:0.42+n*0.22,n};
 }
-let spotsLayer='overview',spotsSpotId=null,spotsFilter='all',spotsCity='all',spotsLastLayer=null;
+let spotsLayer='overview',spotsSpotId=null,spotsFilter='all',spotsCity='all',spotsQuery='',spotsLastLayer=null;
 function spotsCityCounts(){
  const seen=new Map();
  CATALOG.forEach(p=>{if(!seen.has(p.city))seen.set(p.city,{name:p.city,count:0});seen.get(p.city).count++});
@@ -45,7 +45,13 @@ let spotsPopular=null,spotsPopularDemo=false,spotsPopularKey=null;
 let spotsReview={loaded:false,worthMoreStop:null};
 let spotsPlannedDuration={};
 let spots3D=null,spots3DFailed=false,spots3DRunning=false,spots3DAuto=true;
-function spotsVisiblePlaces(){return CATALOG.filter(p=>(spotsCity==='all'||p.city===spotsCity)&&(spotsFilter==='all'||spotDimsOf(p).some(d=>d.key===spotsFilter)))}
+function spotsMatchesQuery(p){
+ const q=String(spotsQuery||'').trim().toLowerCase();
+ if(!q)return true;
+ const hay=((p.name||'')+' '+(p.city||'')+' '+(p.theme||'')+' '+(p.address||'')+' '+(p.aliases||[]).join(' ')).toLowerCase();
+ return hay.includes(q);
+}
+function spotsVisiblePlaces(){return CATALOG.filter(p=>(spotsCity==='all'||p.city===spotsCity)&&(spotsFilter==='all'||spotDimsOf(p).some(d=>d.key===spotsFilter))&&spotsMatchesQuery(p))}
 function spotsPlace(id){return CATALOG.find(p=>p.id===id)||null}
 function spotsDurationFor(p){const stop=trip.find(s=>s.place.id===p.id);return spotsPlannedDuration[p.id]??(stop?stop.duration:undefined)??p.duration??90}
 function spotsPopularRank(id){if(!spotsPopular||!Array.isArray(spotsPopular.items))return null;const i=spotsPopular.items.findIndex(x=>x.id===id);return i<0?null:i+1}
@@ -64,6 +70,7 @@ async function refreshSpotsPopular(){
 }
 async function loadSpotsReview(){
  if(spotsReview.loaded)return spotsReview;
+ if(typeof cfg!=='undefined'&&cfg.authMode==='standalone'&&typeof authUser!=='undefined'&&!authUser){spotsReview={loaded:true,worthMoreStop:null};return spotsReview}
  try{const data=await api('/api/trips/'+encodeURIComponent(getTripId())+'/review');spotsReview={loaded:true,worthMoreStop:data.review?data.review.worthMoreStop||null:null}}catch(e){spotsReview={loaded:true,worthMoreStop:null}}
  if(typeof activeView!=='undefined'&&activeView==='spots')renderSpots();
  return spotsReview;
@@ -72,7 +79,9 @@ function spotsCreditHTML(p){
  const text=p.credit||p.photoSource||'照片出处待补充';
  const link=p.photoReference?(' <a href="'+esc(p.photoReference)+'" target="_blank" rel="noopener">来源 ↗</a>'):'';
  const license=p.licenseUrl?(' <a href="'+esc(p.licenseUrl)+'" target="_blank" rel="noopener">授权 ↗</a>'):'';
- return esc(text)+link+license+' · '+esc(typeof photoDateLabel==='function'?photoDateLabel(p):'');
+ const date=typeof photoDateLabel==='function'?photoDateLabel(p):'';
+ const dateSuffix=date&&!text.includes(date)?(' · '+esc(date)):'';
+ return esc(text)+link+license+dateSuffix;
 }
 function toggleSpotsTrip(id){
  const place=spotsPlace(id);if(!place)return;
@@ -139,6 +148,7 @@ function spotsOverviewHTML(){
  +'<div class="spots-summary">文化 '+counts.culture+' · 山水 '+counts.nature+' · 沉浸 '+counts.immersive+' · 亲子 '+counts.family+' · 美食 '+counts.food+'</div></div>'
  +'<div class="spots-cities" role="group" aria-label="按城市筛选"><span class="spots-filter-label">城市</span><button class="spots-chip spots-city-chip'+(spotsCity==='all'?' active':'')+'" data-spots-city="all">全部 <b>'+CATALOG.length+'</b></button>'+cities.map(c=>'<button class="spots-chip spots-city-chip'+(spotsCity===c.name?' active':'')+'" data-spots-city="'+esc(c.name)+'">'+esc(c.name)+' <b>'+c.count+'</b></button>').join('')+'</div>'
  +'<div class="spots-dims" role="group" aria-label="按维度筛选"><span class="spots-filter-label">维度</span>'+chips.map(c=>'<button class="spots-chip'+(spotsFilter===c.key?' active':'')+'" data-spots-filter="'+c.key+'"'+(c.color?' style="--dim:'+c.color+'"':'')+'><span class="spots-dot"></span>'+esc(c.name)+' <b>'+c.count+'</b></button>').join('')+'</div>'
+ +'<div class="spots-search"><input id="spots-search" type="search" maxlength="60" value="'+esc(spotsQuery)+'" placeholder="搜索景点名称、城市或关键词…" aria-label="搜索精选景点" data-spots-search><button type="button" class="small quiet" data-spots-search-clear'+(spotsQuery?'':' hidden')+'>清空</button></div>'
  +'<div class="spots-3d-wrap"><div id="spots-3d" class="spots-3d" aria-label="3D 景点空间"></div>'
  +'<div class="spots-3d-bar"><span>拖动旋转 · 滚轮缩放 · 点球进卡片</span><button class="small quiet" data-spots-rotate>'+(spots3DAuto?'暂停旋转':'自动旋转')+'</button></div>'
  +'<div id="spots-3d-tip" class="spots-3d-tip" hidden></div>'
@@ -240,12 +250,13 @@ if(spotsRoot){
   const backCard=t.closest('[data-spots-back-card]');if(backCard){setSpotsLayer('card');return}
   const filterBtn=t.closest('[data-spots-filter]');if(filterBtn){setSpotsFilter(filterBtn.dataset.spotsFilter);return}
   const cityBtn=t.closest('[data-spots-city]');if(cityBtn){setSpotsCity(cityBtn.dataset.spotsCity);return}
+  const clearBtn=t.closest('[data-spots-search-clear]');if(clearBtn){spotsQuery='';const inp=$('#spots-search');if(inp){inp.value='';inp.focus?.()}clearBtn.hidden=true;spots3DApplyFilter();renderSpotsList();return}
   const rotateBtn=t.closest('[data-spots-rotate]');if(rotateBtn){spots3DAuto=!spots3DAuto;rotateBtn.textContent=spots3DAuto?'暂停旋转':'自动旋转';if(spots3D)spots3D.lastInteract=0;return}
   const openEl=t.closest('[data-spots-open]');if(openEl){openSpotsCard(openEl.dataset.spotsOpen);return}
  };
  if(typeof spotsRoot.addEventListener==='function'){
   spotsRoot.addEventListener('keydown',function(e){if(e.key!=='Enter')return;const el=e.target&&e.target.closest?e.target.closest('[data-spots-open]'):null;if(el){e.preventDefault();openSpotsCard(el.dataset.spotsOpen)}});
-  spotsRoot.addEventListener('input',spotsDurationInput);
+  spotsRoot.addEventListener('input',function(e){const s=e.target&&e.target.closest?e.target.closest('[data-spots-search]'):null;if(s){spotsQuery=s.value||'';const clearBtn=spotsRoot.querySelector?.('[data-spots-search-clear]');if(clearBtn)clearBtn.hidden=!spotsQuery;spots3DApplyFilter();renderSpotsList();return}spotsDurationInput(e)});
   spotsRoot.addEventListener('change',spotsDurationChange);
  }
 }
@@ -271,7 +282,7 @@ function spots3DDispose(){
 }
 function spots3DApplyFilter(){
  if(!spots3D)return;
- spots3D.meshes.forEach((mesh,id)=>{const p=spotsPlace(id);mesh.visible=!p||((spotsCity==='all'||p.city===spotsCity)&&(spotsFilter==='all'||spotDimsOf(p).some(d=>d.key===spotsFilter)))});
+ spots3D.meshes.forEach((mesh,id)=>{const p=spotsPlace(id);mesh.visible=!p||((spotsCity==='all'||p.city===spotsCity)&&(spotsFilter==='all'||spotDimsOf(p).some(d=>d.key===spotsFilter))&&spotsMatchesQuery(p))});
 }
 function spots3DHighlight(id){
  if(!spots3D)return;

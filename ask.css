@@ -64,7 +64,8 @@ dialog.ask-dialog[open] { display: grid; grid-template-rows: auto auto minmax(10
 .ask-dialog .ask-reference { margin: 0; padding: 8px 20px max(14px, env(safe-area-inset-bottom)); background: #102238; color: #a8bfcf; font-size: 10px; line-height: 1.7; }
 @keyframes ask-arrive { from { transform: translateY(24px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
 @media (max-width: 767px) {
-  .ask-launcher { right: 16px; bottom: calc(18px + env(safe-area-inset-bottom)); min-width: 104px; min-height: 50px; }
+  .ask-launcher { right: 14px; bottom: calc(14px + env(safe-area-inset-bottom)); width: 48px; min-width: 48px; height: 48px; min-height: 48px; padding: 0; border-radius: 50%; gap: 0; }
+  .ask-launcher > span:last-child { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
   dialog.ask-dialog { inset: auto 0 0 0; width: 100%; max-width: 100%; border-left: 0; border-right: 0; border-radius: 18px 18px 0 0; }
   dialog.ask-dialog[open] { height: min(740px, calc(100dvh - 12px)); max-height: calc(100dvh - 12px); }
   .ask-dialog .ask-head { padding: 13px 16px 12px; gap: 8px; }
